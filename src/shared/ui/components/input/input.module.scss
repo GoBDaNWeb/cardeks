@@ -1,0 +1,43 @@
+@import '@/shared/styles/mixins';
+
+.input.styled {
+	border: 1px solid rgba(167, 181, 197, 0.3);
+	height: 48px;
+	padding: 20px;
+	border-radius: var(--radius-s);
+	width: 100%;
+
+	&:focus {
+		border-color: var(--accent-color);
+		@include text-m;
+		color: var(--primary-color);
+		opacity: 1;
+		letter-spacing: 0;
+	}
+	&:hover {
+		border-color: var(--accent-color);
+	}
+}
+.input {
+	background: var(--white-color);
+	border: none;
+	outline: none;
+	@include text-m;
+	padding: 0;
+	opacity: 1 !important;
+	transition: border-color var(--trs-300);
+	&::placeholder {
+		@include text-m;
+		color: var(--secondary-color);
+		opacity: 1;
+		letter-spacing: 0;
+	}
+	&:focus {
+		&::placeholder {
+			@include text-m;
+			color: var(--primary-color);
+			opacity: 1;
+			letter-spacing: 0;
+		}
+	}
+}

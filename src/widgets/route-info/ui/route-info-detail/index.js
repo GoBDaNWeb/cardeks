@@ -1,0 +1,1 @@
+export { RouteInfoDetail } from './RouteInfoDetail';

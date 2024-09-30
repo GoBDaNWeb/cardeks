@@ -1,0 +1,33 @@
+@import '@/shared/styles/mixins';
+
+.routeInfo.active {
+	opacity: 1;
+	pointer-events: all;
+}
+.routeInfo.ready {
+	transform: translateX(0);
+}
+.routeInfo {
+	pointer-events: none;
+	z-index: 3;
+	background: var(--white-color);
+	border-radius: var(--radius-s);
+	box-shadow: var(--shadow);
+	position: absolute;
+	width: 633px;
+	right: 24px;
+	max-height: calc(100vh - 105px);
+	top: 80px;
+	transform: translateX(680px);
+	opacity: 0;
+	transition:
+		transform var(--trs-300),
+		opacity var(--trs-300);
+	padding: 20px 24px;
+	overflow-y: auto;
+	scrollbar-width: thin;
+	scrollbar-color: var(--accent-color) #ffffff;
+	&::-webkit-scrollbar {
+		width: 5px;
+	}
+}

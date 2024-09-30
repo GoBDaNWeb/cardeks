@@ -1,0 +1,71 @@
+@import './mixins';
+
+.select.disabled {
+	opacity: 0.5;
+	pointer-events: none;
+}
+.select {
+	.select__control.select__control--is-focused {
+		border-color: var(--accent-color);
+		outline: none;
+		box-shadow: none;
+	}
+
+	.select__control.select__control--menu-is-open {
+		border-color: var(--accent-color);
+		outline: none;
+		box-shadow: none;
+		.select__value-container {
+			.select__single-value {
+				color: var(--primary-color);
+			}
+		}
+	}
+
+	.select__control {
+		height: 48px;
+		border-radius: var(--radius-s);
+		border-color: var(--line-color);
+		transition: all var(--trs-300);
+		cursor: pointer;
+		&:hover {
+			border-color: var(--accent-color);
+		}
+		.select__value-container {
+			padding: 0;
+			margin-left: 20px;
+			.select__single-value {
+				@include text-m;
+			}
+
+			.select__placeholder {
+				@include text-m;
+			}
+		}
+		.select__indicators {
+			position: absolute;
+			left: 0;
+			right: 0;
+			height: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			left: 30px;
+			right: 30px;
+			.select__indicator-separator {
+				opacity: 0;
+			}
+
+			.select__clear-indicator {
+				cursor: pointer;
+			}
+
+			.select__indicator {
+				padding: 0;
+			}
+		}
+	}
+}
+
+// .select__value-container.select__value-container--has-value
+//     // margin-left: 58px

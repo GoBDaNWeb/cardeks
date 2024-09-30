@@ -1,0 +1,58 @@
+.objectsList.active {
+	transform: translateX(0);
+}
+.objectsList {
+	background: var(--white-color);
+	border-radius: var(--radius-s);
+	box-shadow: var(--shadow);
+	width: 633px;
+	max-height: calc(100vh - 255px);
+	position: absolute;
+	top: 218px;
+	right: 24px;
+	transform: translateX(680px);
+	transition: transform var(--trs-300);
+	padding: 20px 0 24px 20px;
+	bottom: 24px;
+	.objectListTop {
+		display: flex;
+		justify-content: space-between;
+		padding-right: 24px;
+		.left {
+			p {
+				color: var(--primary-color);
+				font-size: 12px;
+				font-weight: 400;
+				font-family: 'Onest', sans-serif;
+				line-height: 14px;
+				letter-spacing: -0.2px;
+			}
+		}
+		.right {
+			display: flex;
+			align-items: center;
+			gap: 32px;
+			.features {
+				display: flex;
+				align-items: center;
+				gap: 16px;
+			}
+		}
+	}
+	.objectListContent {
+		margin-top: 16px;
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+		overflow-y: auto;
+		max-height: calc(100% - 55px);
+		scrollbar-width: thin;
+		scrollbar-color: var(--accent-color) #ffffff;
+		height: 100%;
+		padding-right: 12px;
+		margin-right: 12px;
+		&::-webkit-scrollbar {
+			width: 5px;
+		}
+	}
+}

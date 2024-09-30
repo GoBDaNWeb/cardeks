@@ -1,0 +1,23 @@
+@import '@/shared/styles/mixins';
+
+.chip.active {
+	background: var(--accent-color);
+	color: var(--white-color);
+}
+.chip {
+	background: var(--tertiary-color);
+	border-radius: var(--radius-xs);
+	transition:
+		background var(--trs-300),
+		color var(--trs-300),
+		border-color var(--trs-300);
+	border: 1px solid rgba(0, 0, 0, 0);
+	height: 36px;
+	padding: 0 20px;
+	@include text-sm;
+	display: flex;
+	align-items: center;
+	&:hover {
+		border-color: var(--accent-color);
+	}
+}

@@ -1,0 +1,61 @@
+@import '@/shared/styles/mixins';
+
+.menuButton.active {
+	background: var(--tertiary-color);
+	border-color: rgba(0, 0, 0, 0);
+	&:hover {
+		border-color: rgba(0, 0, 0, 0);
+	}
+}
+.menuButton {
+	background: var(--white-color);
+	padding: 12px 20px;
+	border-radius: var(--radius-s);
+	border: 1px solid rgba(0, 0, 0, 0);
+	transition:
+		border-color var(--trs-300),
+		background var(--trs-300);
+	height: 48px;
+	box-shadow: var(--shadow);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	&:hover {
+		border-color: var(--accent-color);
+	}
+	&:last-child {
+		.content {
+			gap: 6px;
+		}
+	}
+	.content {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		.icon {
+			position: relative;
+			padding-right: 14px;
+			&:after {
+				content: '';
+				position: absolute;
+				width: 1px;
+				height: 24px;
+				background: var(--line-color);
+				right: 0;
+				top: 0;
+			}
+			svg {
+				width: 24px;
+				height: 24px;
+			}
+		}
+
+		p {
+			@include text-m;
+			letter-spacing: 0;
+		}
+	}
+	span {
+		@include text-xs;
+	}
+}

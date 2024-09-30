@@ -1,0 +1,35 @@
+@import '@/shared/styles/mixins';
+
+.routeBuild.hide {
+	opacity: 0;
+}
+.routeBuild.active {
+	transform: translateX(0);
+}
+.routeBuild {
+	z-index: 2;
+	background: var(--white-color);
+	border-radius: var(--radius-s);
+	box-shadow: var(--shadow);
+	position: absolute;
+	width: 633px;
+	right: 24px;
+	max-height: calc(100vh - 105px);
+	top: 80px;
+	transform: translateX(680px);
+	transition:
+		transform var(--trs-300),
+		opacity var(--trs-300);
+	padding: 20px 24px;
+	overflow-y: auto;
+	scrollbar-width: thin;
+	scrollbar-color: var(--accent-color) #ffffff;
+	&::-webkit-scrollbar {
+		width: 5px;
+	}
+	.routeBuildTop {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+}

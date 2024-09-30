@@ -1,0 +1,40 @@
+@import '@/shared/styles/mixins';
+
+.routeForm {
+	.routeInputs {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 8px;
+		width: 100%;
+		margin-top: 16px;
+
+		.routeInputWrapper {
+			width: 100%;
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+			align-items: center;
+		}
+	}
+	.addBtn {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		margin-top: 16px;
+		svg {
+			width: 16px;
+			height: 16px;
+			path {
+				stroke: var(--secondary-color);
+			}
+		}
+		p {
+			@include text-sm;
+			color: var(--secondary-color);
+		}
+	}
+	.routeFormBotton {
+		margin-top: 16px;
+	}
+}

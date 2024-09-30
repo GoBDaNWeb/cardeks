@@ -1,0 +1,52 @@
+@import '@/shared/styles/mixins';
+
+.button {
+	background: none;
+	outline: none;
+	cursor: pointer;
+	border: none;
+	padding: 0;
+	&:disabled {
+		opacity: 0.5;
+		pointer-events: none;
+	}
+}
+.button.link {
+	p {
+		transition: color var(--trs-300);
+	}
+
+	&:hover {
+		p {
+			color: var(--accent-hover-color) !important;
+		}
+	}
+}
+.button.primary {
+	background: var(--accent-color);
+	height: 48px;
+	border-radius: var(--radius-s);
+	@include text-m;
+	padding: 0 32px;
+	color: var(--white-color);
+	transition: background var(--trs-300);
+	&:hover {
+		background: var(--accent-hover-color);
+	}
+}
+.button.icon {
+	&:hover {
+		svg {
+			path {
+				stroke: var(--accent-color);
+			}
+		}
+	}
+	svg {
+		width: 100%;
+		height: 100%;
+		path {
+			transition: var(--trs-300);
+		}
+	}
+}

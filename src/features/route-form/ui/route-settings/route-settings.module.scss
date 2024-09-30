@@ -1,0 +1,94 @@
+@import '@/shared/styles/mixins';
+
+.routeSettings {
+	margin-top: 16px;
+	padding-top: 16px;
+	border-top: 1px solid var(--line-color);
+}
+.accorionTitle {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	.filtersBtns {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+		.filterBtn {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			svg {
+				width: 16px;
+				height: 16px;
+				path {
+					fill: var(--secondary-color);
+				}
+			}
+			p {
+				@include text-sm;
+				color: var(--secondary-color);
+			}
+		}
+	}
+	.moreBtn.active {
+		svg {
+			transform: rotate(180deg);
+			path {
+				stroke: var(--accent-color);
+			}
+		}
+		p {
+			color: var(--accent-color);
+		}
+	}
+	.moreBtn {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		svg {
+			transition: var(--trs-300);
+
+			path {
+				transition: var(--trs-300);
+			}
+		}
+		p {
+			@include text-sm;
+			transition: color var(--trs-300);
+			color: var(--secondary-color);
+		}
+	}
+}
+.accordionContent {
+	margin-top: 16px;
+	padding-top: 16px;
+	border-top: 1px solid var(--line-color);
+	border-bottom: 1px solid var(--line-color);
+	padding-bottom: 16px;
+	p {
+		@include text-m;
+	}
+	.chipList {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		margin-top: 8px;
+	}
+	.accordionContentBottom {
+		margin-top: 16px;
+		.inputList {
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			gap: 8px;
+			margin-top: 8px;
+			.inputWrapper {
+				display: flex;
+				flex-direction: column;
+				gap: 8px;
+				input {
+					margin: 0;
+				}
+			}
+		}
+	}
+}

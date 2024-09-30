@@ -1,0 +1,11 @@
+@import '@/shared/styles/mixins';
+
+.tab {
+	background: var(--tertiary-color);
+	border-radius: var(--radius-xs);
+	height: 36px;
+	padding: 0 20px;
+	@include text-sm;
+	display: flex;
+	align-items: center;
+}

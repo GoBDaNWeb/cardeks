@@ -1,0 +1,119 @@
+@import '@/shared/styles/mixins';
+
+.routeInfoDetail {
+	.title {
+		@include text-lm;
+	}
+	.routeInfoTop {
+		display: flex;
+		justify-content: space-between;
+		.btnsWrapper {
+			display: flex;
+			align-items: center;
+			gap: 35px;
+			.features {
+				display: flex;
+				align-items: center;
+				gap: 16px;
+				button {
+					svg {
+						rect,
+						path {
+							transition: var(--trs-300);
+						}
+					}
+					&:nth-child(1) {
+						&:hover {
+							svg {
+								path {
+									fill: var(--accent-color);
+									stroke: var(--accent-color);
+								}
+							}
+						}
+					}
+					&:nth-child(2) {
+						&:hover {
+							svg {
+								path {
+									fill: var(--accent-color);
+								}
+							}
+						}
+					}
+					&:nth-child(3) {
+						&:hover {
+							svg {
+								rect {
+									stroke: var(--accent-color);
+								}
+							}
+						}
+					}
+					&:nth-child(4) {
+						&:hover {
+							svg {
+								rect {
+									stroke: var(--accent-color);
+								}
+								path {
+									stroke: var(--accent-color);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	.routeInfoContent {
+		margin-top: 16px;
+		padding-top: 16px;
+		border-top: 1px solid var(--line-color);
+		.routeList {
+			display: flex;
+			flex-direction: column;
+			gap: 15px;
+			.addressItem {
+				display: flex;
+				gap: 15px;
+				position: relative;
+				&:last-child {
+					&:before {
+						display: none;
+					}
+				}
+				&:before {
+					content: '';
+					border-left: 1px dashed var(--secondary-color);
+					height: 70%;
+					width: 2px;
+					position: absolute;
+					top: 24px;
+					left: 5px;
+				}
+				span {
+					@include text-m;
+					color: var(--secondary-color);
+				}
+				p {
+					@include text-m;
+				}
+			}
+		}
+		.azsTotal {
+			margin-top: 16px;
+			font-size: 12px;
+			line-height: 14px;
+			color: var(--primary-color);
+		}
+		.routeAZSList {
+			display: flex;
+			flex-direction: column;
+			gap: 16px;
+			margin-top: 16px;
+			padding-top: 16px;
+			border-top: 1px solid var(--line-color);
+		}
+	}
+}

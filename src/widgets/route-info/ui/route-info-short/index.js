@@ -1,0 +1,1 @@
+export { RouteInfoShort } from './RouteInfoShort';

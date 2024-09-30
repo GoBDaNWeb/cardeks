@@ -1,0 +1,9 @@
+.menu {
+	position: absolute;
+	top: 24px;
+	right: 24px;
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 8px;
+	width: 633px;
+}

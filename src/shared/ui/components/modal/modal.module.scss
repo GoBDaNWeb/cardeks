@@ -1,0 +1,21 @@
+.modal.exit {
+	opacity: 0;
+}
+.modal.open {
+	opacity: 1;
+}
+.modal {
+	transition: opacity var(--trs-300);
+	opacity: 0;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(80, 86, 95, 0.5);
+	backdrop-filter: blur(4px);
+	z-index: var(--modal-z);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}

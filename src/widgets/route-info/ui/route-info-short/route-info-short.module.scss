@@ -1,0 +1,125 @@
+@import '@/shared/styles/mixins';
+
+.routeInfoShort {
+	.title {
+		@include text-lm;
+	}
+	.routeInfoTop {
+		padding-right: 25px;
+		.btns {
+			display: flex;
+			align-items: center;
+			gap: 16px;
+			margin-top: 16px;
+			button {
+				@include text-sm;
+				color: var(--secondary-color);
+				transition: color var(--trs-300);
+				&:hover {
+					color: var(--accent-color);
+				}
+			}
+		}
+		.closeBtn {
+			position: absolute;
+			top: 20px;
+			right: 24px;
+		}
+	}
+	.routeInfoContent {
+		margin-top: 16px;
+		padding-top: 16px;
+		border-top: 1px solid var(--line-color);
+		.routeInfoList {
+			display: flex;
+			align-items: center;
+			margin-top: 8px;
+			gap: 16px;
+			p {
+				@include text-s;
+				position: relative;
+				padding-left: 20px;
+				&:before {
+					content: '';
+					background: var(--success-color);
+					width: 12px;
+					height: 12px;
+					position: absolute;
+					top: 0;
+					left: 0;
+					bottom: 0;
+					margin: auto;
+					border-radius: var(--radius-full);
+				}
+			}
+		}
+		.routeInfoFeatures {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			margin-top: 16px;
+
+			.btns {
+				display: flex;
+				align-items: center;
+				gap: 16px;
+				button {
+					svg {
+						rect,
+						path {
+							transition: var(--trs-300);
+						}
+					}
+					&:nth-child(1) {
+						&:hover {
+							svg {
+								path {
+									fill: var(--accent-color);
+									stroke: var(--accent-color);
+								}
+							}
+						}
+					}
+					&:nth-child(2) {
+						&:hover {
+							svg {
+								path {
+									fill: var(--accent-color);
+								}
+							}
+						}
+					}
+					&:nth-child(3) {
+						&:hover {
+							svg {
+								rect {
+									stroke: var(--accent-color);
+								}
+							}
+						}
+					}
+					&:nth-child(4) {
+						&:hover {
+							svg {
+								rect {
+									stroke: var(--accent-color);
+								}
+								path {
+									stroke: var(--accent-color);
+								}
+							}
+						}
+					}
+				}
+			}
+			.aboutBtn {
+				@include text-sm;
+				color: var(--secondary-color);
+				transition: color var(--trs-300);
+				&:hover {
+					color: var(--accent-color);
+				}
+			}
+		}
+	}
+}

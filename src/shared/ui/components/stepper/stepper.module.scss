@@ -1,0 +1,15 @@
+.stepper {
+	display: flex;
+	flex-direction: column;
+	background: var(--white-color);
+	border-radius: var(--radius-s);
+	padding: 11px;
+	gap: 5px;
+	box-shadow: var(--shadow);
+
+	.line {
+		width: 100%;
+		height: 1px;
+		background: var(--tertiary-color);
+	}
+}

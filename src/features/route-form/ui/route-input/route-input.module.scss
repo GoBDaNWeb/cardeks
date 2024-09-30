@@ -1,0 +1,49 @@
+@import '@/shared/styles/mixins';
+
+.routeInput {
+	padding: 12px 20px;
+	background: var(--white-color);
+	border-radius: var(--radius-s);
+	display: flex;
+	align-items: center;
+	box-shadow: var(--shadow);
+	box-sizing: border-box;
+	transition: border-color var(--trs-300);
+	border: 1px solid rgba(0, 0, 0, 0);
+	height: 48px;
+	width: 100%;
+	justify-content: space-between;
+	&:hover {
+		border-color: var(--accent-color);
+	}
+	.letter {
+		text-transform: uppercase;
+		color: var(--accent-color);
+		font-size: 20px;
+		font-weight: 700;
+		line-height: 24px;
+	}
+	input {
+		width: 100%;
+		padding-left: 16px;
+		padding-right: 16px;
+	}
+	.features {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		button {
+			position: relative;
+			padding-left: 14px;
+
+			&:before {
+				content: '';
+				position: absolute;
+				width: 1px;
+				height: 100%;
+				background: var(--line-color);
+				left: 0;
+			}
+		}
+	}
+}

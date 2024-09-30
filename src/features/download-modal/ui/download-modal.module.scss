@@ -1,0 +1,55 @@
+@import '@/shared/styles/mixins';
+
+.downloadModal {
+	.modalContent {
+		background: var(--white-color);
+		max-width: 502px;
+		width: 100%;
+		border-radius: var(--radius-s);
+		box-shadow: var(--shadow);
+		padding: 24px 32px;
+		position: relative;
+		.closeBtn {
+			position: absolute;
+			top: 14px;
+			right: 14px;
+		}
+		form {
+			.inputs {
+				margin-top: 20px;
+				display: flex;
+				flex-direction: column;
+				gap: 20px;
+				.inputRow {
+					display: flex;
+					flex-direction: column;
+					gap: 12px;
+				}
+			}
+			.formBottom {
+				margin-top: 20px;
+				display: flex;
+				justify-content: space-between;
+				.submitBtn {
+					width: 218px;
+				}
+				.fileBtn {
+					display: flex;
+					align-items: center;
+					gap: 8px;
+					svg {
+						width: 16px;
+						height: 16px;
+						path {
+							stroke: var(--secondary-color);
+						}
+					}
+					p {
+						@include text-sm;
+						color: var(--secondary-color);
+					}
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,81 @@
+@import '@/shared/styles/mixins';
+
+.objectItem {
+	padding-bottom: 16px;
+	border-bottom: 1px solid var(--line-color);
+	.objectItemTop {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		.title {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			p {
+				@include text-m;
+				color: var(--primary-color);
+			}
+			span {
+				@include text-m;
+				color: var(--secondary-color);
+			}
+		}
+
+		span {
+			@include text-s;
+			color: var(--primary-color);
+		}
+	}
+	.objectItemBadges {
+		margin-top: 16px;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px;
+		.badge {
+			display: flex;
+			gap: 8px;
+			align-items: center;
+			p {
+				@include text-s;
+			}
+			span {
+				@include text-sm;
+			}
+		}
+	}
+	.objectItemBottom {
+		display: flex;
+		justify-content: space-between;
+		margin-top: 16px;
+		.features {
+			display: flex;
+			align-items: center;
+			gap: 24px;
+			button {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				svg {
+					width: 16px;
+					height: 16px;
+					path {
+						stroke: var(--secondary-color);
+						fill: var(--secondary-color);
+					}
+					circle {
+						fill: var(--secondary-color);
+					}
+				}
+				p {
+					@include text-sm;
+					color: var(--secondary-color);
+				}
+			}
+		}
+		.aboutBtn {
+			@include text-sm;
+
+			color: var(--accent-color);
+		}
+	}
+}

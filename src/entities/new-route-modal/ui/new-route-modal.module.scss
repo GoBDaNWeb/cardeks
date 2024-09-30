@@ -1,0 +1,20 @@
+.newRouteModal {
+	.modalContent {
+		background: var(--white-color);
+		max-width: 502px;
+		border-radius: var(--radius-s);
+		box-shadow: var(--shadow);
+		padding: 24px 32px;
+		position: relative;
+		width: 100%;
+		.closeBtn {
+			position: absolute;
+			top: 14px;
+			right: 14px;
+		}
+		.successBtn {
+			width: 218px;
+			margin-top: 20px;
+		}
+	}
+}

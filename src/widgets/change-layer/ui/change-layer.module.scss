@@ -1,0 +1,72 @@
+@import '@/shared/styles/mixins';
+
+.changeLayerWrapper.active {
+	.changeLayer {
+		border-color: var(--accent-color);
+	}
+	.dropDown {
+		opacity: 1;
+		transform: translateY(0);
+		pointer-events: all;
+	}
+}
+.changeLayerWrapper {
+	position: absolute;
+	left: 24px;
+	top: 80px;
+	pointer-events: none;
+	.changeLayer {
+		background: var(--white-color);
+		box-shadow: var(--shadow);
+		border-radius: var(--radius-s);
+		border: 1px solid rgba(0, 0, 0, 0);
+		transition: border-color var(--trs-300);
+		width: 40px;
+		height: 40px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		pointer-events: all;
+	}
+	.dropDown {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		padding: 12px 16px;
+		background: var(--white-color);
+		border-radius: var(--radius-s);
+		box-shadow: var(--shadow);
+		width: 164px;
+		box-sizing: border-box;
+		margin-top: 10px;
+		opacity: 0;
+		transform: translateY(-10px);
+		pointer-events: none;
+		transition:
+			opacity var(--trs-300),
+			transform var(--trs-300);
+		.dropDownTab.active {
+			color: var(--accent-color);
+			.icon {
+				opacity: 1;
+			}
+		}
+		.dropDownTab {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 10px;
+			@include text-m;
+			transition: color var(--trs-300);
+			&:hover {
+				.icon {
+					opacity: 1;
+				}
+			}
+			.icon {
+				opacity: 0;
+				transition: opacity var(--trs-300);
+			}
+		}
+	}
+}

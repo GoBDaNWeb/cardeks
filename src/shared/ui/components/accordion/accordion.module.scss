@@ -1,0 +1,21 @@
+.accordion {
+	.title {
+		width: 100%;
+	}
+	.content {
+		max-height: 0;
+		overflow: hidden;
+		transition:
+			max-height 450ms ease,
+			opacity var(--trs-300);
+		opacity: 0;
+	}
+
+	.content.show {
+		transition:
+			max-height var(--trs-300),
+			opacity var(--trs-300);
+		max-height: 50vh;
+		opacity: 1;
+	}
+}

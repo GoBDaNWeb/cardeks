@@ -1,0 +1,67 @@
+@import '@/shared/styles/mixins';
+
+.filters.hide {
+	opacity: 0;
+	pointer-events: none;
+}
+.filters.left {
+	transform: translateX(-642px);
+}
+.filters.routeFilterActive {
+	background: var(--tertiary-color);
+}
+.filters {
+	position: absolute;
+	top: 80px;
+	right: 24px;
+	background: var(--white-color);
+	border-radius: var(--radius-s);
+	width: 100%;
+	max-width: 633px;
+	box-shadow: var(--shadow);
+	transition:
+		transform var(--trs-300),
+		background var(--trs-300),
+		opacity var(--trs-300);
+	.filtersTop {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 11px 20px 14px;
+		.title {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			.icon {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				position: relative;
+				padding-right: 14px;
+				&:after {
+					content: '';
+					position: absolute;
+					width: 1px;
+					height: 24px;
+					background: var(--line-color);
+					right: 0;
+					top: 0;
+				}
+			}
+			p {
+				@include text-m;
+				margin-left: 7px;
+				letter-spacing: 0;
+			}
+		}
+		.total {
+			@include text-xs;
+		}
+	}
+	.filtersTabs {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 8px;
+		padding: 0px 8px 8px;
+	}
+}

@@ -1,0 +1,39 @@
+@import '@/shared/styles/mixins';
+
+.routeFilters.active {
+	transform: translateX(-642px) !important;
+	box-shadow: var(--shadow);
+	opacity: 1;
+	pointer-events: all;
+}
+.routeFilters.ready {
+	transform: translateX(0);
+}
+.routeFilters {
+	pointer-events: none;
+	opacity: 0;
+	z-index: 1;
+	background: var(--white-color);
+	border-radius: var(--radius-s);
+	position: absolute;
+	width: 633px;
+	right: 24px;
+	max-height: calc(100vh - 105px);
+	top: 222px;
+	transform: translateX(680px);
+	transition:
+		transform var(--trs-300),
+		opacity var(--trs-300);
+	padding: 20px 24px;
+	overflow-y: auto;
+	scrollbar-width: thin;
+	scrollbar-color: var(--accent-color) #ffffff;
+	&::-webkit-scrollbar {
+		width: 5px;
+	}
+	.routeFiltersTop {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+}
