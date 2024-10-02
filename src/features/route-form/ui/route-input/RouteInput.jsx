@@ -8,12 +8,22 @@ export const RouteInput = ({
 	register,
 	id,
 	fields,
-	handleSelectAddress
+	handleSelectAddress,
+	onChange,
+	handleFocus,
+	handleBlur
 }) => {
 	return (
 		<div className={s.routeInput}>
 			<p className={s.letter}>{letter}</p>
-			<Input id={id} register={register} placeholder='Регион, город, улица, трасса' />
+			<Input
+				id={id}
+				register={register}
+				placeholder='Регион, город, улица, трасса'
+				onChange={onChange}
+				onFocus={() => handleFocus()}
+				onBlur={() => handleBlur()}
+			/>
 			<div className={s.features}>
 				{fields.length > 2 ? (
 					<Button onClick={removeQuestion}>

@@ -32,6 +32,11 @@
 				background: var(--line-color);
 				left: 0;
 			}
+			svg {
+				path {
+					transition: var(--trs-300);
+				}
+			}
 		}
 	}
 }

@@ -21,9 +21,8 @@ import s from './search.module.scss';
 export const Search = () => {
 	const [searchData, setSearchData] = useState('');
 	const [selectedAddress, setSelectedAddress] = useState('');
-	const [dropDownOpen, setDropdownOpen] = useState(true);
+	const [dropdownOpen, setDropdownOpen] = useState(true);
 	const [inputValue, setInvputValue] = useState('');
-	const [activeInput, setActiveInput] = useState(false);
 
 	const dispatch = useDispatch();
 	const debounced = useDebounce(inputValue);
@@ -31,10 +30,14 @@ export const Search = () => {
 	const { data } = useGetAddressesQuery(searchData);
 
 	const handleFocus = () => {
-		setActiveInput(true);
+		setTimeout(() => {
+			setDropdownOpen(true);
+		}, 200);
 	};
 	const handleBlur = () => {
-		setActiveInput(false);
+		setTimeout(() => {
+			setDropdownOpen(false);
+		}, 200);
 	};
 
 	const handleSeletAddress = (address, subtitle) => {
@@ -78,14 +81,6 @@ export const Search = () => {
 		setSearchData(inputValue);
 	}, [debounced]);
 
-	useEffect(() => {
-		if (!activeInput) {
-			setTimeout(() => {
-				setDropdownOpen(false);
-			}, 200);
-		}
-	}, [activeInput]);
-
 	return (
 		<div className={s.searchWrapper}>
 			<SearchInput
@@ -96,7 +91,7 @@ export const Search = () => {
 				handleFocus={handleFocus}
 				handleBlur={handleBlur}
 			/>
-			{data?.results && dropDownOpen ? (
+			{data?.results && dropdownOpen ? (
 				<SearchDropdown list={data} handleSeletAddress={handleSeletAddress} />
 			) : null}
 		</div>

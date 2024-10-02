@@ -14,7 +14,6 @@ export const Input = ({
 	onBlur
 }) => {
 	const inputClass = clsx(s.input, { [s.styled]: isStyled });
-
 	return (
 		<>
 			{field ? (
@@ -33,7 +32,10 @@ export const Input = ({
 					className={inputClass}
 					placeholder={placeholder}
 					value={value}
+					onChange={onChange}
 					{...register(id)}
+					onFocus={onFocus}
+					onBlur={onBlur}
 				/>
 			) : (
 				<input

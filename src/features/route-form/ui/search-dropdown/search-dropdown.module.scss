@@ -1,0 +1,26 @@
+@import '@/shared/styles/mixins';
+
+.dropdown.active {
+	display: flex;
+}
+.dropdown {
+	display: none;
+	margin-top: 60px;
+}
+.searchItem {
+	cursor: pointer;
+	&:hover {
+		span,
+		p {
+			color: var(--accent-color);
+		}
+	}
+	p {
+		@include text-m;
+		transition: color var(--trs-300);
+	}
+	span {
+		@include text-sm;
+		transition: color var(--trs-300);
+	}
+}
