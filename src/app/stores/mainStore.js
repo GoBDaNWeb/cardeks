@@ -10,6 +10,8 @@ import { guideModalSlice } from '@/entities/guide-modal';
 import { mapReducer } from '@/entities/map';
 import { newRouteModalReducer } from '@/entities/new-route-modal';
 
+import { cardeksAPI } from '@/shared/api';
+
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 
 const mainReducer = combineReducers({
@@ -21,9 +23,11 @@ const mainReducer = combineReducers({
 	newRouteModal: newRouteModalReducer,
 	filters: filtersReducer,
 	downloadModal: downloadModalReducer,
-	mailModal: mailModalReducer
+	mailModal: mailModalReducer,
+	[cardeksAPI.reducerPath]: cardeksAPI.reducer
 });
 
 export const mainStore = configureStore({
-	reducer: mainReducer
+	reducer: mainReducer,
+	middleware: getDefaultMiddleware => getDefaultMiddleware().concat(cardeksAPI.middleware)
 });

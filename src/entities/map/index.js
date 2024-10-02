@@ -20,5 +20,8 @@ export {
 	setRouteChanged,
 	setPanorama,
 	setPanoramaOpen,
+	setSearch,
+	setSearchValue,
+	setBuildSearch,
 	mapReducer
 } from './model';

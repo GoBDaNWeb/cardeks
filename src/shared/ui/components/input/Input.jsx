@@ -2,7 +2,17 @@ import clsx from 'clsx';
 
 import s from './input.module.scss';
 
-export const Input = ({ placeholder, value, field, register, id, required, isStyled }) => {
+export const Input = ({
+	placeholder,
+	value,
+	field,
+	register,
+	id,
+	onChange,
+	isStyled,
+	onFocus,
+	onBlur
+}) => {
 	const inputClass = clsx(s.input, { [s.styled]: isStyled });
 
 	return (
@@ -26,7 +36,15 @@ export const Input = ({ placeholder, value, field, register, id, required, isSty
 					{...register(id)}
 				/>
 			) : (
-				<input type='text' className={inputClass} placeholder={placeholder} value={value} />
+				<input
+					type='text'
+					className={inputClass}
+					placeholder={placeholder}
+					onChange={onChange}
+					value={value}
+					onFocus={onFocus}
+					onBlur={onBlur}
+				/>
 			)}
 		</>
 	);

@@ -1,19 +1,27 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { enLetter } from '@/shared/config';
 
-import { setAddress, setCoords, setSelectAddress } from '../model';
-
-import { containsArray } from './contains-array';
-import { createPlacemark } from './create-placemark';
+import { setAddress, setCoords, setSelectAddress } from '../../model';
+import { containsArray, createPlacemark } from '../helpers';
 
 export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) => {
+	const [searchPoint, setSearchPoint] = useState(null);
+
 	const currentPointIdRef = useRef(null);
 	const dispatch = useDispatch();
 
 	const {
-		routeInfo: { isSelectAddress, currentPointId, routeCoords, swapPoints, deletePointId }
+		searchInfo: { search, searchValue, buildSearch },
+		routeInfo: {
+			isSelectAddress,
+			currentPointId,
+			routeCoords,
+			swapPoints,
+			deletePointId,
+			selectedAddress
+		}
 	} = useSelector(state => state.map);
 
 	const { activeMenu } = useSelector(state => state.menu);
@@ -44,10 +52,8 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) =>
 		});
 	};
 
-	const handleAddPoint = e => {
-		const coords = e.get('coords');
+	const addPoint = coords => {
 		const pointId = currentPointIdRef.current;
-
 		const existingMarker = pointCollection.find(function (marker) {
 			return marker.properties.get('id') === pointId;
 		});
@@ -69,6 +75,19 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) =>
 
 			map.geoObjects.add(myPlacemark);
 			setPointCollection(prevCollection => [...prevCollection, myPlacemark]);
+		}
+	};
+
+	const handleAddPoint = e => {
+		if (e) {
+			const coords = e.get('coords');
+			addPoint(coords);
+		} else {
+			ymaps.geocode(selectedAddress).then(res => {
+				const firstGeoObject = res.geoObjects.get(0);
+				const coords = firstGeoObject.geometry.getCoordinates();
+				addPoint(coords);
+			});
 		}
 	};
 
@@ -109,6 +128,37 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) =>
 	useEffect(() => {
 		currentPointIdRef.current = currentPointId;
 	}, [currentPointId]);
+
+	useEffect(() => {
+		if (buildSearch) {
+			handleAddPoint();
+		}
+	}, [buildSearch]);
+
+	useEffect(() => {
+		if (map) {
+			if (search) {
+				map.geoObjects.remove(searchPoint);
+				ymaps
+					.geocode(searchValue, {
+						results: 1
+					})
+					.then(function (res) {
+						var firstGeoObject = res.geoObjects.get(0);
+						var coords = firstGeoObject.geometry.getCoordinates();
+						var myPlacemark = new ymaps.Placemark(coords, {
+							hintContent: searchValue,
+							balloonContent: searchValue
+						});
+
+						map.geoObjects.add(myPlacemark);
+						setSearchPoint(myPlacemark);
+
+						map.setCenter(coords, 15);
+					});
+			}
+		}
+	}, [search]);
 
 	// меняем точки на карте местами
 	useEffect(() => {

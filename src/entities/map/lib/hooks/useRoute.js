@@ -13,9 +13,8 @@ import {
 	setRouteChanged,
 	setRouteLength,
 	setRouteTime
-} from '../model';
-
-import { createPlacemark } from './create-placemark';
+} from '../../model';
+import { createPlacemark } from '../helpers';
 
 export const useRoute = ({ ymaps, map, setPointCollection }) => {
 	const [addressesColletion, setAddressesCollection] = useState([]);

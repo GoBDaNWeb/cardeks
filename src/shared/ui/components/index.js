@@ -14,3 +14,4 @@ export * from './textarea';
 export * from './search-input';
 export * from './selector';
 export * from './radio';
+export * from './dropdown';

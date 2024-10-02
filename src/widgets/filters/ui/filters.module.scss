@@ -29,6 +29,9 @@
 		top: 72px;
 		max-width: 550px;
 	}
+	@media (max-width: $tab) {
+		top: 130px;
+	}
 	.filtersTop {
 		display: flex;
 		align-items: center;

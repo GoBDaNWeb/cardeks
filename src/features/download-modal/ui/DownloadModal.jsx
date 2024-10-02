@@ -31,7 +31,6 @@ export const DownloadModal = () => {
 	};
 
 	const handleCloseModal = () => {
-		console.log('))');
 		dispatch(handleOpenModal(false));
 	};
 

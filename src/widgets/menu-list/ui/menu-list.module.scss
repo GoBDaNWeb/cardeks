@@ -13,4 +13,7 @@
 		right: 16px;
 		width: 550px;
 	}
+	@media (max-width: $tab) {
+		grid-template-columns: repeat(1, 1fr);
+	}
 }

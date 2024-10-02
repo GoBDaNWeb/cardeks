@@ -70,6 +70,7 @@ export const Map = () => {
 	// хук который отвечает за построение маршрута
 	useRoute({ ymaps, map, setPointCollection });
 
+	// хук отвечающий за панораму
 	useEffect(() => {
 		if (map) {
 			map.getPanoramaManager().then(function (manager) {

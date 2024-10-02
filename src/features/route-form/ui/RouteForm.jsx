@@ -13,7 +13,7 @@ import {
 } from '@/entities/map';
 
 import { ruLetters } from '@/shared/config';
-import { getQueryParams } from '@/shared/lib';
+import { getQueryParams, useDebounce } from '@/shared/lib';
 import { ArrowsIcon, Button, PlusIcon } from '@/shared/ui';
 
 import s from './route-form.module.scss';
@@ -24,8 +24,9 @@ export const RouteForm = () => {
 	const [isDisabled, setDisabled] = useState(true);
 
 	const dispatch = useDispatch();
-
+	// const debounced = useDebounce(inputValue);
 	const {
+		searchInfo: { searchValue, buildSearch },
 		routeInfo: { selectedAddress, currentPointId, changeRoute }
 	} = useSelector(store => store.map);
 	const { activeMenu } = useSelector(store => store.menu);
@@ -86,6 +87,12 @@ export const RouteForm = () => {
 			remove(tempArr);
 		}, 0);
 	};
+
+	useEffect(() => {
+		if (buildSearch) {
+			setValue('points.1.inputText', searchValue);
+		}
+	}, [buildSearch]);
 
 	useEffect(() => {
 		const queryRoutes = getQueryParams(window.location.href).routes;

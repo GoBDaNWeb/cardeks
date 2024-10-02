@@ -19,5 +19,8 @@ export {
 	setRouteChanged,
 	setPanorama,
 	setPanoramaOpen,
+	setSearch,
+	setSearchValue,
+	setBuildSearch,
 	default as mapReducer
 } from './map.slice';

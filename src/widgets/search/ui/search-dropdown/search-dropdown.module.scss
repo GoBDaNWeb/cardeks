@@ -1,0 +1,19 @@
+@import '@/shared/styles/mixins';
+
+.searchItem {
+	cursor: pointer;
+	&:hover {
+		span,
+		p {
+			color: var(--accent-color);
+		}
+	}
+	p {
+		@include text-m;
+		transition: color var(--trs-300);
+	}
+	span {
+		@include text-sm;
+		transition: color var(--trs-300);
+	}
+}

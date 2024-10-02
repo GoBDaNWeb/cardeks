@@ -5,6 +5,11 @@ import { createSlice } from '@reduxjs/toolkit';
 const queryRoutes = getQueryParams(window.location.href).routes;
 
 const initialState = {
+	searchInfo: {
+		search: false,
+		searchValue: '',
+		buildSearch: false
+	},
 	mapInfo: {
 		zoom: 8,
 		isWheel: false,
@@ -96,6 +101,15 @@ const mapSlice = createSlice({
 		},
 		setPanoramaOpen(state, action) {
 			state.mapInfo.panoramaIsOpen = action.payload;
+		},
+		setSearch(state, action) {
+			state.searchInfo.search = action.payload;
+		},
+		setSearchValue(state, action) {
+			state.searchInfo.searchValue = action.payload;
+		},
+		setBuildSearch(state, action) {
+			state.searchInfo.buildSearch = action.payload;
 		}
 	}
 });
@@ -120,6 +134,9 @@ export const {
 	setChangeRoute,
 	setRouteChanged,
 	setPanorama,
-	setPanoramaOpen
+	setPanoramaOpen,
+	setSearch,
+	setSearchValue,
+	setBuildSearch
 } = mapSlice.actions;
 export default mapSlice.reducer;

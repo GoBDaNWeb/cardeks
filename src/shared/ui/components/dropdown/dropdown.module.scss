@@ -1,0 +1,13 @@
+.dropdown {
+	background: var(--white-color);
+	position: absolute;
+	width: 100%;
+	padding: 12px 16px;
+	box-shadow: var(--shadow);
+	border-radius: var(--radius-s);
+	margin-top: 8px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	z-index: 10;
+}
