@@ -18,5 +18,7 @@ export {
 	setRouteLength,
 	setChangeRoute,
 	setRouteChanged,
+	setPanorama,
+	setPanoramaOpen,
 	mapReducer
 } from './model';

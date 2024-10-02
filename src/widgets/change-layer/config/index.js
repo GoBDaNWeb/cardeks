@@ -10,8 +10,5 @@ export const layers = [
 	{
 		title: 'Гибрид',
 		type: 'yandex#hybrid'
-	},
-	{
-		title: 'Панорамы'
 	}
 ];

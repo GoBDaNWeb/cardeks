@@ -17,5 +17,7 @@ export {
 	setRouteLength,
 	setChangeRoute,
 	setRouteChanged,
+	setPanorama,
+	setPanoramaOpen,
 	default as mapReducer
 } from './map.slice';

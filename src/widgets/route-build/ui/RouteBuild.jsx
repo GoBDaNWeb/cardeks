@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import { clearActiveMenu } from '@/widgets/menu-list';
 
 import { RouteForm } from '@/features/route-form';
+import { setFilterActive } from '@/features/route-form';
 
 import { setBuildRoute, setChangeRoute, setRouteBuilded } from '@/entities/map';
 
@@ -25,7 +26,7 @@ export const RouteBuild = () => {
 		dispatch(setRouteBuilded(false));
 		dispatch(setChangeRoute(false));
 		dispatch(clearActiveMenu());
-		// dispatch(setFilterActive(false));
+		dispatch(setFilterActive(false));
 	};
 
 	const routeBuildClass = clsx(s.routeBuild, {

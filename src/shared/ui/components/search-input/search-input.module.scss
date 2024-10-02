@@ -13,6 +13,9 @@
 	&:hover {
 		border-color: var(--accent-color);
 	}
+	input {
+		width: 100%;
+	}
 	.icons {
 		display: flex;
 		align-items: center;

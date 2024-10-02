@@ -1,4 +1,5 @@
 @import '@/shared/styles/mixins';
+@import '@/shared/styles/variables';
 
 .changeLayerWrapper.active {
 	.changeLayer {
@@ -15,6 +16,10 @@
 	left: 24px;
 	top: 80px;
 	pointer-events: none;
+	@media (max-width: $desktop-sm) {
+		left: 16px;
+		top: 72px;
+	}
 	.changeLayer {
 		background: var(--white-color);
 		box-shadow: var(--shadow);

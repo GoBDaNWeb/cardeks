@@ -1,13 +1,8 @@
+@import '@/shared/styles/variables';
+
 .layout {
 	position: relative;
-	// .controls {
-	// 	position: absolute;
-	// 	top: 0;
-	// 	bottom: 0;
-	// 	left: 0;
-	// 	right: 0;
-	// 	overflow: hidden;
-	// }
+
 	.reviewModalBtn,
 	.guideModalBtn {
 		position: absolute;
@@ -20,11 +15,20 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		@media (max-width: $desktop-sm) {
+			bottom: 16px;
+		}
 	}
 	.reviewModalBtn {
 		right: 24px;
+		@media (max-width: $desktop-sm) {
+			right: 16px;
+		}
 	}
 	.guideModalBtn {
 		right: 72px;
+		@media (max-width: $desktop-sm) {
+			right: 64px;
+		}
 	}
 }

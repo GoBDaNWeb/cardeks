@@ -1,6 +1,13 @@
 @import './mixins';
+@import './variables';
+
 #root {
 	overflow: hidden;
+}
+.ymaps-2-1-79-controls__control {
+	@media (max-width: $desktop-sm) {
+		inset: 71px auto auto 73px !important;
+	}
 }
 .ymaps-2-1-79-gotoymaps,
 // .ymaps-2-1-79-copyright,
@@ -32,7 +39,7 @@
 	margin-top: 8px;
 }
 .ymaps-2-1-79-float-button-icon {
-	background-image: url('images/icons/line.svg') !important;
+	background-image: url('/images/icons/line.svg') !important;
 	width: 100% !important;
 	height: 100% !important;
 	border: none !important;

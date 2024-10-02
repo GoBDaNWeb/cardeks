@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import clsx from 'clsx';
 
-import { setMapType } from '@/entities/map';
+import { setMapType, setPanorama } from '@/entities/map';
 
 import { Button, CheckIcon, LayerIcon } from '@/shared/ui';
 
@@ -16,7 +16,7 @@ export const ChangeLayer = () => {
 
 	const dispatch = useDispatch();
 
-	const { mapType } = useSelector(state => state.map.mapInfo);
+	const { mapType, panorama } = useSelector(state => state.map.mapInfo);
 
 	const handleActive = () => {
 		setActive(!isActive);
@@ -27,7 +27,13 @@ export const ChangeLayer = () => {
 		setActive(false);
 	};
 
+	const handleSetPanorama = () => {
+		dispatch(setPanorama(!panorama));
+		setActive(false);
+	};
+
 	const changeLayerWrapperClass = clsx(s.changeLayerWrapper, { [s.active]: isActive });
+	const panoramaClass = clsx(s.dropDownTab, { [s.active]: panorama });
 
 	return (
 		<div className={changeLayerWrapperClass}>
@@ -47,6 +53,12 @@ export const ChangeLayer = () => {
 						</div>
 					</Button>
 				))}
+				<Button onClick={() => handleSetPanorama()} className={panoramaClass}>
+					Панорама
+					<div className={s.icon}>
+						<CheckIcon />
+					</div>
+				</Button>
 			</div>
 		</div>
 	);

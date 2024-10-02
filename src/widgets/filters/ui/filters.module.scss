@@ -1,4 +1,5 @@
 @import '@/shared/styles/mixins';
+@import '@/shared/styles/variables';
 
 .filters.hide {
 	opacity: 0;
@@ -23,6 +24,11 @@
 		transform var(--trs-300),
 		background var(--trs-300),
 		opacity var(--trs-300);
+	@media (max-width: $desktop-sm) {
+		right: 16px;
+		top: 72px;
+		max-width: 550px;
+	}
 	.filtersTop {
 		display: flex;
 		align-items: center;

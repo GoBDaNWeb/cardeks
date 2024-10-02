@@ -6,7 +6,7 @@ import clsx from 'clsx';
 import points from '@/shared/config/points.json';
 
 import { usePoint, useRoute } from '../lib';
-import { handleWheel, setZoom } from '../model';
+import { handleWheel, setPanoramaOpen, setZoom } from '../model';
 
 import s from './map.module.scss';
 
@@ -16,7 +16,7 @@ export const Map = () => {
 
 	const dispatch = useDispatch();
 	const {
-		mapInfo: { zoom, isWheel, mapType },
+		mapInfo: { zoom, isWheel, mapType, panorama, panoramaIsOpen },
 		routeInfo: { isSelectAddress }
 	} = useSelector(state => state.map);
 
@@ -70,6 +70,24 @@ export const Map = () => {
 	// хук который отвечает за построение маршрута
 	useRoute({ ymaps, map, setPointCollection });
 
+	useEffect(() => {
+		if (map) {
+			map.getPanoramaManager().then(function (manager) {
+				manager.events.add('openplayer', () => {
+					dispatch(setPanoramaOpen(true));
+				});
+				manager.events.add('closeplayer', () => {
+					dispatch(setPanoramaOpen(false));
+				});
+				if (panorama) {
+					manager.enableLookup();
+				} else {
+					manager.disableLookup();
+				}
+			});
+		}
+	}, [panorama]);
+
 	// изменение типа карты
 	useEffect(() => {
 		if (map) {
@@ -84,7 +102,7 @@ export const Map = () => {
 		}
 	}, [map, zoom, isWheel]);
 
-	const mapClass = clsx({ [s.select]: isSelectAddress });
+	const mapClass = clsx({ [s.select]: isSelectAddress, [s.panorama]: panoramaIsOpen });
 
 	return <div id='map' className={mapClass} style={{ width: '100vw', height: '100vh' }} />;
 };

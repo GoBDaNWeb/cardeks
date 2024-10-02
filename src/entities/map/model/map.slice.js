@@ -8,7 +8,9 @@ const initialState = {
 	mapInfo: {
 		zoom: 8,
 		isWheel: false,
-		mapType: 'yandex#map'
+		mapType: 'yandex#map',
+		panorama: false,
+		panoramaIsOpen: false
 	},
 	routeInfo: {
 		isSelectAddress: false,
@@ -88,6 +90,12 @@ const mapSlice = createSlice({
 		},
 		setRouteChanged(state, action) {
 			state.routeInfo.routeIsChanged = action.payload;
+		},
+		setPanorama(state, action) {
+			state.mapInfo.panorama = action.payload;
+		},
+		setPanoramaOpen(state, action) {
+			state.mapInfo.panoramaIsOpen = action.payload;
 		}
 	}
 });
@@ -110,6 +118,8 @@ export const {
 	setRouteLength,
 	clearRouteAddresses,
 	setChangeRoute,
-	setRouteChanged
+	setRouteChanged,
+	setPanorama,
+	setPanoramaOpen
 } = mapSlice.actions;
 export default mapSlice.reducer;

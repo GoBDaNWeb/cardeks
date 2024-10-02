@@ -1,7 +1,13 @@
+@import '@/shared/styles/variables';
+
 .searchWrapper {
 	position: absolute;
 	top: 24px;
 	left: 24px;
 	z-index: 2;
 	width: 370px;
+	@media (max-width: $desktop-sm) {
+		left: 16px;
+		top: 16px;
+	}
 }
