@@ -1,4 +1,5 @@
 @import '@/shared/styles/mixins';
+@import '@/shared/styles/variables';
 
 .routeSettings {
 	margin-top: 16px;
@@ -9,10 +10,17 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
+	@media (max-width: $tab) {
+		align-items: flex-start;
+	}
 	.filtersBtns {
 		display: flex;
 		align-items: center;
 		gap: 16px;
+		@media (max-width: $tab) {
+			flex-direction: column;
+			align-items: flex-start;
+		}
 		.filterBtn {
 			display: flex;
 			align-items: center;
@@ -27,6 +35,9 @@
 			p {
 				@include text-sm;
 				color: var(--secondary-color);
+				@media (max-width: $tab) {
+					@include text-s;
+				}
 			}
 		}
 	}
@@ -67,10 +78,14 @@
 	padding-bottom: 16px;
 	p {
 		@include text-m;
+		@media (max-width: $tab) {
+			@include text-sm;
+		}
 	}
 	.chipList {
 		display: flex;
 		align-items: center;
+		flex-wrap: wrap;
 		gap: 8px;
 		margin-top: 8px;
 	}
@@ -81,10 +96,16 @@
 			grid-template-columns: repeat(3, 1fr);
 			gap: 8px;
 			margin-top: 8px;
+			@media (max-width: $tab) {
+				align-items: flex-end;
+			}
 			.inputWrapper {
 				display: flex;
 				flex-direction: column;
 				gap: 8px;
+				@media (max-width: $tab) {
+					gap: 4px;
+				}
 				input {
 					margin: 0;
 				}

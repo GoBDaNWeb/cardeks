@@ -1,13 +1,20 @@
 @import '@/shared/styles/mixins';
+@import '@/shared/styles/variables';
 
 .checkboxWrapper {
 	display: flex;
 	align-items: center;
 	gap: 8px;
 	cursor: pointer;
+	@media (max-width: $tab) {
+		gap: 6px;
+	}
 	p {
 		@include text-m;
 		transition: color var(--trs-300);
+		@media (max-width: $tab) {
+			@include text-s;
+		}
 	}
 }
 
@@ -24,6 +31,10 @@
 	outline: 0;
 	cursor: pointer;
 	transition: var(--trs-300);
+	@media (max-width: $tab) {
+		width: 16px;
+		height: 16px;
+	}
 	&:hover {
 		color: var(--accent-color);
 		border-color: var(--accent-color);

@@ -1,3 +1,5 @@
+@import '@/shared/styles/variables';
+
 .searchInput {
 	padding: 12px 20px;
 	background: var(--white-color);
@@ -10,8 +12,13 @@
 	border: 1px solid rgba(0, 0, 0, 0);
 	height: 48px;
 	justify-content: space-between;
+
 	&:hover {
 		border-color: var(--accent-color);
+	}
+	@media (max-width: $tab) {
+		padding: 10px 16px;
+		height: 36px;
 	}
 	input {
 		width: 100%;
@@ -23,7 +30,9 @@
 		button {
 			position: relative;
 			padding-left: 14px;
-
+			@media (max-width: $tab) {
+				padding-left: 12px;
+			}
 			&:before {
 				content: '';
 				position: absolute;
@@ -33,6 +42,10 @@
 				left: 0;
 			}
 			svg {
+				@media (max-width: $tab) {
+					width: 16px;
+					height: 16px;
+				}
 				path {
 					transition: var(--trs-300);
 				}

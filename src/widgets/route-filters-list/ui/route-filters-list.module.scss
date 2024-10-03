@@ -1,10 +1,17 @@
 @import '@/shared/styles/mixins';
+@import '@/shared/styles/variables';
 
 .routeFilters.active {
 	transform: translateX(-642px) !important;
 	box-shadow: var(--shadow);
 	opacity: 1;
 	pointer-events: all;
+	@media (max-width: $desktop-sm) {
+		transform: translateX(-556px) !important;
+	}
+	@media (max-width: $tab) {
+		transform: translateX(-366px) !important;
+	}
 }
 .routeFilters.ready {
 	transform: translateX(0);
@@ -20,6 +27,7 @@
 	right: 24px;
 	max-height: calc(100vh - 105px);
 	top: 222px;
+	z-index: 3;
 	transform: translateX(680px);
 	transition:
 		transform var(--trs-300),
@@ -31,9 +39,21 @@
 	&::-webkit-scrollbar {
 		width: 5px;
 	}
+
+	@media (max-width: $desktop-sm) {
+		right: 16px;
+		top: 205px;
+		max-width: 550px;
+	}
+	@media (max-width: $tab) {
+		top: 245px;
+		max-width: 360px;
+		padding: 16px 0 16px 16px;
+	}
 	.routeFiltersTop {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+		padding-right: 24px;
 	}
 }

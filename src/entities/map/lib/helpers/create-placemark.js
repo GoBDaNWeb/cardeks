@@ -1,4 +1,5 @@
 import { enLetter } from '@/shared/config';
+import { getPointId } from '@/shared/lib';
 
 export const createPlacemark = ({ ymaps, coords, index, pointId, pointIndex }) => {
 	let myPlacemark = new ymaps.Placemark(
@@ -6,7 +7,7 @@ export const createPlacemark = ({ ymaps, coords, index, pointId, pointIndex }) =
 		{
 			hintContent: 'Новая метка',
 			balloonContent: 'index: ' + pointIndex,
-			id: pointId ?? `points.${index}.inputText`
+			id: pointId ?? getPointId(index)
 		},
 		{
 			iconLayout: 'default#image',

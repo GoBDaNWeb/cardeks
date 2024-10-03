@@ -1,10 +1,25 @@
 @import '@/shared/styles/mixins';
+@import '@/shared/styles/variables';
 
 .routeFilters {
+	padding-right: 12px;
+	margin-right: 12px;
 	margin-top: 20px;
 	display: flex;
 	flex-direction: column;
 	gap: 20px;
+	max-height: calc(100vh - 344px);
+	overflow-y: auto;
+	scrollbar-width: thin;
+	scrollbar-color: var(--accent-color) #ffffff;
+	&::-webkit-scrollbar {
+		width: 5px;
+	}
+	@media (max-width: $tab) {
+		gap: 16px;
+		padding-right: 8px;
+		margin-right: 8px;
+	}
 	.filterRow {
 		display: flex;
 		flex-direction: column;
@@ -12,6 +27,9 @@
 		gap: 8px;
 		.title {
 			@include text-m;
+			@media (max-width: $tab) {
+				@include text-sm;
+			}
 		}
 		.content {
 			display: flex;

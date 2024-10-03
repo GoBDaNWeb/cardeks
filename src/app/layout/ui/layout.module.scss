@@ -18,6 +18,16 @@
 		@media (max-width: $desktop-sm) {
 			bottom: 16px;
 		}
+		@media (max-width: $tab) {
+			width: 36px;
+			height: 36px;
+		}
+		svg {
+			@media (max-width: $tab) {
+				width: 16px;
+				height: 16px;
+			}
+		}
 	}
 	.reviewModalBtn {
 		right: 24px;
@@ -29,6 +39,9 @@
 		right: 72px;
 		@media (max-width: $desktop-sm) {
 			right: 64px;
+		}
+		@media (max-width: $tab) {
+			right: 56px;
 		}
 	}
 }

@@ -17,7 +17,7 @@ import {
 
 import { useGetAddressesQuery } from '@/shared/api';
 import { ruLetters } from '@/shared/config';
-import { getQueryParams, useDebounce } from '@/shared/lib';
+import { getPointId, getQueryParams, useDebounce } from '@/shared/lib';
 import { ArrowsIcon, Button, PlusIcon } from '@/shared/ui';
 
 import s from './route-form.module.scss';
@@ -55,38 +55,54 @@ export const RouteForm = () => {
 		name: 'points'
 	});
 
+	const getInputValue = index => {
+		return getValues('points')[index].inputText;
+	};
+
 	const handleSwap = index => {
 		swap(index, index + 1);
 		dispatch(setSwapPoints([index, index + 1]));
 	};
 
 	const removeQuestion = index => {
-		remove(index);
-		dispatch(setDeletePointId(`points.${index}.inputText`));
-		setTimeout(() => {
-			dispatch(setDeletePointId(null));
-		}, 100);
+		if (getInputValue(index).length > 0) {
+			setValue(getPointId(index), '');
+			dispatch(setDeletePointId(getPointId(index)));
+			setTimeout(() => {
+				dispatch(setDeletePointId(null));
+			}, 100);
+		} else {
+			remove(index);
+			dispatch(setDeletePointId(getPointId(index)));
+			setTimeout(() => {
+				dispatch(setDeletePointId(null));
+			}, 100);
+		}
 	};
 
 	const addQuestion = () => {
 		append({ inputText: '' });
+		setCurrentPointIndex(null);
+		setSearchData('');
 	};
 
-	const handleSelectAddress = id => {
+	const handleSelectPoint = id => {
 		dispatch(setSelectAddress(true));
 		dispatch(setCurrentPointId(id));
+		setSearchData('');
 	};
-	const handleSeletAddress = (address, subtitle) => {
+	const handleSelectAddress = (address, subtitle) => {
 		subtitle
-			? setValue(`points.${currentInputIndex}.inputText`, `${address} ${subtitle}`)
-			: setValue(`points.${currentInputIndex}.inputText`, address);
+			? setValue(getPointId(currentInputIndex), `${address} ${subtitle}`)
+			: setValue(getPointId(currentInputIndex), address);
 		dispatch(setBuildSearch(true));
-		dispatch(setSearchValue(getValues('points')[currentInputIndex].inputText));
-		dispatch(setCurrentPointId(`points.${currentInputIndex}.inputText`));
-		dispatch(setAddress(getValues('points')[currentInputIndex].inputText));
+		dispatch(setSearchValue(getInputValue(currentInputIndex)));
+		dispatch(setCurrentPointId(getPointId(currentInputIndex)));
+		dispatch(setAddress(getInputValue(currentInputIndex)));
 		setTimeout(() => {
 			dispatch(setBuildSearch(false));
 			setdropdownOpen(false);
+			setSearchData('');
 		}, 300);
 	};
 
@@ -98,6 +114,7 @@ export const RouteForm = () => {
 	const handleBlur = () => {
 		setTimeout(() => {
 			setdropdownOpen(false);
+			setSearchData('');
 		}, 200);
 	};
 
@@ -113,7 +130,7 @@ export const RouteForm = () => {
 		let tempArr = [];
 		fields.forEach((_, index) => {
 			if (index === 0 || index === 1) {
-				setValue(`points.${index}.inputText`, '');
+				setValue(getPointId(index), '');
 				return;
 			} else {
 				tempArr.push(index);
@@ -130,7 +147,7 @@ export const RouteForm = () => {
 
 	useEffect(() => {
 		if (buildSearch && currentInputIndex.length === 0) {
-			setValue('points.1.inputText', searchValue);
+			setValue(getPointId(1), searchValue);
 		}
 	}, [buildSearch]);
 
@@ -140,7 +157,7 @@ export const RouteForm = () => {
 			if (queryRoutes) {
 				const queryRoutesArray = queryRoutes.split(';');
 				queryRoutesArray.forEach((route, index) => {
-					setValue(`points.${index}.inputText`, route);
+					setValue(getPointId(index), route);
 				});
 			}
 		}, 0);
@@ -164,7 +181,7 @@ export const RouteForm = () => {
 	useEffect(() => {
 		if (currentPointId) {
 			const index = currentPointId.split('.')[1];
-			setValue(`points.${index}.inputText`, selectedAddress);
+			setValue(getPointId(index), selectedAddress);
 		}
 	}, [selectedAddress]);
 
@@ -175,7 +192,6 @@ export const RouteForm = () => {
 			});
 			const changeFieldInput = field.name.split('.')[1];
 			if (changeFieldInput) {
-				setdropdownOpen(true);
 				setCurrentPointIndex(changeFieldInput);
 				const inputText = value.points[changeFieldInput].inputText;
 				setCurrentPointValue(inputText);
@@ -193,27 +209,29 @@ export const RouteForm = () => {
 	return (
 		<div className={s.routeForm}>
 			<div className={s.routeInputs}>
-				{fields.map((_, index) => (
+				{fields.map((field, index) => (
 					<div key={index} className={s.routeInputWrapper}>
 						<RouteInput
 							letter={ruLetters.split('')[index]}
-							id={`points.${index}.inputText`}
+							id={getPointId(index)}
 							removeQuestion={() => removeQuestion(index)}
 							register={register}
 							fields={fields}
-							handleSelectAddress={() => handleSelectAddress(`points.${index}.inputText`)}
+							field={field}
+							handleSelectPoint={() => handleSelectPoint(getPointId(index))}
 							handleFocus={handleFocus}
 							handleBlur={handleBlur}
+							value={getInputValue(index)}
 						/>
 						{data?.results && dropdownOpen ? (
 							<SearchDropdown
 								isActive={currentInputIndex == index}
 								list={data}
-								handleSeletAddress={handleSeletAddress}
+								handleSelectAddress={handleSelectAddress}
 							/>
 						) : null}
 						{index === fields.length - 1 ? null : (
-							<Button onClick={() => handleSwap(index)}>
+							<Button className={s.swapBtn} onClick={() => handleSwap(index)}>
 								<ArrowsIcon />
 							</Button>
 						)}

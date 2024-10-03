@@ -12,7 +12,7 @@ import {
 } from '@/entities/map';
 
 import { useGetAddressesQuery } from '@/shared/api';
-import { useDebounce } from '@/shared/lib';
+import { getPointId, useDebounce } from '@/shared/lib';
 
 import { SearchDropdown } from './search-dropdown';
 import { SearchInput } from './search-input';
@@ -65,10 +65,11 @@ export const Search = () => {
 		if (inputValue.length > 0 && activeMenu !== 'route') {
 			dispatch(setSearchValue(inputValue));
 			dispatch(setBuildSearch(true));
-			dispatch(setCurrentPointId('points.1.inputText'));
+			dispatch(setCurrentPointId(getPointId(1)));
 			dispatch(setAddress(inputValue));
 			setTimeout(() => {
 				dispatch(setBuildSearch(false));
+				dispatch(setCurrentPointId(null));
 			}, 300);
 		}
 	};

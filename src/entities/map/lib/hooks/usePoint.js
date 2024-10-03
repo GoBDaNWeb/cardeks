@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { enLetter } from '@/shared/config';
+import { getPointId } from '@/shared/lib';
 
 import { setAddress, setCoords, setSelectAddress } from '../../model';
 import { containsArray, createPlacemark } from '../helpers';
@@ -43,7 +44,7 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) =>
 	};
 
 	const changePointImage = (point, index, newImageUrl) => {
-		point.properties.set('id', `points.${index}.inputText`);
+		point.properties.set('id', getPointId(index));
 		point.properties.set('balloonContent', `index:  ${index}`);
 		point.options.set({
 			iconImageHref: newImageUrl,

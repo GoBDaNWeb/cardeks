@@ -1,3 +1,6 @@
+@import '@/shared/styles/variables';
+@import '@/shared/styles/mixins';
+
 .objectsList.active {
 	transform: translateX(0);
 }
@@ -6,18 +9,35 @@
 	border-radius: var(--radius-s);
 	box-shadow: var(--shadow);
 	width: 633px;
-	max-height: calc(100vh - 255px);
+	max-height: calc(100vh - 237px);
 	position: absolute;
-	top: 218px;
+	top: 213px;
 	right: 24px;
 	transform: translateX(680px);
 	transition: transform var(--trs-300);
 	padding: 20px 0 24px 20px;
 	bottom: 24px;
+	z-index: 3;
+	@media (max-width: $desktop-sm) {
+		right: 16px;
+		width: 550px;
+		top: 204px;
+		bottom: 16px;
+		max-height: calc(100vh - 221px);
+	}
+	@media (max-width: $tab) {
+		right: 16px;
+		width: 360px;
+		top: 243px;
+		padding: 16px 0 16px 16px;
+	}
 	.objectListTop {
 		display: flex;
 		justify-content: space-between;
 		padding-right: 24px;
+		@media (max-width: $tab) {
+			padding-right: 16px;
+		}
 		.left {
 			p {
 				color: var(--primary-color);
@@ -26,12 +46,29 @@
 				font-family: 'Onest', sans-serif;
 				line-height: 14px;
 				letter-spacing: -0.2px;
+				@media (max-width: $tab) {
+					@include text-xs;
+					color: var(--primary-color);
+					max-width: 115px;
+				}
 			}
 		}
 		.right {
 			display: flex;
 			align-items: center;
 			gap: 32px;
+			@media (max-width: $tab) {
+				gap: 24px;
+				button {
+					width: 16px;
+					height: 16px;
+				}
+				svg {
+					width: 16px;
+					height: 16px;
+				}
+			}
+
 			.features {
 				display: flex;
 				align-items: center;
@@ -45,7 +82,7 @@
 		flex-direction: column;
 		gap: 16px;
 		overflow-y: auto;
-		max-height: calc(100% - 55px);
+		max-height: calc(100% - 37px);
 		scrollbar-width: thin;
 		scrollbar-color: var(--accent-color) #ffffff;
 		height: 100%;

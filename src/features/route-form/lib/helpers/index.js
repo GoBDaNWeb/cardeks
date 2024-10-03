@@ -1,0 +1,1 @@
+export { getInputValue } from './getInputValue';

@@ -20,6 +20,9 @@
 		left: 16px;
 		top: 72px;
 	}
+	@media (max-width: $tab) {
+		top: 57px;
+	}
 	.changeLayer {
 		background: var(--white-color);
 		box-shadow: var(--shadow);
@@ -32,6 +35,16 @@
 		align-items: center;
 		justify-content: center;
 		pointer-events: all;
+		@media (max-width: $tab) {
+			width: 36px;
+			height: 36px;
+		}
+		svg {
+			@media (max-width: $tab) {
+				width: 16px;
+				height: 16px;
+			}
+		}
 	}
 	.dropDown {
 		display: flex;

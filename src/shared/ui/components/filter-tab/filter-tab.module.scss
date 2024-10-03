@@ -1,4 +1,5 @@
 @import '@/shared/styles/mixins';
+@import '@/shared/styles/variables';
 
 .filterTab.active {
 	background: var(--accent-color);
@@ -33,6 +34,11 @@
 	transition:
 		background var(--trs-300),
 		border-color var(--trs-300);
+	@media (max-width: $tab) {
+		flex-direction: column-reverse;
+		align-items: flex-start;
+		padding: 10px 15px;
+	}
 	&:hover {
 		background: var(--tertiary-color);
 		border-color: var(--accent-color);
@@ -60,9 +66,15 @@
 		flex-direction: column;
 		align-items: flex-start;
 		gap: 1px;
+		@media (max-width: $tab) {
+			gap: 0;
+		}
 		.title {
 			@include text-m;
 			transition: color var(--trs-300);
+			@media (max-width: $tab) {
+				@include text-sm;
+			}
 		}
 		.count {
 			@include text-s;

@@ -1,4 +1,5 @@
 @import '@/shared/styles/mixins';
+@import '@/shared/styles/variables';
 
 .input.styled {
 	border: 1px solid rgba(167, 181, 197, 0.3);
@@ -6,13 +7,19 @@
 	padding: 20px;
 	border-radius: var(--radius-s);
 	width: 100%;
-
+	@media (max-width: $tab) {
+		height: 36px;
+		padding: 16px;
+	}
 	&:focus {
 		border-color: var(--accent-color);
 		@include text-m;
 		color: var(--primary-color);
 		opacity: 1;
 		letter-spacing: 0;
+		@media (max-width: $tab) {
+			@include text-sm;
+		}
 	}
 	&:hover {
 		border-color: var(--accent-color);
@@ -26,11 +33,18 @@
 	padding: 0;
 	opacity: 1 !important;
 	transition: border-color var(--trs-300);
+	@media (max-width: $tab) {
+		@include text-sm;
+	}
 	&::placeholder {
 		@include text-m;
 		color: var(--secondary-color);
 		opacity: 1;
 		letter-spacing: 0;
+		@media (max-width: $tab) {
+			@include text-sm;
+			color: var(--secondary-color);
+		}
 	}
 	&:focus {
 		&::placeholder {
@@ -38,6 +52,10 @@
 			color: var(--primary-color);
 			opacity: 1;
 			letter-spacing: 0;
+			@media (max-width: $tab) {
+				@include text-sm;
+				color: var(--primary-color);
+			}
 		}
 	}
 }

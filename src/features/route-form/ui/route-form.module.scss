@@ -1,6 +1,19 @@
 @import '@/shared/styles/mixins';
 
 .routeForm {
+	padding-right: 12px;
+	margin-right: 12px;
+	max-height: calc(100vh - 180px);
+	overflow-y: auto;
+	scrollbar-width: thin;
+	scrollbar-color: var(--accent-color) #ffffff;
+	&::-webkit-scrollbar {
+		width: 5px;
+	}
+	@media (max-width: $tab) {
+		padding-right: 8px;
+		margin-right: 8px;
+	}
 	.routeInputs {
 		display: flex;
 		flex-direction: column;
@@ -8,13 +21,23 @@
 		gap: 8px;
 		width: 100%;
 		margin-top: 16px;
-
+		padding-left: 4px;
 		.routeInputWrapper {
 			width: 100%;
 			display: flex;
 			flex-direction: column;
 			gap: 8px;
 			align-items: center;
+			.swapBtn {
+				@media (max-width: $tab) {
+					width: 24px;
+					height: 18px;
+					svg {
+						width: 100%;
+						height: 100%;
+					}
+				}
+			}
 		}
 	}
 	.addBtn {

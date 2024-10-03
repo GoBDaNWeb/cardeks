@@ -1,4 +1,5 @@
 @import '@/shared/styles/mixins';
+@import '@/shared/styles/variables';
 
 .button {
 	background: none;
@@ -33,6 +34,11 @@
 	&:hover {
 		background: var(--accent-hover-color);
 	}
+	@media (max-width: $tab) {
+		height: 36px;
+		@include text-sm;
+		color: var(--white-color);
+	}
 }
 .button.icon {
 	&:hover {
@@ -43,8 +49,6 @@
 		}
 	}
 	svg {
-		width: 100%;
-		height: 100%;
 		path {
 			transition: var(--trs-300);
 		}

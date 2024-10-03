@@ -8,6 +8,9 @@
 	@media (max-width: $desktop-sm) {
 		inset: 71px auto auto 73px !important;
 	}
+	@media (max-width: $tab) {
+		inset: 57px auto auto 60px !important;
+	}
 }
 .ymaps-2-1-79-gotoymaps,
 // .ymaps-2-1-79-copyright,
@@ -30,6 +33,12 @@
 	border-radius: var(--radius-s) !important;
 	box-shadow: var(--shadow) !important;
 	top: 0 !important;
+	@media (max-width: $tab) {
+		min-width: 36px !important;
+		min-height: 36px !important;
+		max-width: 36px !important;
+		max-height: 36px !important;
+	}
 }
 .ymaps-2-1-79-_checked {
 	background: var(--white-color) !important;
@@ -37,12 +46,18 @@
 }
 .ymaps-2-1-79-scaleline {
 	margin-top: 8px;
+	@media (max-width: $tab) {
+		margin-top: 4px;
+	}
 }
 .ymaps-2-1-79-float-button-icon {
 	background-image: url('/images/icons/line.svg') !important;
 	width: 100% !important;
 	height: 100% !important;
 	border: none !important;
+	@media (max-width: $tab) {
+		background-image: url('/images/icons/line-mob.svg') !important;
+	}
 }
 
 body {

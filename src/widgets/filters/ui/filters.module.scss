@@ -7,6 +7,12 @@
 }
 .filters.left {
 	transform: translateX(-642px);
+	@media (max-width: $desktop-sm) {
+		transform: translateX(-556px);
+	}
+	@media (max-width: $tab) {
+		transform: translateX(-366px);
+	}
 }
 .filters.routeFilterActive {
 	background: var(--tertiary-color);
@@ -19,6 +25,7 @@
 	border-radius: var(--radius-s);
 	width: 100%;
 	max-width: 633px;
+	z-index: 3;
 	box-shadow: var(--shadow);
 	transition:
 		transform var(--trs-300),
@@ -30,13 +37,17 @@
 		max-width: 550px;
 	}
 	@media (max-width: $tab) {
-		top: 130px;
+		top: 96px;
+		max-width: 360px;
 	}
 	.filtersTop {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		padding: 11px 20px 14px;
+		@media (max-width: $tab) {
+			padding: 11px 16px 10px;
+		}
 		.title {
 			display: flex;
 			align-items: center;
@@ -47,6 +58,9 @@
 				justify-content: center;
 				position: relative;
 				padding-right: 14px;
+				@media (max-width: $tab) {
+					padding-right: 12px;
+				}
 				&:after {
 					content: '';
 					position: absolute;
@@ -55,12 +69,24 @@
 					background: var(--line-color);
 					right: 0;
 					top: 0;
+					@media (max-width: $tab) {
+						height: 16px;
+					}
+				}
+				svg {
+					@media (max-width: $tab) {
+						width: 16px;
+						height: 16px;
+					}
 				}
 			}
 			p {
 				@include text-m;
 				margin-left: 7px;
 				letter-spacing: 0;
+				@media (max-width: $tab) {
+					@include text-sm;
+				}
 			}
 		}
 		.total {
@@ -72,5 +98,9 @@
 		grid-template-columns: repeat(3, 1fr);
 		gap: 8px;
 		padding: 0px 8px 8px;
+		@media (max-width: $tab) {
+			padding: 0px 4px 4px;
+			gap: 4px;
+		}
 	}
 }

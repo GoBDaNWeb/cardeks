@@ -10,4 +10,7 @@
 		left: 16px;
 		top: 16px;
 	}
+	@media (max-width: $tab) {
+		width: 300px;
+	}
 }
