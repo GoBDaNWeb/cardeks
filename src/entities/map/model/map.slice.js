@@ -23,6 +23,7 @@ const initialState = {
 		routeCoords: [],
 		currentPointId: null,
 		pointFields: [],
+		fieldsCount: 2,
 		swapPoints: [],
 		deletePointId: null,
 		buildRoute: queryRoutes ? true : false,
@@ -96,6 +97,9 @@ const mapSlice = createSlice({
 		setRouteChanged(state, action) {
 			state.routeInfo.routeIsChanged = action.payload;
 		},
+		setFieldsCount(state, action) {
+			state.routeInfo.fieldsCount = action.payload;
+		},
 		setPanorama(state, action) {
 			state.mapInfo.panorama = action.payload;
 		},
@@ -137,6 +141,7 @@ export const {
 	setPanoramaOpen,
 	setSearch,
 	setSearchValue,
-	setBuildSearch
+	setBuildSearch,
+	setFieldsCount
 } = mapSlice.actions;
 export default mapSlice.reducer;

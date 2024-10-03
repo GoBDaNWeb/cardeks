@@ -9,6 +9,7 @@ import {
 	setCoords,
 	setCurrentPointId,
 	setDeletePointId,
+	setFieldsCount,
 	setRouteChanged,
 	setSearchValue,
 	setSelectAddress,
@@ -65,25 +66,32 @@ export const RouteForm = () => {
 	};
 
 	const removeQuestion = index => {
-		if (getInputValue(index).length > 0) {
-			setValue(getPointId(index), '');
-			dispatch(setDeletePointId(getPointId(index)));
-			setTimeout(() => {
-				dispatch(setDeletePointId(null));
-			}, 100);
-		} else {
-			remove(index);
-			dispatch(setDeletePointId(getPointId(index)));
-			setTimeout(() => {
-				dispatch(setDeletePointId(null));
-			}, 100);
-		}
+		// if (getInputValue(index).length > 0) {
+		// 	setValue(getPointId(index), '');
+		// 	dispatch(setDeletePointId(getPointId(index)));
+		// 	setTimeout(() => {
+		// 		dispatch(setDeletePointId(null));
+		// 	}, 100);
+		// } else {
+		// 	remove(index);
+		// 	dispatch(setDeletePointId(getPointId(index)));
+		// 	setTimeout(() => {
+		// 		dispatch(setDeletePointId(null));
+		// 	}, 100);
+		// }
+		remove(index);
+		dispatch(setDeletePointId(getPointId(index)));
+		setTimeout(() => {
+			dispatch(setDeletePointId(null));
+		}, 100);
+		dispatch(setFieldsCount(getValues('points').length));
 	};
 
 	const addQuestion = () => {
 		append({ inputText: '' });
 		setCurrentPointIndex(null);
 		setSearchData('');
+		dispatch(setFieldsCount(getValues('points').length));
 	};
 
 	const handleSelectPoint = id => {
@@ -221,7 +229,6 @@ export const RouteForm = () => {
 							handleSelectPoint={() => handleSelectPoint(getPointId(index))}
 							handleFocus={handleFocus}
 							handleBlur={handleBlur}
-							value={getInputValue(index)}
 						/>
 						{data?.results && dropdownOpen ? (
 							<SearchDropdown

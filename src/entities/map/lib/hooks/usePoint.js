@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { enLetter } from '@/shared/config';
 import { getPointId } from '@/shared/lib';
 
 import { setAddress, setCoords, setSelectAddress } from '../../model';
-import { containsArray, createPlacemark } from '../helpers';
+import { containsArray, createPlacemark, getImage, getPointInfo, swapItems } from '../helpers';
 
 export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) => {
 	const [searchPoint, setSearchPoint] = useState(null);
@@ -21,7 +20,8 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) =>
 			routeCoords,
 			swapPoints,
 			deletePointId,
-			selectedAddress
+			selectedAddress,
+			fieldsCount
 		}
 	} = useSelector(state => state.map);
 
@@ -55,8 +55,8 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) =>
 
 	const addPoint = coords => {
 		const pointId = currentPointIdRef.current;
-		const existingMarker = pointCollection.find(function (marker) {
-			return marker.properties.get('id') === pointId;
+		const existingMarker = pointCollection.find(point => {
+			return getPointInfo(point, 'id') === pointId;
 		});
 
 		if (existingMarker) {
@@ -94,10 +94,10 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) =>
 
 	const handleRemovePoint = id => {
 		const deletedPoint = pointCollection.find(point => {
-			return point.properties.get('id') === id;
+			return getPointInfo(point, 'id') === id;
 		});
 		const filteredPointCollection = pointCollection.filter(point => {
-			return point.properties.get('id') !== id;
+			return getPointInfo(point, 'id') !== id;
 		});
 
 		if (deletedPoint) {
@@ -105,15 +105,24 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) =>
 				return coord !== deletedPoint.geometry.getCoordinates();
 			});
 			filteredPointCollection.forEach((point, index) => {
-				changePointImage(
-					point,
-					index,
-					`/images/points/point${enLetter.split('')[index].toUpperCase()}.png`
-				);
+				changePointImage(point, index, getImage(index));
 			});
 			dispatch(setCoords(filteredCoords));
 			map.geoObjects.remove(deletedPoint);
 			setPointCollection(filteredPointCollection);
+		} else {
+			const sortedPoints = pointCollection.sort(
+				(a, b) => getPointInfo(a, 'index') - getPointInfo(b, 'index')
+			);
+
+			for (let i = 0; i < sortedPoints.length; i++) {
+				sortedPoints[i].properties.set('id', getPointId(i));
+			}
+
+			sortedPoints.forEach((point, index) => {
+				changePointImage(point, index, getImage(index));
+			});
+			setPointCollection(sortedPoints);
 		}
 	};
 
@@ -163,22 +172,42 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) =>
 
 	// меняем точки на карте местами
 	useEffect(() => {
-		if (
-			pointCollection.length > 0 &&
-			pointCollection[swapPoints[1]] &&
-			pointCollection[swapPoints[0]]
-		) {
+		if (fieldsCount === pointCollection.length) {
 			let tempCoordsArray = routeCoords.slice();
-			const firstPointCoords = pointCollection[swapPoints[0]].geometry.getCoordinates();
-			const secondPointCoords = pointCollection[swapPoints[1]].geometry.getCoordinates();
-			pointCollection[swapPoints[0]].geometry.setCoordinates(secondPointCoords);
-			pointCollection[swapPoints[1]].geometry.setCoordinates(firstPointCoords);
+			const firstInput = pointCollection.find(point => {
+				return getPointInfo(point, 'index') == swapPoints[0];
+			});
+			const secondInput = pointCollection.find(point => {
+				return getPointInfo(point, 'index') == swapPoints[1];
+			});
+			const firstPointCoords = firstInput.geometry.getCoordinates();
+			const secondPointCoords = secondInput.geometry.getCoordinates();
+			firstInput.geometry.setCoordinates(secondPointCoords);
+			secondInput.geometry.setCoordinates(firstPointCoords);
+			swapItems(tempCoordsArray, swapPoints);
 
-			[tempCoordsArray[swapPoints[0]], tempCoordsArray[swapPoints[1]]] = [
-				tempCoordsArray[swapPoints[1]],
-				tempCoordsArray[swapPoints[0]]
-			];
 			dispatch(setCoords(tempCoordsArray));
+		} else {
+			const firstInput = pointCollection.find(point => {
+				return getPointInfo(point, 'index') == swapPoints[0];
+			});
+			const secondInput = pointCollection.find(point => {
+				return getPointInfo(point, 'index') == swapPoints[1];
+			});
+			if (firstInput) {
+				if (getPointInfo(firstInput, 'index') == swapPoints[0]) {
+					changePointImage(firstInput, swapPoints[0] + 1, getImage(swapPoints[0] + 1));
+				} else {
+					changePointImage(firstInput, swapPoints[0], getImage(swapPoints[0]));
+				}
+			}
+			if (secondInput) {
+				if (getPointInfo(secondInput, 'index') == swapPoints[0]) {
+					changePointImage(secondInput, swapPoints[0] + 1, getImage(swapPoints[0] + 1));
+				} else {
+					changePointImage(secondInput, swapPoints[0], getImage(swapPoints[0]));
+				}
+			}
 		}
 	}, [swapPoints]);
 

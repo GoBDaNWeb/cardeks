@@ -23,5 +23,6 @@ export {
 	setSearch,
 	setSearchValue,
 	setBuildSearch,
+	setFieldsCount,
 	mapReducer
 } from './model';

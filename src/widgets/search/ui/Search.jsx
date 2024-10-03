@@ -69,7 +69,6 @@ export const Search = () => {
 			dispatch(setAddress(inputValue));
 			setTimeout(() => {
 				dispatch(setBuildSearch(false));
-				dispatch(setCurrentPointId(null));
 			}, 300);
 		}
 	};

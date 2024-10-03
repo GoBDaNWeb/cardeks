@@ -22,5 +22,6 @@ export {
 	setSearch,
 	setSearchValue,
 	setBuildSearch,
+	setFieldsCount,
 	default as mapReducer
 } from './map.slice';

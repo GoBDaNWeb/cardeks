@@ -11,8 +11,7 @@ export const RouteInput = ({
 	handleSelectPoint,
 	onChange,
 	handleFocus,
-	handleBlur,
-	value
+	handleBlur
 }) => {
 	return (
 		<div className={s.routeInput}>
@@ -26,7 +25,7 @@ export const RouteInput = ({
 				onBlur={() => handleBlur()}
 			/>
 			<div className={s.features}>
-				{fields.length > 2 || value.length > 0 ? (
+				{fields.length > 2 ? (
 					<Button onClick={removeQuestion}>
 						<CloseIcon />
 					</Button>
