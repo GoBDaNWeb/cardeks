@@ -52,6 +52,7 @@ const mapSlice = createSlice({
 		setSelectAddress(state, action) {
 			state.routeInfo.isSelectAddress = action.payload;
 		},
+
 		setAddress(state, action) {
 			state.routeInfo.selectedAddress = action.payload;
 		},
@@ -79,9 +80,6 @@ const mapSlice = createSlice({
 		setRouteAddresses(state, action) {
 			state.routeInfo.routeAddresses = action.payload;
 		},
-		// setRouteAddresses(state, action) {
-		// 	state.routeInfo.routeAddresses = [...state.routeInfo.routeAddresses, action.payload];
-		// },
 		clearRouteAddresses(state) {
 			state.routeInfo.routeAddresses = [];
 		},

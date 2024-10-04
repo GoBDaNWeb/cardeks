@@ -114,9 +114,11 @@ export const RouteForm = () => {
 		}, 300);
 	};
 
-	const handleFocus = () => {
+	const handleFocus = index => {
 		setTimeout(() => {
 			setdropdownOpen(true);
+			// setCurrentPointIndex(getPointId(index));
+			dispatch(setCurrentPointId(getPointId(index)));
 		}, 300);
 	};
 	const handleBlur = () => {
@@ -144,6 +146,8 @@ export const RouteForm = () => {
 				tempArr.push(index);
 			}
 		});
+		dispatch(setFieldsCount(2));
+
 		setTimeout(() => {
 			remove(tempArr);
 		}, 0);
@@ -151,6 +155,7 @@ export const RouteForm = () => {
 
 	useEffect(() => {
 		setSearchData(currentInputValue);
+		dispatch(setAddress(currentInputValue));
 	}, [debounced]);
 
 	useEffect(() => {
@@ -174,6 +179,7 @@ export const RouteForm = () => {
 	useEffect(() => {
 		if (activeMenu !== 'route') {
 			handleClearInputs();
+			dispatch(setFieldsCount(2));
 			setTimeout(() => {
 				dispatch(setCoords([]));
 			}, 300);
@@ -227,7 +233,7 @@ export const RouteForm = () => {
 							fields={fields}
 							field={field}
 							handleSelectPoint={() => handleSelectPoint(getPointId(index))}
-							handleFocus={handleFocus}
+							handleFocus={() => handleFocus(index)}
 							handleBlur={handleBlur}
 						/>
 						{data?.results && dropdownOpen ? (

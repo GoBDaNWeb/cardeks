@@ -1,10 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { getPointId } from '@/shared/lib';
-
 import { setAddress, setCoords, setSelectAddress } from '../../model';
-import { containsArray, createPlacemark, getImage, getPointInfo, swapItems } from '../helpers';
+import {
+	changePointImage,
+	containsArray,
+	createPlacemark,
+	getImage,
+	getPointInfo,
+	swapItems
+} from '../helpers';
 
 export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) => {
 	const [searchPoint, setSearchPoint] = useState(null);
@@ -38,19 +43,11 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) =>
 	};
 
 	const handleSelectCoords = e => {
-		dispatch(setSelectAddress(false));
 		const coords = e.get('coords');
 		getAddress(coords);
-	};
-
-	const changePointImage = (point, index, newImageUrl) => {
-		point.properties.set('id', getPointId(index));
-		point.properties.set('balloonContent', `index:  ${index}`);
-		point.options.set({
-			iconImageHref: newImageUrl,
-			iconImageSize: [30, 34],
-			iconImageOffset: [-16, -38]
-		});
+		setTimeout(() => {
+			dispatch(setSelectAddress(false));
+		}, 300);
 	};
 
 	const addPoint = coords => {
@@ -70,7 +67,7 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) =>
 			existingMarker.geometry.setCoordinates(coords);
 		} else {
 			const pointIndex = pointId.split('.')[1];
-			var myPlacemark = createPlacemark({ ymaps, coords, pointId, pointIndex });
+			let myPlacemark = createPlacemark({ ymaps, coords, pointId, pointIndex });
 
 			dispatch(setCoords([...routeCoords, coords]));
 
@@ -83,7 +80,7 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) =>
 		if (e) {
 			const coords = e.get('coords');
 			addPoint(coords);
-		} else {
+		} else if (selectedAddress && !isSelectAddress && !buildSearch) {
 			ymaps.geocode(selectedAddress).then(res => {
 				const firstGeoObject = res.geoObjects.get(0);
 				const coords = firstGeoObject.geometry.getCoordinates();
@@ -111,18 +108,18 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) =>
 			map.geoObjects.remove(deletedPoint);
 			setPointCollection(filteredPointCollection);
 		} else {
-			const sortedPoints = pointCollection.sort(
-				(a, b) => getPointInfo(a, 'index') - getPointInfo(b, 'index')
-			);
+			// const sortedPoints = pointCollection.sort(
+			// 	(a, b) => getPointInfo(a, 'index') - getPointInfo(b, 'index')
+			// );
 
-			for (let i = 0; i < sortedPoints.length; i++) {
-				sortedPoints[i].properties.set('id', getPointId(i));
-			}
+			// for (let i = 0; i < sortedPoints.length; i++) {
+			// 	sortedPoints[i].properties.set('id', getPointId(i));
+			// }
 
-			sortedPoints.forEach((point, index) => {
+			pointCollection.forEach((point, index) => {
 				changePointImage(point, index, getImage(index));
 			});
-			setPointCollection(sortedPoints);
+			setPointCollection(pointCollection);
 		}
 	};
 
@@ -139,12 +136,18 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) =>
 		currentPointIdRef.current = currentPointId;
 	}, [currentPointId]);
 
+	// добавляем метку при выборе с помощью dropdown
 	useEffect(() => {
 		if (buildSearch) {
 			handleAddPoint();
 		}
 	}, [buildSearch]);
 
+	useEffect(() => {
+		handleAddPoint();
+	}, [selectedAddress]);
+
+	// добавляем метку и переносимся на нее при выборе в поиске
 	useEffect(() => {
 		if (map) {
 			if (search) {
@@ -154,9 +157,9 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) =>
 						results: 1
 					})
 					.then(function (res) {
-						var firstGeoObject = res.geoObjects.get(0);
-						var coords = firstGeoObject.geometry.getCoordinates();
-						var myPlacemark = new ymaps.Placemark(coords, {
+						let firstGeoObject = res.geoObjects.get(0);
+						let coords = firstGeoObject.geometry.getCoordinates();
+						let myPlacemark = new ymaps.Placemark(coords, {
 							hintContent: searchValue,
 							balloonContent: searchValue
 						});

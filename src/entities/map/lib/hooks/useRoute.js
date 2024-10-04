@@ -69,8 +69,8 @@ export const useRoute = ({ ymaps, map, setPointCollection }) => {
 									results: 1
 								})
 								.then(function (res) {
-									var firstGeoObject = res.geoObjects.get(0);
-									var coords = firstGeoObject.geometry.getCoordinates();
+									let firstGeoObject = res.geoObjects.get(0);
+									let coords = firstGeoObject.geometry.getCoordinates();
 									const myPlacemark = createPlacemark({ ymaps, coords, index });
 									setRouteCoordsState(prevCoords => [...prevCoords, coords]);
 									map.geoObjects.add(myPlacemark);
