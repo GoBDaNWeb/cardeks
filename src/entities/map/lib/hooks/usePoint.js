@@ -207,20 +207,22 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) =>
 		}
 	}, [swapPoints]);
 
-	// useEffect(() => {
-	// 	if (map && getLocation) {
-	// 		var location = ymaps.geolocation.get();
-	// 		location.then(
-	// 			function (result) {
-	// 				// Добавление местоположения на карту.
-	// 				map.geoObjects.add(result.geoObjects);
-	// 			},
-	// 			function (err) {
-	// 				console.log('Ошибка: ' + err);
-	// 			}
-	// 		);
-	// 	}
-	// }, [getLocation]);
+	// поулчаем местоположение пользователя и ставим метку
+	useEffect(() => {
+		if (map && getLocation) {
+			var location = ymaps.geolocation.get();
+			location.then(
+				function (result) {
+					// Добавление местоположения на карту.
+					map.geoObjects.add(result.geoObjects);
+					map.setCenter(result.geoObjects.position, 15);
+				},
+				function (err) {
+					console.log('Ошибка: ' + err);
+				}
+			);
+		}
+	}, [getLocation]);
 
 	// удаление точки маршрута с карты
 	useEffect(() => {
