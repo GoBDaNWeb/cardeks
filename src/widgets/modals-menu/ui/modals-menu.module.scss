@@ -1,0 +1,64 @@
+@import '@/shared/styles/variables';
+
+.modalsMenu.active {
+	.modalsMenuContent {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+.modalsMenu {
+	position: absolute;
+	bottom: 24px;
+	right: 24px;
+	display: flex;
+	flex-direction: row-reverse;
+	gap: 8px;
+	@media (max-width: $desktop-sm) {
+		right: 16px;
+		bottom: 16px;
+	}
+	button {
+		background: var(--white-color);
+		box-shadow: var(--shadow);
+		border-radius: var(--radius-s);
+		width: 40px;
+		height: 40px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		@media (max-width: $tab) {
+			width: 36px;
+			height: 36px;
+		}
+		svg {
+			@media (max-width: $tab) {
+				width: 16px;
+				height: 16px;
+			}
+		}
+	}
+	.menuBtn.active {
+		border-color: var(--accent-color);
+	}
+	.menuBtn {
+		display: none;
+		z-index: 2;
+		border: 1px solid rgba(0, 0, 0, 0);
+		transition: border-color var(--trs-300);
+		@media (max-width: $tab-sm) {
+			display: flex;
+		}
+	}
+	.modalsMenuContent {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		transition:
+			transform var(--trs-300),
+			opacity var(--trs-300);
+		@media (max-width: $tab-sm) {
+			transform: translateX(40px);
+			opacity: 0;
+		}
+	}
+}

@@ -4,9 +4,6 @@ import clsx from 'clsx';
 
 import { setOpenFilters } from '@/widgets/filters';
 
-// import { AZSFilters } from '@/features/azs-filters';
-// import { TireFilters } from '@/features/tire-filters';
-// import { WashFilters } from '@/features/wash-filters';
 import { ArrowTopIcon, Button, Chip, CloseIcon, Input } from '@/shared/ui';
 
 import { fuelList } from '../config';

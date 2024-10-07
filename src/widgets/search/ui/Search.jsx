@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import clsx from 'clsx';
+
 import { setActiveMenu } from '@/widgets/menu-list';
 
 import {
@@ -28,6 +30,7 @@ export const Search = () => {
 	const debounced = useDebounce(inputValue);
 	const { activeMenu } = useSelector(store => store.menu);
 	const { data } = useGetAddressesQuery(searchData);
+	const { activeMenu: mobileActiveMenu } = useSelector(store => store.mobileMenu);
 
 	const handleFocus = () => {
 		setTimeout(() => {
@@ -81,8 +84,10 @@ export const Search = () => {
 		setSearchData(inputValue);
 	}, [debounced]);
 
+	const searchClass = clsx(s.searchWrapper, { [s.active]: mobileActiveMenu === 'search' });
+
 	return (
-		<div className={s.searchWrapper}>
+		<div className={searchClass}>
 			<SearchInput
 				onChange={handleChangeInputValue}
 				value={inputValue}

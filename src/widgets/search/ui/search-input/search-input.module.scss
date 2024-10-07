@@ -20,6 +20,10 @@
 		padding: 10px 16px;
 		height: 36px;
 	}
+	@media (max-width: $tab-sm) {
+		border-radius: 0 0 var(--radius-s) var(--radius-s);
+		box-shadow: var(--shadow-bottom);
+	}
 	input {
 		width: 100%;
 	}

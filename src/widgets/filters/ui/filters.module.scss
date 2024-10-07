@@ -40,6 +40,14 @@
 		top: 96px;
 		max-width: 360px;
 	}
+	@media (max-width: $tab-sm) {
+		top: 49px;
+		border-radius: 0 0 var(--radius-s) var(--radius-s);
+		right: 0;
+		left: 0;
+		max-width: 100%;
+		box-shadow: var(--shadow-bottom);
+	}
 	.filtersTop {
 		display: flex;
 		align-items: center;
@@ -47,6 +55,9 @@
 		padding: 11px 20px 14px;
 		@media (max-width: $tab) {
 			padding: 11px 16px 10px;
+		}
+		@media (max-width: $tab-sm) {
+			padding: 0 16px 10px;
 		}
 		.title {
 			display: flex;
@@ -60,6 +71,9 @@
 				padding-right: 14px;
 				@media (max-width: $tab) {
 					padding-right: 12px;
+				}
+				@media (max-width: $tab-sm) {
+					display: none;
 				}
 				&:after {
 					content: '';
@@ -87,6 +101,9 @@
 				@media (max-width: $tab) {
 					@include text-sm;
 				}
+				@media (max-width: $tab-sm) {
+					margin-left: 0;
+				}
 			}
 		}
 		.total {
@@ -101,6 +118,11 @@
 		@media (max-width: $tab) {
 			padding: 0px 4px 4px;
 			gap: 4px;
+		}
+		@media (max-width: $tab-sm) {
+			gap: 0;
+			padding: 0;
+			padding-bottom: 10px;
 		}
 	}
 }

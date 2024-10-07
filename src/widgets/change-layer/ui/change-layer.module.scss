@@ -23,6 +23,9 @@
 	@media (max-width: $tab) {
 		top: 57px;
 	}
+	@media (max-width: $tab-sm) {
+		display: none;
+	}
 	.changeLayer {
 		background: var(--white-color);
 		box-shadow: var(--shadow);

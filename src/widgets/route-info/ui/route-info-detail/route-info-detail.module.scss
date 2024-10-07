@@ -1,12 +1,17 @@
 @import '@/shared/styles/mixins';
+@import '@/shared/styles/variables';
 
 .routeInfoDetail {
 	.title {
 		@include text-lm;
+		@media (max-width: $tab) {
+			@include text-sm;
+		}
 	}
 	.routeInfoTop {
 		display: flex;
 		justify-content: space-between;
+		position: relative;
 		.btnsWrapper {
 			display: flex;
 			align-items: center;
@@ -15,11 +20,20 @@
 				display: flex;
 				align-items: center;
 				gap: 16px;
+				@media (max-width: $tab) {
+					position: absolute;
+					bottom: -16px;
+					left: 0;
+				}
 				button {
 					svg {
 						rect,
 						path {
 							transition: var(--trs-300);
+						}
+						@media (max-width: $tab) {
+							width: 16px;
+							height: 16px;
 						}
 					}
 					&:nth-child(1) {
@@ -70,6 +84,9 @@
 		margin-top: 16px;
 		padding-top: 16px;
 		border-top: 1px solid var(--line-color);
+		@media (max-width: $tab) {
+			margin-top: 30px;
+		}
 		.routeList {
 			display: flex;
 			flex-direction: column;

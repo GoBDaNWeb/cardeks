@@ -37,6 +37,13 @@
 		display: flex;
 		align-items: center;
 		gap: 14px;
+		button.active {
+			svg {
+				path {
+					fill: var(--accent-color);
+				}
+			}
+		}
 		button {
 			position: relative;
 			padding-left: 14px;

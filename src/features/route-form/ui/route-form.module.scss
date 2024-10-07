@@ -14,6 +14,9 @@
 		padding-right: 8px;
 		margin-right: 8px;
 	}
+	@media (max-width: $tab-sm) {
+		max-height: calc(66vh - 180px);
+	}
 	.routeInputs {
 		display: flex;
 		flex-direction: column;

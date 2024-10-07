@@ -39,6 +39,19 @@
 		align-items: flex-start;
 		padding: 10px 15px;
 	}
+	@media (max-width: $tab-sm) {
+		flex-direction: row-reverse;
+		align-items: flex-start;
+		padding: 0 15px;
+		border: none;
+		gap: 8px;
+		min-width: fit-content;
+		border-right: 1px solid var(--line-color);
+		border-radius: 0px;
+		&:last-child {
+			border-right: none;
+		}
+	}
 	&:hover {
 		background: var(--tertiary-color);
 		border-color: var(--accent-color);
@@ -75,6 +88,9 @@
 			@media (max-width: $tab) {
 				@include text-sm;
 			}
+			@media (max-width: $tab-sm) {
+				white-space: nowrap;
+			}
 		}
 		.count {
 			@include text-s;
@@ -90,6 +106,10 @@
 	}
 	.icon {
 		svg {
+			@media (max-width: $tab) {
+				width: 16px;
+				height: 16px;
+			}
 			path {
 				transition: var(--trs-300);
 			}

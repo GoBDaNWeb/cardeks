@@ -22,6 +22,7 @@ export const Filters = () => {
 	const { activeMenu } = useSelector(state => state.menu);
 	const { filterActive } = useSelector(store => store.routeForm);
 	const { filtersIsOpen } = useSelector(store => store.filters);
+	const { activeMenu: mobileActiveMenu } = useSelector(store => store.mobileMenu);
 
 	const {
 		routeInfo: { routeIsBuilded }
@@ -47,7 +48,7 @@ export const Filters = () => {
 	const filtersClass = clsx(s.filters, {
 		[s.left]: activeMenu === 'route',
 		[s.routeFilterActive]: filterActive || filtersIsOpen,
-		[s.hide]: routeIsBuilded && activeMenu === 'route'
+		[s.hide]: (routeIsBuilded && activeMenu === 'route') || mobileActiveMenu !== null
 	});
 
 	return (

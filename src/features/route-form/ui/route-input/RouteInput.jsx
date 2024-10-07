@@ -1,3 +1,5 @@
+import clsx from 'clsx';
+
 import { Button, CloseIcon, Input, SearchIcon } from '@/shared/ui';
 
 import s from './route-input.module.scss';
@@ -11,8 +13,10 @@ export const RouteInput = ({
 	handleSelectPoint,
 	onChange,
 	handleFocus,
-	handleBlur
+	handleBlur,
+	isSelect
 }) => {
+	const searchBtnClass = clsx({ [s.active]: isSelect });
 	return (
 		<div className={s.routeInput}>
 			<p className={s.letter}>{letter}</p>
@@ -31,7 +35,7 @@ export const RouteInput = ({
 					</Button>
 				) : null}
 
-				<Button onClick={handleSelectPoint}>
+				<Button onClick={handleSelectPoint} className={searchBtnClass}>
 					<SearchIcon />
 				</Button>
 			</div>

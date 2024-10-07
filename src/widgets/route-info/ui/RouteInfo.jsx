@@ -17,6 +17,7 @@ export const RouteInfo = () => {
 	const dispatch = useDispatch();
 
 	const { activeMenu } = useSelector(store => store.menu);
+	const { activeMenu: mobileActiveMenu } = useSelector(store => store.mobileMenu);
 	const {
 		routeInfo: { routeIsBuilded }
 	} = useSelector(state => state.map);
@@ -34,8 +35,9 @@ export const RouteInfo = () => {
 	}, [routeIsBuilded]);
 
 	const routeInfoClass = clsx(s.routeInfo, {
-		[s.ready]: activeMenu === 'route',
-		[s.active]: routeIsBuilded && activeMenu === 'route'
+		[s.ready]: activeMenu === 'route' || mobileActiveMenu === 'route',
+		[s.active]:
+			(routeIsBuilded && activeMenu === 'route') || (routeIsBuilded && mobileActiveMenu === 'route')
 	});
 
 	return (

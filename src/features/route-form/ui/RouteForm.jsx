@@ -43,6 +43,7 @@ export const RouteForm = () => {
 		routeInfo: { selectedAddress, currentPointId, changeRoute }
 	} = useSelector(store => store.map);
 	const { activeMenu } = useSelector(store => store.menu);
+	const { activeMenu: mobileActiveMenu } = useSelector(store => store.mobileMenu);
 	const { isSuccess } = useSelector(state => state.newRouteModal);
 
 	const { control, register, setValue, getValues, watch } = useForm({
@@ -66,19 +67,6 @@ export const RouteForm = () => {
 	};
 
 	const removeQuestion = index => {
-		// if (getInputValue(index).length > 0) {
-		// 	setValue(getPointId(index), '');
-		// 	dispatch(setDeletePointId(getPointId(index)));
-		// 	setTimeout(() => {
-		// 		dispatch(setDeletePointId(null));
-		// 	}, 100);
-		// } else {
-		// 	remove(index);
-		// 	dispatch(setDeletePointId(getPointId(index)));
-		// 	setTimeout(() => {
-		// 		dispatch(setDeletePointId(null));
-		// 	}, 100);
-		// }
 		remove(index);
 		dispatch(setDeletePointId(getPointId(index)));
 		setTimeout(() => {
@@ -177,14 +165,14 @@ export const RouteForm = () => {
 	}, []);
 
 	useEffect(() => {
-		if (activeMenu !== 'route') {
+		if (activeMenu !== 'route' || mobileActiveMenu !== 'route') {
 			handleClearInputs();
 			dispatch(setFieldsCount(2));
 			setTimeout(() => {
 				dispatch(setCoords([]));
 			}, 300);
 		}
-	}, [activeMenu]);
+	}, [activeMenu, mobileActiveMenu]);
 
 	useEffect(() => {
 		if (isSuccess) {
@@ -235,6 +223,7 @@ export const RouteForm = () => {
 							handleSelectPoint={() => handleSelectPoint(getPointId(index))}
 							handleFocus={() => handleFocus(index)}
 							handleBlur={handleBlur}
+							isSelect={false}
 						/>
 						{data?.results && dropdownOpen ? (
 							<SearchDropdown

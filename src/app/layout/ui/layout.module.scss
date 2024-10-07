@@ -1,47 +1,4 @@
 @import '@/shared/styles/variables';
 
 .layout {
-	position: relative;
-
-	.reviewModalBtn,
-	.guideModalBtn {
-		position: absolute;
-		bottom: 24px;
-		background: var(--white-color);
-		box-shadow: var(--shadow);
-		border-radius: var(--radius-s);
-		width: 40px;
-		height: 40px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		@media (max-width: $desktop-sm) {
-			bottom: 16px;
-		}
-		@media (max-width: $tab) {
-			width: 36px;
-			height: 36px;
-		}
-		svg {
-			@media (max-width: $tab) {
-				width: 16px;
-				height: 16px;
-			}
-		}
-	}
-	.reviewModalBtn {
-		right: 24px;
-		@media (max-width: $desktop-sm) {
-			right: 16px;
-		}
-	}
-	.guideModalBtn {
-		right: 72px;
-		@media (max-width: $desktop-sm) {
-			right: 64px;
-		}
-		@media (max-width: $tab) {
-			right: 56px;
-		}
-	}
 }

@@ -1,5 +1,6 @@
 import { filtersReducer } from '@/widgets/filters';
 import { menuReducer } from '@/widgets/menu-list';
+import { settingsMapMenuReducer } from '@/widgets/settings-map-menu';
 
 import { downloadModalReducer } from '@/features/download-modal';
 import { mailModalReducer } from '@/features/mail-modal';
@@ -8,6 +9,7 @@ import { routeFormReducer } from '@/features/route-form';
 
 import { guideModalSlice } from '@/entities/guide-modal';
 import { mapReducer } from '@/entities/map';
+import { mobileMenuReducer } from '@/entities/mobile-menu';
 import { newRouteModalReducer } from '@/entities/new-route-modal';
 
 import { cardeksAPI } from '@/shared/api';
@@ -24,6 +26,8 @@ const mainReducer = combineReducers({
 	filters: filtersReducer,
 	downloadModal: downloadModalReducer,
 	mailModal: mailModalReducer,
+	mobileMenu: mobileMenuReducer,
+	settingsMapMenu: settingsMapMenuReducer,
 	[cardeksAPI.reducerPath]: cardeksAPI.reducer
 });
 

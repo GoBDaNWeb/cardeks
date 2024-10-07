@@ -1,4 +1,5 @@
 @import '@/shared/styles/mixins';
+@import '@/shared/styles/variables';
 
 .routeInfo.active {
 	opacity: 1;
@@ -29,5 +30,28 @@
 	scrollbar-color: var(--accent-color) #ffffff;
 	&::-webkit-scrollbar {
 		width: 5px;
+	}
+	@media (max-width: $desktop-sm) {
+		right: 16px;
+		width: 550px;
+		top: 72px;
+		max-height: calc(100vh - 92px);
+	}
+	@media (max-width: $tab) {
+		right: 16px;
+		width: 360px;
+		top: 96px;
+		padding: 16px;
+	}
+	@media (max-width: $tab-sm) {
+		max-height: calc(63vh - 92px);
+
+		width: 100%;
+		left: 0;
+		right: 0;
+		top: 49px;
+		border-radius: 0 0 var(--radius-s) var(--radius-s);
+		box-shadow: var(--shadow-bottom);
+		padding: 16px;
 	}
 }

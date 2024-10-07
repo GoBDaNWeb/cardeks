@@ -2,10 +2,12 @@
 @import '@/shared/styles/variables';
 
 .routeBuild.hide {
-	opacity: 0;
+	opacity: 0 !important;
 }
 .routeBuild.active {
 	transform: translateX(0);
+	opacity: 1;
+	pointer-events: all;
 }
 .routeBuild {
 	z-index: 2;
@@ -22,7 +24,7 @@
 		transform var(--trs-300),
 		opacity var(--trs-300);
 	padding: 20px 0 24px 20px;
-
+	opacity: 0;
 	@media (max-width: $desktop-sm) {
 		right: 16px;
 		width: 550px;
@@ -34,6 +36,17 @@
 		width: 360px;
 		top: 96px;
 		padding: 16px 0 16px 16px;
+	}
+	@media (max-width: $tab-sm) {
+		top: 49px;
+		width: 100%;
+		left: 0;
+		right: 0;
+		box-shadow: var(--shadow-bottom);
+		border-radius: 0 0 var(--radius-s) var(--radius-s);
+		transform: translateX(0);
+		max-height: calc(64vh - 92px);
+		pointer-events: none;
 	}
 	.routeBuildTop {
 		display: flex;

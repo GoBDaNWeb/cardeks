@@ -1,0 +1,40 @@
+@import '@/shared/styles/variables';
+
+.mobileMenu {
+	background: var(--white-color);
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	padding: 10px 16px;
+	display: none;
+	@media (max-width: $tab-sm) {
+		display: block;
+	}
+	.menuBtns {
+		display: grid;
+		grid-template-columns: 0.5fr 1fr 1fr 0.5fr;
+		padding-bottom: 10px;
+
+		border-bottom: 1px solid var(--line-color);
+		button {
+			border-right: 1px solid var(--line-color);
+			&:last-child {
+				border-right: none;
+				display: flex;
+				justify-content: flex-end;
+			}
+			&:first-child {
+				display: flex;
+				justify-content: flex-start;
+			}
+			svg {
+				width: 16px;
+				height: 16px;
+				path {
+					fill: var(--primary-color);
+				}
+			}
+		}
+	}
+}

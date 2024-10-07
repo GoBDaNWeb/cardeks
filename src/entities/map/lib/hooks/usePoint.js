@@ -29,7 +29,8 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) =>
 			fieldsCount
 		}
 	} = useSelector(state => state.map);
-
+	const { getLocation } = useSelector(store => store.settingsMapMenu);
+	const { activeMenu: mobileActiveMenu } = useSelector(store => store.mobileMenu);
 	const { activeMenu } = useSelector(state => state.menu);
 	const { isSuccess } = useSelector(state => state.newRouteModal);
 
@@ -108,14 +109,6 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) =>
 			map.geoObjects.remove(deletedPoint);
 			setPointCollection(filteredPointCollection);
 		} else {
-			// const sortedPoints = pointCollection.sort(
-			// 	(a, b) => getPointInfo(a, 'index') - getPointInfo(b, 'index')
-			// );
-
-			// for (let i = 0; i < sortedPoints.length; i++) {
-			// 	sortedPoints[i].properties.set('id', getPointId(i));
-			// }
-
 			pointCollection.forEach((point, index) => {
 				changePointImage(point, index, getImage(index));
 			});
@@ -214,6 +207,21 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) =>
 		}
 	}, [swapPoints]);
 
+	// useEffect(() => {
+	// 	if (map && getLocation) {
+	// 		var location = ymaps.geolocation.get();
+	// 		location.then(
+	// 			function (result) {
+	// 				// Добавление местоположения на карту.
+	// 				map.geoObjects.add(result.geoObjects);
+	// 			},
+	// 			function (err) {
+	// 				console.log('Ошибка: ' + err);
+	// 			}
+	// 		);
+	// 	}
+	// }, [getLocation]);
+
 	// удаление точки маршрута с карты
 	useEffect(() => {
 		if (deletePointId) {
@@ -242,10 +250,10 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) =>
 
 	// удаление точек маршрута при закрытии окна построения маршрута
 	useEffect(() => {
-		if (activeMenu !== 'route') {
+		if (activeMenu !== 'route' || mobileActiveMenu !== 'route') {
 			handleClearPoints();
 		}
-	}, [activeMenu]);
+	}, [activeMenu, mobileActiveMenu]);
 
 	// удаление точек при выборе нового маршрута
 	useEffect(() => {

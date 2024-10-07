@@ -29,7 +29,7 @@ export const NewRouteModal = () => {
 
 	return (
 		<Modal isOpen={isOpen} className={s.newRouteModal} close={handleCloseModal}>
-			<div className={s.modalContent}>
+			<div className={s.modalContent} onClick={e => e.stopPropagation()}>
 				<Button className={s.closeBtn}>
 					<CloseIcon />
 				</Button>

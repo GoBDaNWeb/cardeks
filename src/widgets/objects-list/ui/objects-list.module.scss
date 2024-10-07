@@ -3,8 +3,11 @@
 
 .objectsList.active {
 	transform: translateX(0);
+	opacity: 1;
+	pointer-events: all;
 }
 .objectsList {
+	pointer-events: none;
 	background: var(--white-color);
 	border-radius: var(--radius-s);
 	box-shadow: var(--shadow);
@@ -14,10 +17,13 @@
 	top: 213px;
 	right: 24px;
 	transform: translateX(680px);
-	transition: transform var(--trs-300);
+	transition:
+		transform var(--trs-300),
+		opacity var(--trs-300);
 	padding: 20px 0 24px 20px;
 	bottom: 24px;
 	z-index: 3;
+	opacity: 0;
 	@media (max-width: $desktop-sm) {
 		right: 16px;
 		width: 550px;
@@ -30,6 +36,16 @@
 		width: 360px;
 		top: 243px;
 		padding: 16px 0 16px 16px;
+	}
+	@media (max-width: $tab-sm) {
+		top: 49px;
+		width: 100%;
+		right: 0;
+		left: 0;
+		border-radius: 0 0 var(--radius-s) var(--radius-s);
+		box-shadow: var(--shadow-bottom);
+		max-height: calc(80vh - 221px);
+		transform: translateX(0);
 	}
 	.objectListTop {
 		display: flex;
@@ -90,6 +106,9 @@
 		margin-right: 12px;
 		&::-webkit-scrollbar {
 			width: 5px;
+		}
+		@media (max-width: $tab-sm) {
+			max-height: calc(97% - 37px);
 		}
 	}
 }

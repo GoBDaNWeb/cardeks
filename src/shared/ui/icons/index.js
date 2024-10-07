@@ -22,3 +22,6 @@ export { DocumentIcon } from './DocumentIcon';
 export { ChatIcon } from './ChatIcon';
 export { PinIcon } from './PinIcon';
 export { ArrowTopIcon } from './ArrowTopIcon';
+export { SettingsIcon } from './SettingsIcon';
+export { LocationIcon } from './LocationIcon';
+export { MenuIcon } from './MenuIcon';

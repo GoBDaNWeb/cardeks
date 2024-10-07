@@ -1,5 +1,5 @@
 @import '@/shared/styles/mixins';
-
+@import '@/shared/styles/variables';
 .downloadModal {
 	.modalContent {
 		background: var(--white-color);
@@ -9,6 +9,10 @@
 		box-shadow: var(--shadow);
 		padding: 24px 32px;
 		position: relative;
+		@media (max-width: $tab) {
+			padding: 16px;
+			margin: 0 16px;
+		}
 		.closeBtn {
 			position: absolute;
 			top: 14px;
@@ -47,6 +51,9 @@
 					p {
 						@include text-sm;
 						color: var(--secondary-color);
+						@media (max-width: $tab) {
+							@include text-s;
+						}
 					}
 				}
 			}

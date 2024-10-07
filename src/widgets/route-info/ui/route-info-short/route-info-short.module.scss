@@ -3,14 +3,23 @@
 .routeInfoShort {
 	.title {
 		@include text-lm;
+		@media (max-width: $tab) {
+			@include text-sm;
+		}
 	}
 	.routeInfoTop {
 		padding-right: 25px;
+		@media (max-width: $tab) {
+			padding-right: 40px;
+		}
 		.btns {
 			display: flex;
 			align-items: center;
 			gap: 16px;
 			margin-top: 16px;
+			@media (max-width: $tab) {
+				margin-top: 12px;
+			}
 			button {
 				@include text-sm;
 				color: var(--secondary-color);
@@ -30,6 +39,10 @@
 		margin-top: 16px;
 		padding-top: 16px;
 		border-top: 1px solid var(--line-color);
+		@media (max-width: $tab) {
+			margin-top: 12px;
+			padding-top: 12px;
+		}
 		.routeInfoList {
 			display: flex;
 			align-items: center;
@@ -68,6 +81,10 @@
 						rect,
 						path {
 							transition: var(--trs-300);
+						}
+						@media (max-width: $tab) {
+							width: 16px;
+							height: 16px;
 						}
 					}
 					&:nth-child(1) {

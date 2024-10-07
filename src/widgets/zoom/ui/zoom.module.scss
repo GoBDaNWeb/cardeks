@@ -1,5 +1,8 @@
 @import '@/shared/styles/variables';
 
+.zoom.active {
+	transform: translateX(0);
+}
 .zoom {
 	position: absolute;
 	z-index: 2;
@@ -10,5 +13,11 @@
 	@media (max-width: $desktop-sm) {
 		bottom: 16px;
 		left: 16px;
+	}
+	@media (max-width: $tab-sm) {
+		// display: none;
+		transition: transform var(--trs-300);
+		transform: translateX(-100px);
+		bottom: 58px;
 	}
 }

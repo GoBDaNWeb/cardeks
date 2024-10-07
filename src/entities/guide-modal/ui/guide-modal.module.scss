@@ -1,5 +1,5 @@
 @import '@/shared/styles/mixins';
-
+@import '@/shared/styles/variables';
 .guideModal {
 	.modalContent {
 		background: var(--white-color);
@@ -9,6 +9,10 @@
 		padding: 24px 32px;
 		position: relative;
 		width: 100%;
+		@media (max-width: $tab) {
+			padding: 16px;
+			margin: 0 16px;
+		}
 		.closeBtn {
 			position: absolute;
 			top: 14px;
@@ -18,6 +22,9 @@
 			p {
 				margin-top: 16px;
 				@include text-m;
+				@media (max-width: $tab) {
+					@include text-s;
+				}
 				svg {
 					width: 16px;
 					height: 16px;

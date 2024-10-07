@@ -18,6 +18,9 @@
 		align-items: center;
 		transition: var(--trs-300);
 		@include text-m;
+		@media (max-width: $tab) {
+			@include text-s;
+		}
 		&:hover {
 			color: var(--accent-color);
 		}

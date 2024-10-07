@@ -20,6 +20,9 @@
 		padding-right: 8px;
 		margin-right: 8px;
 	}
+	@media (max-width: $tab-sm) {
+		max-height: calc(85vh - 344px);
+	}
 	.filterRow {
 		display: flex;
 		flex-direction: column;

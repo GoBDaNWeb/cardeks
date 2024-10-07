@@ -1,0 +1,40 @@
+@import '@/shared/styles/variables';
+
+.settingsMap {
+	position: absolute;
+	bottom: 16px;
+	left: 16px;
+	display: none;
+	align-items: center;
+	gap: 8px;
+	@media (max-width: $tab-sm) {
+		display: flex;
+	}
+	button {
+		background: var(--white-color);
+		box-shadow: var(--shadow);
+		border-radius: var(--radius-s);
+		width: 40px;
+		height: 40px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		@media (max-width: $tab) {
+			width: 36px;
+			height: 36px;
+		}
+		svg {
+			@media (max-width: $tab) {
+				width: 16px;
+				height: 16px;
+			}
+		}
+	}
+	.settingBtn.active {
+		border-color: var(--accent-color);
+	}
+	.settingBtn {
+		border: 1px solid rgba(0, 0, 0, 0);
+		transition: border-color var(--trs-300);
+	}
+}

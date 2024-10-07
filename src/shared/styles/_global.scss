@@ -11,6 +11,9 @@
 	@media (max-width: $tab) {
 		inset: 57px auto auto 60px !important;
 	}
+	@media (max-width: $tab-sm) {
+		display: none;
+	}
 }
 .ymaps-2-1-79-gotoymaps,
 // .ymaps-2-1-79-copyright,

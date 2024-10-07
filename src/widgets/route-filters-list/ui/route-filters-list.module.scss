@@ -12,6 +12,10 @@
 	@media (max-width: $tab) {
 		transform: translateX(-366px) !important;
 	}
+	@media (max-width: $tab-sm) {
+		transform: translateX(0) !important;
+		box-shadow: var(--shadow-bottom);
+	}
 }
 .routeFilters.ready {
 	transform: translateX(0);
@@ -27,7 +31,7 @@
 	right: 24px;
 	max-height: calc(100vh - 105px);
 	top: 222px;
-	z-index: 3;
+	z-index: 4;
 	transform: translateX(680px);
 	transition:
 		transform var(--trs-300),
@@ -49,6 +53,16 @@
 		top: 245px;
 		max-width: 360px;
 		padding: 16px 0 16px 16px;
+	}
+	@media (max-width: $tab-sm) {
+		top: 49px;
+		max-width: 100%;
+		width: 100%;
+		right: 0;
+		left: 0;
+		transform: translateX(0);
+		border-radius: 0 0 var(--radius-s) var(--radius-s);
+		pointer-events: none;
 	}
 	.routeFiltersTop {
 		display: flex;

@@ -8,6 +8,7 @@ import { RouteForm } from '@/features/route-form';
 import { setFilterActive } from '@/features/route-form';
 
 import { setBuildRoute, setChangeRoute, setRouteBuilded } from '@/entities/map';
+import { setActiveMenu } from '@/entities/mobile-menu';
 
 import { Button, CloseIcon } from '@/shared/ui';
 
@@ -15,6 +16,8 @@ import s from './route-build.module.scss';
 
 export const RouteBuild = () => {
 	const { activeMenu } = useSelector(store => store.menu);
+	const { activeMenu: mobileActiveMenu } = useSelector(store => store.mobileMenu);
+
 	const {
 		routeInfo: { routeIsBuilded }
 	} = useSelector(state => state.map);
@@ -27,10 +30,11 @@ export const RouteBuild = () => {
 		dispatch(setChangeRoute(false));
 		dispatch(clearActiveMenu());
 		dispatch(setFilterActive(false));
+		dispatch(setActiveMenu(null));
 	};
 
 	const routeBuildClass = clsx(s.routeBuild, {
-		[s.active]: activeMenu === 'route',
+		[s.active]: activeMenu === 'route' || mobileActiveMenu === 'route',
 		[s.hide]: routeIsBuilded
 	});
 
