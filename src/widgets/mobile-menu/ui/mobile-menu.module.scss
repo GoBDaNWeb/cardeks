@@ -17,6 +17,17 @@
 		padding-bottom: 10px;
 
 		border-bottom: 1px solid var(--line-color);
+		button.active {
+			svg {
+				path {
+					fill: var(--accent-color);
+					stroke: var(--accent-color);
+				}
+				circle {
+					fill: var(--accent-color);
+				}
+			}
+		}
 		button {
 			border-right: 1px solid var(--line-color);
 			&:last-child {
@@ -33,6 +44,11 @@
 				height: 16px;
 				path {
 					fill: var(--primary-color);
+					transition: var(--trs-300);
+				}
+
+				circle {
+					transition: var(--trs-300);
 				}
 			}
 		}

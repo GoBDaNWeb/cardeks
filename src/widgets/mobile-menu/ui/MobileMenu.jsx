@@ -8,6 +8,25 @@ import { Button, FilterIcon, ListIcon, RouteIcon, SearchIcon } from '@/shared/ui
 
 import s from './mobile-menu.module.scss';
 
+const menuList = [
+	{
+		icon: <SearchIcon />,
+		type: 'search'
+	},
+	{
+		icon: <FilterIcon />,
+		type: 'filters'
+	},
+	{
+		icon: <ListIcon />,
+		type: 'objects'
+	},
+	{
+		icon: <RouteIcon />,
+		type: 'route'
+	}
+];
+
 export const MobileMenu = () => {
 	const dispatch = useDispatch();
 
@@ -28,18 +47,15 @@ export const MobileMenu = () => {
 	return (
 		<div className={s.mobileMenu}>
 			<div className={s.menuBtns}>
-				<Button onClick={() => handleSetActiveMenu('search')}>
-					<SearchIcon />
-				</Button>
-				<Button onClick={() => handleSetActiveMenu('filters')}>
-					<FilterIcon />
-				</Button>
-				<Button onClick={() => handleSetActiveMenu('objects')}>
-					<ListIcon />
-				</Button>
-				<Button onClick={() => handleSetActiveMenu('route')}>
-					<RouteIcon />
-				</Button>
+				{menuList.map(item => (
+					<Button
+						key={item.type}
+						onClick={() => handleSetActiveMenu(item.type)}
+						className={item.type == activeMenu ? s.active : ''}
+					>
+						{item.icon}
+					</Button>
+				))}
 			</div>
 		</div>
 	);

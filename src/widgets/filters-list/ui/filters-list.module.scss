@@ -58,6 +58,9 @@
 }
 .filtersList.left {
 	transform: translateX(-642px);
+	@media (max-width: $desktop-sm) {
+		transform: translateX(-556px);
+	}
 }
 .filtersList {
 	width: 633px;

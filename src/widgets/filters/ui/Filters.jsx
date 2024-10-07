@@ -44,6 +44,12 @@ export const Filters = () => {
 			setActiveTab(null);
 		}
 	}, [filtersIsOpen]);
+	useEffect(() => {
+		if (mobileActiveMenu !== null) {
+			setActiveTab(null);
+			dispatch(setOpenFilters(false));
+		}
+	}, [mobileActiveMenu]);
 
 	const filtersClass = clsx(s.filters, {
 		[s.left]: activeMenu === 'route',

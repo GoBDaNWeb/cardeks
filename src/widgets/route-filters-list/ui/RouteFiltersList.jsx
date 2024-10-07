@@ -6,6 +6,8 @@ import clsx from 'clsx';
 import { RouteFilters } from '@/features/route-filters';
 import { setFilterActive } from '@/features/route-form';
 
+import { setActiveMenu } from '@/entities/mobile-menu';
+
 import { Button, CloseIcon } from '@/shared/ui';
 
 import s from './route-filters-list.module.scss';
@@ -23,6 +25,7 @@ export const RouteFiltersList = () => {
 
 	const handleCloseFilters = () => {
 		dispatch(setFilterActive(false));
+		dispatch(setActiveMenu(null));
 	};
 
 	useEffect(() => {
