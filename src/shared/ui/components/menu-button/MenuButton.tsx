@@ -6,15 +6,15 @@ import { Button } from '@/shared/ui';
 
 import s from './menu-button.module.scss';
 
-type MenuButtonType = {
+interface IMenuButton {
 	onClick: () => void;
 	icon: ReactElement;
 	text: string;
 	count?: string;
 	isActive?: boolean;
-};
+}
 
-export const MenuButton: FC<MenuButtonType> = ({ onClick, icon, text, count, isActive }) => {
+export const MenuButton: FC<IMenuButton> = ({ onClick, icon, text, count, isActive }) => {
 	const menuBtnClass = clsx(s.menuButton, { [s.active]: isActive });
 
 	return (

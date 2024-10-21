@@ -1,6 +1,6 @@
 import { getPointId } from '@/shared/lib';
 
-export const changePointImage = (point, index, newImageUrl) => {
+export const changePointImage = (point: any, index: number, newImageUrl: string) => {
 	point.properties.set('id', getPointId(index));
 	point.properties.set('balloonContent', `index:  ${index}`);
 	point.options.set({

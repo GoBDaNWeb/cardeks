@@ -1,6 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = {
+interface IFilters {
+	selectedFilter: number;
+	filtersIsOpen: boolean;
+}
+const initialState: IFilters = {
 	selectedFilter: 0,
 	filtersIsOpen: false
 };

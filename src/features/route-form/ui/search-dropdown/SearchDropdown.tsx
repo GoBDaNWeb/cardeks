@@ -4,7 +4,28 @@ import { Dropdown } from '@/shared/ui';
 
 import s from './search-dropdown.module.scss';
 
-export const SearchDropdown = ({ list, handleSelectAddress, isActive }) => {
+interface IListItem {
+	title: {
+		text: string;
+	};
+	subtitle?: {
+		text: string;
+	};
+}
+
+interface ISearchDropdownProps {
+	list: {
+		results: IListItem[];
+	};
+	handleSelectAddress: (title: string, subtitle: string) => void;
+	isActive: boolean;
+}
+
+export const SearchDropdown: React.FC<ISearchDropdownProps> = ({
+	list,
+	handleSelectAddress,
+	isActive
+}) => {
 	const dropdownClass = clsx(s.dropdown, { [s.active]: isActive });
 
 	return (

@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import clsx from 'clsx';
@@ -11,15 +11,16 @@ import { setFilterActive } from '../../model';
 
 import s from './route-settings.module.scss';
 
-type AccordionTitleType = {
+interface IAccordionTitle {
 	handleOpen: () => void;
 	isShow: boolean;
-};
+}
 
-const AccordionTitle: FC<AccordionTitleType> = ({ handleOpen, isShow }) => {
+const AccordionTitle: FC<IAccordionTitle> = ({ handleOpen, isShow }) => {
 	const dispatch = useDispatch();
 
 	const { filterActive } = useTypedSelector(store => store.routeForm);
+
 	const handleOpenFilters = () => {
 		dispatch(setFilterActive(!filterActive));
 	};
@@ -29,7 +30,7 @@ const AccordionTitle: FC<AccordionTitleType> = ({ handleOpen, isShow }) => {
 		<div className={s.accorionTitle}>
 			<div className={s.filtersBtns}>
 				<Checkbox isChecked label='Учитывать фильтры' />
-				<Button onClick={() => handleOpenFilters()} className={s.filterBtn} variant='link'>
+				<Button onClick={handleOpenFilters} className={s.filterBtn} variant='link'>
 					<FilterIcon />
 					<p>Фильтры</p>
 				</Button>
@@ -44,13 +45,9 @@ const AccordionTitle: FC<AccordionTitleType> = ({ handleOpen, isShow }) => {
 const AccordionContent = () => {
 	const [activeChip, setActiveChip] = useState<number | null>(null);
 
-	const handleSelectChip = (index: number) => {
-		if (activeChip === index) {
-			setActiveChip(null);
-		} else {
-			setActiveChip(index);
-		}
-	};
+	const handleSelectChip = useCallback((index: number) => {
+		setActiveChip(prevChip => (prevChip === index ? null : index));
+	}, []);
 
 	return (
 		<div className={s.accordionContent}>
@@ -82,15 +79,15 @@ const AccordionContent = () => {
 export const RouteSettings = () => {
 	const [isShow, setShow] = useState(false);
 
-	const handleOpenAccordion = () => {
+	const handleOpenAccordion = useCallback(() => {
 		setShow(prevShow => !prevShow);
-	};
+	}, []);
 
 	return (
 		<div className={s.routeSettings}>
 			<Accordion
 				isShow={isShow}
-				title={<AccordionTitle handleOpen={() => handleOpenAccordion()} isShow={isShow} />}
+				title={<AccordionTitle handleOpen={handleOpenAccordion} isShow={isShow} />}
 				content={<AccordionContent />}
 			/>
 		</div>

@@ -6,12 +6,12 @@ import { Button } from '@/shared/ui';
 
 import s from './chip.module.scss';
 
-type ChipType = {
+interface IChip {
 	isActive?: boolean;
 	onClick: () => void;
-};
+}
 
-export const Chip: FC<PropsWithChildren<ChipType>> = ({ children, isActive, onClick }) => {
+export const Chip: FC<PropsWithChildren<IChip>> = ({ children, isActive, onClick }) => {
 	const chipClass = clsx(s.chip, { [s.active]: isActive });
 
 	return (

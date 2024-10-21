@@ -1,6 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = {
+interface ISettings {
+	openSettings: boolean;
+	getLocation: boolean;
+}
+
+const initialState: ISettings = {
 	openSettings: false,
 	getLocation: false
 };

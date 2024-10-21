@@ -7,30 +7,26 @@ import { addChipsList, catChipsList } from '../config';
 import s from './route-filters.module.scss';
 
 export const RouteFilters = () => {
-	const [mainChipActive, setMainChipActive] = useState(false);
-	const [addChips, setAddChips] = useState([]);
-	const [catChips, setCatChips] = useState([]);
+	const [mainChipActive, setMainChipActive] = useState<boolean>(false);
+	const [addChips, setAddChips] = useState<number[]>([]);
+	const [catChips, setCatChips] = useState<number[]>([]);
 
 	const handleChangeMainChipActive = () => {
 		setMainChipActive(prevChipActive => !prevChipActive);
 	};
 
-	const handleChangeChipActive = (index: number, type: string) => {
+	const handleChangeChipActive = (index: number, type: 'add' | 'cat') => {
 		if (type === 'add') {
 			if (addChips.includes(index)) {
-				const filtered = addChips.filter(chip => {
-					return chip !== index;
-				});
-				setAddChips([...filtered]);
+				const filtered = addChips.filter(chip => chip !== index);
+				setAddChips(filtered);
 			} else {
 				setAddChips(prevChips => [...prevChips, index]);
 			}
 		} else {
 			if (catChips.includes(index)) {
-				const filtered = catChips.filter(chip => {
-					return chip !== index;
-				});
-				setCatChips([...filtered]);
+				const filtered = catChips.filter(chip => chip !== index);
+				setCatChips(filtered);
 			} else {
 				setCatChips(prevChips => [...prevChips, index]);
 			}
@@ -41,7 +37,7 @@ export const RouteFilters = () => {
 		<div className={s.routeFilters}>
 			<div className={s.filterRow}>
 				<p className={s.title}>Основное</p>
-				<Chip onClick={() => handleChangeMainChipActive()} isActive={mainChipActive}>
+				<Chip onClick={handleChangeMainChipActive} isActive={mainChipActive}>
 					Сбросить счетчик PIN-кода
 				</Chip>
 			</div>

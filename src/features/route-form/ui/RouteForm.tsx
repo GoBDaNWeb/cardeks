@@ -26,12 +26,16 @@ import { RouteInput } from './route-input';
 import { RouteSettings } from './route-settings';
 import { SearchDropdown } from './search-dropdown';
 
-export const RouteForm = () => {
-	const [searchData, setSearchData] = useState('');
-	const [isDisabled, setDisabled] = useState(true);
-	const [currentInputValue, setCurrentPointValue] = useState<string | null>('');
-	const [currentInputIndex, setCurrentPointIndex] = useState<string | null>('');
-	const [dropdownOpen, setdropdownOpen] = useState(false);
+interface IRouteFormValues {
+	points: { inputText: string }[];
+}
+
+export const RouteForm: React.FC = () => {
+	const [searchData, setSearchData] = useState<string>('');
+	const [isDisabled, setDisabled] = useState<boolean>(true);
+	const [currentInputValue, setCurrentPointValue] = useState<string>('');
+	const [currentInputIndex, setCurrentPointIndex] = useState<string>('');
+	const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
 
 	const dispatch = useDispatch();
 	const debounced = useDebounce(currentInputValue);
@@ -46,7 +50,7 @@ export const RouteForm = () => {
 	const { activeMenu: mobileActiveMenu } = useTypedSelector(store => store.mobileMenu);
 	const { isSuccess } = useTypedSelector(state => state.newRouteModal);
 
-	const { control, register, setValue, getValues, watch } = useForm({
+	const { control, register, setValue, getValues, watch } = useForm<IRouteFormValues>({
 		defaultValues: {
 			points: [{ inputText: '' }, { inputText: '' }]
 		}
@@ -77,7 +81,7 @@ export const RouteForm = () => {
 
 	const addQuestion = () => {
 		append({ inputText: '' });
-		setCurrentPointIndex(null);
+		setCurrentPointIndex('');
 		setSearchData('');
 		dispatch(setFieldsCount(getValues('points').length));
 	};
@@ -87,34 +91,36 @@ export const RouteForm = () => {
 		dispatch(setCurrentPointId(id));
 		setSearchData('');
 	};
-	const handleSelectAddress = (address: string, subtitle: string) => {
-		console.log('currentInputIndex', currentInputIndex);
-		subtitle
-			? // @ts-ignore
-				setValue(getPointId(currentInputIndex), `${address} ${subtitle}`)
-			: // @ts-ignore
-				setValue(getPointId(currentInputIndex), address);
-		dispatch(setBuildSearch(true));
-		dispatch(setSearchValue(getInputValue(currentInputIndex)));
-		dispatch(setCurrentPointId(getPointId(currentInputIndex)));
-		dispatch(setAddress(getInputValue(currentInputIndex)));
-		setTimeout(() => {
-			dispatch(setBuildSearch(false));
-			setdropdownOpen(false);
-			setSearchData('');
-		}, 300);
-	};
 
+	const handleSelectAddress = (address: string, subtitle: string) => {
+		if (currentInputIndex !== null && currentInputIndex !== '') {
+			const index = parseInt(currentInputIndex, 10);
+			if (!isNaN(index)) {
+				const pointId = getPointId(index);
+				setValue(pointId, subtitle ? `${address} ${subtitle}` : address);
+				dispatch(setBuildSearch(true));
+				dispatch(setSearchValue(getInputValue(index)));
+				dispatch(setCurrentPointId(getPointId(index)));
+				dispatch(setAddress(getInputValue(index)));
+
+				setTimeout(() => {
+					dispatch(setBuildSearch(false));
+					setDropdownOpen(false);
+					setSearchData('');
+				}, 300);
+			}
+		}
+	};
 	const handleFocus = (index: number) => {
 		setTimeout(() => {
-			setdropdownOpen(true);
-			// setCurrentPointIndex(getPointId(index));
+			setDropdownOpen(true);
 			dispatch(setCurrentPointId(getPointId(index)));
 		}, 300);
 	};
+
 	const handleBlur = () => {
 		setTimeout(() => {
-			setdropdownOpen(false);
+			setDropdownOpen(false);
 			setSearchData('');
 		}, 200);
 	};
@@ -128,9 +134,8 @@ export const RouteForm = () => {
 	};
 
 	const handleClearInputs = () => {
-		let tempArr = [];
+		let tempArr: number[] = [];
 		fields.forEach((_, index) => {
-			console.log(index);
 			if (index === 0 || index === 1) {
 				setValue(getPointId(index), '');
 				return;
@@ -142,7 +147,7 @@ export const RouteForm = () => {
 
 		setTimeout(() => {
 			remove(tempArr);
-		}, 0);
+		}, 100);
 	};
 
 	useEffect(() => {
@@ -151,7 +156,7 @@ export const RouteForm = () => {
 	}, [debounced]);
 
 	useEffect(() => {
-		if (buildSearch && currentInputIndex.length === 0) {
+		if (buildSearch && currentInputIndex?.length === 0) {
 			setValue(getPointId(1), searchValue);
 		}
 	}, [buildSearch]);
@@ -161,7 +166,7 @@ export const RouteForm = () => {
 		setTimeout(() => {
 			if (queryRoutes) {
 				const queryRoutesArray = queryRoutes.split(';');
-				queryRoutesArray.forEach((route, index) => {
+				queryRoutesArray.forEach((route: string, index: number) => {
 					setValue(getPointId(index), route);
 				});
 			}
@@ -193,25 +198,27 @@ export const RouteForm = () => {
 
 	useEffect(() => {
 		const subscription = watch((value, field) => {
-			const emptyFields = value.points.filter(point => {
-				return point.inputText.length === 0;
-			});
-			const changeFieldInput = field.name.split('.')[1];
-			if (changeFieldInput) {
-				setCurrentPointIndex(changeFieldInput);
-				const inputText = value.points[changeFieldInput].inputText;
-				setCurrentPointValue(inputText);
-			}
+			if (Array.isArray(value.points)) {
+				const emptyFields = value.points.filter(point => {
+					return point && point.inputText?.length === 0;
+				});
 
-			if (emptyFields.length > 0) {
-				setDisabled(true);
+				const changeFieldInput: number | string = field.name ? field.name.split('.')[1] : '';
+
+				if (changeFieldInput) {
+					const inputText = value.points[+changeFieldInput]?.inputText;
+					setCurrentPointIndex(changeFieldInput);
+					setCurrentPointValue(inputText ?? '');
+				}
+
+				setDisabled(emptyFields.length > 0);
 			} else {
-				setDisabled(false);
+				setDisabled(true);
 			}
 		});
+
 		return () => subscription.unsubscribe();
 	}, [watch]);
-
 	return (
 		<div className={s.routeForm}>
 			<div className={s.routeInputs}>
@@ -223,6 +230,7 @@ export const RouteForm = () => {
 							removeQuestion={() => removeQuestion(index)}
 							register={register}
 							fields={fields}
+							//@ts-ignore
 							field={field}
 							handleSelectPoint={() => handleSelectPoint(getPointId(index))}
 							handleFocus={() => handleFocus(index)}
@@ -231,7 +239,7 @@ export const RouteForm = () => {
 						/>
 						{data?.results && dropdownOpen ? (
 							<SearchDropdown
-								isActive={currentInputIndex == index}
+								isActive={currentInputIndex == String(index)}
 								list={data}
 								handleSelectAddress={handleSelectAddress}
 							/>
@@ -244,7 +252,7 @@ export const RouteForm = () => {
 					</div>
 				))}
 			</div>
-			<Button variant='link' className={s.addBtn} onClick={() => addQuestion()}>
+			<Button variant='link' className={s.addBtn} onClick={addQuestion}>
 				<PlusIcon />
 				<p>Добавить точку</p>
 			</Button>

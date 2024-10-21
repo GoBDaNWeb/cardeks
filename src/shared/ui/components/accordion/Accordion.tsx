@@ -6,14 +6,14 @@ import { Button } from '@/shared/ui';
 
 import s from './accordion.module.scss';
 
-type AccordionType = {
+interface IAccordion {
 	isShow: boolean;
 	onClick?: () => void;
 	title: ReactElement;
 	content: ReactElement;
-};
+}
 
-export const Accordion: FC<AccordionType> = ({ isShow, onClick, title, content }) => {
+export const Accordion: FC<IAccordion> = ({ isShow, onClick, title, content }) => {
 	const accordionClass = clsx(s.accordion, { [s.active]: isShow });
 	const contentClass = clsx(s.content, { [s.show]: isShow });
 

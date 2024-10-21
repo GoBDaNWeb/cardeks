@@ -1,4 +1,11 @@
-export const layers = [
+import { MapTypes } from '@/shared/types';
+
+interface ILayers {
+	title: string;
+	type: MapTypes;
+}
+
+export const layers: ILayers[] = [
 	{
 		title: 'Схема',
 		type: 'yandex#map'

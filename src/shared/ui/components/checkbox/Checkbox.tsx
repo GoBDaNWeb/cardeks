@@ -3,12 +3,12 @@ import { FC } from 'react';
 
 import s from './checkbox.module.scss';
 
-type CheckboxType = {
+interface ICheckbox {
 	label?: string;
 	isChecked?: boolean;
-};
+}
 
-export const Checkbox: FC<CheckboxType> = ({ label, isChecked = false }) => {
+export const Checkbox: FC<ICheckbox> = ({ label, isChecked = false }) => {
 	const [isActive, setActive] = useState(isChecked);
 
 	const handleChange = () => {

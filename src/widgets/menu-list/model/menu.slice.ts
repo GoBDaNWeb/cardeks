@@ -1,6 +1,11 @@
+import { ActiveMenu } from '@/shared/types';
+
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = {
+interface IMenu {
+	activeMenu: ActiveMenu;
+}
+const initialState: IMenu = {
 	activeMenu: null
 };
 

@@ -12,11 +12,11 @@ import { Button, CloseIcon, DownloadIcon, LinkIcon, MailIcon, PrintIcon } from '
 
 import s from './route-info-detail.module.scss';
 
-type RouteInfoDetailType = {
+interface IRouteInfoDetail {
 	handleClose: () => void;
-};
+}
 
-export const RouteInfoDetail: FC<RouteInfoDetailType> = ({ handleClose }) => {
+export const RouteInfoDetail: FC<IRouteInfoDetail> = ({ handleClose }) => {
 	const dispatch = useDispatch();
 
 	const {

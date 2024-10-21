@@ -1,7 +1,12 @@
+import { ActiveMenu } from '@/shared/types';
+
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = {
-	activeMenu: null // search/filters/objects/route
+interface IMenuState {
+	activeMenu: ActiveMenu; // Указывает на тип открытого меню
+}
+const initialState: IMenuState = {
+	activeMenu: null
 };
 
 const mobileMenuSlice = createSlice({

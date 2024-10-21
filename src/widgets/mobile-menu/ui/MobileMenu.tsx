@@ -1,3 +1,4 @@
+import { ReactElement } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { setFilterActive } from '@/features/route-form';
@@ -9,7 +10,14 @@ import { Button, FilterIcon, ListIcon, RouteIcon, SearchIcon } from '@/shared/ui
 
 import s from './mobile-menu.module.scss';
 
-const menuList = [
+type MenuType = 'search' | 'filters' | 'objects' | 'route';
+
+interface IMenuList {
+	icon: ReactElement;
+	type: MenuType;
+}
+
+const menuList: IMenuList[] = [
 	{
 		icon: <SearchIcon />,
 		type: 'search'
@@ -33,7 +41,7 @@ export const MobileMenu = () => {
 
 	const { activeMenu } = useTypedSelector(store => store.mobileMenu);
 
-	const handleSetActiveMenu = (type: string) => {
+	const handleSetActiveMenu = (type: 'search' | 'filters' | 'objects' | 'route') => {
 		if (activeMenu === type) {
 			dispatch(setActiveMenu(null));
 			dispatch(setFilterActive(false));

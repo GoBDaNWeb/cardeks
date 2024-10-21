@@ -3,12 +3,7 @@ import Select, { GroupBase, OptionsOrGroups } from 'react-select';
 
 import clsx from 'clsx';
 
-type OptionsType = {
-	value: string;
-	label: string;
-};
-
-export interface ISelector {
+interface ISelector {
 	onFocus?: () => void;
 	onBlur?: () => void;
 	onChange: (...event: any[]) => void;

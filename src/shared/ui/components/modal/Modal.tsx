@@ -8,13 +8,13 @@ import { Portal } from '../portal';
 import { useLockedBody } from './lib';
 import s from './modal.module.scss';
 
-type ModalType = {
+interface IModal {
 	isOpen: boolean;
 	className?: string;
 	close: () => void;
-};
+}
 
-export const Modal: FC<PropsWithChildren<ModalType>> = forwardRef(
+export const Modal: FC<PropsWithChildren<IModal>> = forwardRef(
 	({ isOpen, className, children, close }, ref) => {
 		useLockedBody(isOpen);
 		const nodeRef = useRef<HTMLDivElement | null>(null);

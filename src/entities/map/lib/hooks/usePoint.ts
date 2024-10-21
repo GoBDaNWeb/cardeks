@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
+import { IPointGeometry } from 'yandex-maps';
+
 import { useTypedSelector } from '@/shared/lib';
+import { IPlacemark } from '@/shared/types';
 
 import { setAddress, setCoords, setSelectAddress } from '../../model';
 import {
@@ -13,10 +16,17 @@ import {
 	swapItems
 } from '../helpers';
 
-export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) => {
-	const [searchPoint, setSearchPoint] = useState(null);
+interface IUsePointProps {
+	ymaps: any;
+	map: any;
+	pointCollection: IPlacemark[];
+	setPointCollection: React.Dispatch<React.SetStateAction<IPlacemark[]>>;
+}
 
-	const currentPointIdRef = useRef(null);
+export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IUsePointProps) => {
+	const [searchPoint, setSearchPoint] = useState<any>(null);
+
+	const currentPointIdRef = useRef<string | null>(null);
 	const dispatch = useDispatch();
 
 	const {
@@ -30,22 +40,22 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) =>
 			selectedAddress,
 			fieldsCount
 		}
-	} = useTypedSelector(state => state.map);
+	} = useTypedSelector(store => store.map);
+
 	const { getLocation } = useTypedSelector(store => store.settingsMapMenu);
 	const { activeMenu: mobileActiveMenu } = useTypedSelector(store => store.mobileMenu);
 	const { activeMenu } = useTypedSelector(state => state.menu);
 	const { isSuccess } = useTypedSelector(state => state.newRouteModal);
 
-	const getAddress = coords => {
-		ymaps.geocode(coords).then(function (res) {
+	const getAddress = (coords: number[]) => {
+		ymaps.geocode(coords).then((res: any) => {
 			const firstGeoObject = res.geoObjects.get(0);
 			const address = firstGeoObject.getAddressLine();
 			dispatch(setAddress(address));
-			// dispatch(setCoords(coords));
 		});
 	};
 
-	const handleSelectCoords = e => {
+	const handleSelectCoords = (e: any) => {
 		const coords = e.get('coords');
 		getAddress(coords);
 		setTimeout(() => {
@@ -53,38 +63,44 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) =>
 		}, 300);
 	};
 
-	const addPoint = coords => {
+	const addPoint = (coords: number[]) => {
 		const pointId = currentPointIdRef.current;
 		const existingMarker = pointCollection.find(point => {
 			return getPointInfo(point, 'id') === pointId;
 		});
-
 		if (existingMarker) {
 			const currentCoords = routeCoords.slice();
 			const newCoords = containsArray(
 				currentCoords,
-				existingMarker.geometry.getCoordinates(),
+				(existingMarker.geometry as IPointGeometry).getCoordinates(),
 				coords
 			);
 			dispatch(setCoords(newCoords));
-			existingMarker.geometry.setCoordinates(coords);
+			(existingMarker.geometry as IPointGeometry).setCoordinates(coords);
 		} else {
-			const pointIndex = pointId.split('.')[1];
-			let myPlacemark = createPlacemark({ ymaps, coords, pointId, pointIndex });
+			const pointIndex = pointId!.split('.')[1];
+			if (pointId) {
+				let myPlacemark = createPlacemark({
+					ymaps,
+					coords,
+					pointId,
+					pointIndex: parseInt(pointIndex)
+				});
+				console.log('myPlacemark', myPlacemark);
+				dispatch(setCoords([...routeCoords, coords]));
 
-			dispatch(setCoords([...routeCoords, coords]));
-
-			map.geoObjects.add(myPlacemark);
-			setPointCollection(prevCollection => [...prevCollection, myPlacemark]);
+				map.geoObjects.add(myPlacemark);
+				setPointCollection(prevCollection => [...prevCollection, myPlacemark]);
+			}
 		}
 	};
 
-	const handleAddPoint = e => {
+	const handleAddPoint = (e?: any) => {
 		if (e) {
 			const coords = e.get('coords');
 			addPoint(coords);
 		} else if (selectedAddress && !isSelectAddress && !buildSearch) {
-			ymaps.geocode(selectedAddress).then(res => {
+			ymaps.geocode(selectedAddress).then((res: any) => {
 				const firstGeoObject = res.geoObjects.get(0);
 				const coords = firstGeoObject.geometry.getCoordinates();
 				addPoint(coords);
@@ -92,7 +108,7 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) =>
 		}
 	};
 
-	const handleRemovePoint = id => {
+	const handleRemovePoint = (id: string) => {
 		const deletedPoint = pointCollection.find(point => {
 			return getPointInfo(point, 'id') === id;
 		});
@@ -101,8 +117,8 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) =>
 		});
 
 		if (deletedPoint) {
-			const filteredCoords = routeCoords.filter(coord => {
-				return coord !== deletedPoint.geometry.getCoordinates();
+			const filteredCoords = routeCoords.filter((coord: number[]) => {
+				return coord !== (deletedPoint.geometry as IPointGeometry).getCoordinates();
 			});
 			filteredPointCollection.forEach((point, index) => {
 				changePointImage(point, index, getImage(index));
@@ -131,7 +147,6 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) =>
 		currentPointIdRef.current = currentPointId;
 	}, [currentPointId]);
 
-	// добавляем метку при выборе с помощью dropdown
 	useEffect(() => {
 		if (buildSearch) {
 			handleAddPoint();
@@ -142,7 +157,6 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) =>
 		handleAddPoint();
 	}, [selectedAddress]);
 
-	// добавляем метку и переносимся на нее при выборе в поиске
 	useEffect(() => {
 		if (map) {
 			if (search) {
@@ -151,10 +165,10 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) =>
 					.geocode(searchValue, {
 						results: 1
 					})
-					.then(function (res) {
-						let firstGeoObject = res.geoObjects.get(0);
-						let coords = firstGeoObject.geometry.getCoordinates();
-						let myPlacemark = new ymaps.Placemark(coords, {
+					.then((res: any) => {
+						const firstGeoObject = res.geoObjects.get(0);
+						const coords = firstGeoObject.geometry.getCoordinates();
+						const myPlacemark = new ymaps.Placemark(coords, {
 							hintContent: searchValue,
 							balloonContent: searchValue
 						});
@@ -168,30 +182,25 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) =>
 		}
 	}, [search]);
 
-	// меняем точки на карте местами
 	useEffect(() => {
+		const firstInput = pointCollection.find(point => {
+			return getPointInfo(point, 'index') == swapPoints[0];
+		});
+		const secondInput = pointCollection.find(point => {
+			return getPointInfo(point, 'index') == swapPoints[1];
+		});
 		if (fieldsCount === pointCollection.length) {
 			let tempCoordsArray = routeCoords.slice();
-			const firstInput = pointCollection.find(point => {
-				return getPointInfo(point, 'index') == swapPoints[0];
-			});
-			const secondInput = pointCollection.find(point => {
-				return getPointInfo(point, 'index') == swapPoints[1];
-			});
-			const firstPointCoords = firstInput.geometry.getCoordinates();
-			const secondPointCoords = secondInput.geometry.getCoordinates();
-			firstInput.geometry.setCoordinates(secondPointCoords);
-			secondInput.geometry.setCoordinates(firstPointCoords);
-			swapItems(tempCoordsArray, swapPoints);
+			if (firstInput && secondInput) {
+				const firstPointCoords = (firstInput.geometry as IPointGeometry).getCoordinates();
+				const secondPointCoords = (secondInput.geometry as IPointGeometry).getCoordinates();
+				(firstInput.geometry as IPointGeometry).setCoordinates(secondPointCoords);
+				(secondInput.geometry as IPointGeometry).setCoordinates(firstPointCoords);
+				swapItems(tempCoordsArray, swapPoints);
 
-			dispatch(setCoords(tempCoordsArray));
+				dispatch(setCoords(tempCoordsArray));
+			}
 		} else {
-			const firstInput = pointCollection.find(point => {
-				return getPointInfo(point, 'index') == swapPoints[0];
-			});
-			const secondInput = pointCollection.find(point => {
-				return getPointInfo(point, 'index') == swapPoints[1];
-			});
 			if (firstInput) {
 				if (getPointInfo(firstInput, 'index') == swapPoints[0]) {
 					changePointImage(firstInput, swapPoints[0] + 1, getImage(swapPoints[0] + 1));
@@ -209,40 +218,36 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) =>
 		}
 	}, [swapPoints]);
 
-	// поулчаем местоположение пользователя и ставим метку
 	useEffect(() => {
 		if (map && getLocation) {
-			var location = ymaps.geolocation.get();
+			const location = ymaps.geolocation.get();
 			location.then(
-				function (result) {
-					// Добавление местоположения на карту.
+				(result: any) => {
 					map.geoObjects.add(result.geoObjects);
 					map.setCenter(result.geoObjects.position, 15);
 				},
-				function (err) {
+				(err: any) => {
 					console.log('Ошибка: ' + err);
 				}
 			);
 		}
 	}, [getLocation]);
 
-	// удаление точки маршрута с карты
 	useEffect(() => {
 		if (deletePointId) {
 			handleRemovePoint(deletePointId);
 		}
 	}, [deletePointId]);
 
-	// отслеживание добавления точек на карту и координат
 	useEffect(() => {
 		if (map) {
-			let cursor = map.cursors.push('arrow');
+			const cursor = map.cursors.push('arrow');
 
 			if (isSelectAddress && currentPointId) {
 				cursor.setKey('crosshair');
 				map.events.group().events.types.click = undefined;
-				map.events.group().add('click', e => handleSelectCoords(e));
-				map.events.group().add('click', e => handleAddPoint(e));
+				map.events.group().add('click', (e: any) => handleSelectCoords(e));
+				map.events.group().add('click', (e: any) => handleAddPoint(e));
 			} else {
 				cursor.setKey('grab');
 
@@ -252,14 +257,12 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }) =>
 		}
 	}, [isSelectAddress, currentPointId]);
 
-	// удаление точек маршрута при закрытии окна построения маршрута
 	useEffect(() => {
 		if (activeMenu !== 'route' || mobileActiveMenu !== 'route') {
 			handleClearPoints();
 		}
 	}, [activeMenu, mobileActiveMenu]);
 
-	// удаление точек при выборе нового маршрута
 	useEffect(() => {
 		if (isSuccess) {
 			handleClearPoints();

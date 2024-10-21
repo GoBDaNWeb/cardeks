@@ -1,5 +1,5 @@
-import { FC, ReactElement } from 'react';
-import { FieldValues, UseFormRegister } from 'react-hook-form';
+import { FormEvent, ReactElement } from 'react';
+import { FieldValues, Path, UseFormRegister } from 'react-hook-form';
 
 import clsx from 'clsx';
 
@@ -7,19 +7,19 @@ import { FieldType } from '@/shared/types';
 
 import s from './input.module.scss';
 
-interface IInput {
+interface IInput<T extends FieldValues> {
 	placeholder: string;
 	value?: string;
 	field?: FieldType & { id: string };
-	register?: UseFormRegister<FieldValues>;
-	id?: string;
-	onChange?: () => void;
+	register?: UseFormRegister<T>;
+	id?: Path<T>;
+	onChange?: (e: FormEvent<HTMLInputElement>) => void;
 	isStyled?: boolean;
 	onFocus?: () => void;
 	onBlur?: () => void;
 }
 
-export const Input: FC<IInput> = ({
+export const Input = <T extends FieldValues>({
 	placeholder,
 	value,
 	field,
@@ -29,8 +29,9 @@ export const Input: FC<IInput> = ({
 	isStyled,
 	onFocus,
 	onBlur
-}) => {
+}: IInput<T>): ReactElement => {
 	const inputClass = clsx(s.input, { [s.styled]: isStyled });
+
 	return (
 		<>
 			{field ? (
@@ -43,13 +44,13 @@ export const Input: FC<IInput> = ({
 					onChange={field.onChange}
 					onBlur={field.onBlur}
 				/>
-			) : register ? (
+			) : register && id ? (
 				<input
 					type='text'
 					className={inputClass}
 					placeholder={placeholder}
 					value={value}
-					{...register(id)}
+					{...register(id)} // This is now correct as id is of type Path<T>
 					onChange={onChange}
 					onFocus={onFocus}
 					onBlur={onBlur}

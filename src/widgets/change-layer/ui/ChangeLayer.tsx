@@ -6,6 +6,7 @@ import clsx from 'clsx';
 import { setMapType, setPanorama } from '@/entities/map';
 
 import { useTypedSelector } from '@/shared/lib';
+import { MapTypes } from '@/shared/types';
 import { Button, CheckIcon, LayerIcon } from '@/shared/ui';
 
 import { layers } from '../config';
@@ -23,7 +24,7 @@ export const ChangeLayer = () => {
 		setActive(!isActive);
 	};
 
-	const handleSetMapType = type => {
+	const handleSetMapType = (type: MapTypes) => {
 		dispatch(setMapType(type));
 		setActive(false);
 	};

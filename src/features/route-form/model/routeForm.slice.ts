@@ -1,6 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = {
+interface IRouteForm {
+	filterActive: boolean;
+}
+const initialState: IRouteForm = {
 	filterActive: false
 };
 

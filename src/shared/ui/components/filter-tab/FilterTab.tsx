@@ -6,16 +6,16 @@ import { Button } from '@/shared/ui';
 
 import s from './filter-tab.module.scss';
 
-type FilterTabType = {
+interface IFilterTab {
 	onClick: () => void;
 	title: string;
 	viewCount: string;
 	totalCount: string;
 	icon: ReactElement;
 	isActive?: boolean;
-};
+}
 
-export const FilterTab: FC<FilterTabType> = ({
+export const FilterTab: FC<IFilterTab> = ({
 	onClick,
 	title,
 	viewCount,

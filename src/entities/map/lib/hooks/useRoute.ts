@@ -16,18 +16,25 @@ import {
 } from '../../model';
 import { createPlacemark } from '../helpers';
 
-export const useRoute = ({ ymaps, map, setPointCollection }) => {
-	const [addressesColletion, setAddressesCollection] = useState([]);
-	const [routeCoordsState, setRouteCoordsState] = useState([]);
+interface IUseRouteProps {
+	ymaps: any;
+	map: any;
+	setPointCollection: React.Dispatch<React.SetStateAction<any[]>>;
+}
+
+export const useRoute = ({ ymaps, map, setPointCollection }: IUseRouteProps) => {
+	const [addressesCollection, setAddressesCollection] = useState<string[]>([]);
+	const [routeCoordsState, setRouteCoordsState] = useState<number[][]>([]);
+
 	const dispatch = useDispatch();
 
 	const {
 		routeInfo: { routeCoords, buildRoute, routeIsChanged }
 	} = useTypedSelector(state => state.map);
 
-	const multiRouteRef = useRef(null);
+	const multiRouteRef = useRef<any>(null);
 
-	const handleBuildRoute = (condition, urlBuild, routesArr) => {
+	const handleBuildRoute = (condition: boolean, urlBuild: boolean, routesArr: string[]) => {
 		if (map) {
 			if (multiRouteRef.current) {
 				map.geoObjects.remove(multiRouteRef.current);
@@ -49,7 +56,8 @@ export const useRoute = ({ ymaps, map, setPointCollection }) => {
 
 				map.geoObjects.add(multiRoute);
 				multiRouteRef.current = multiRoute;
-				multiRoute.model.events.add('update', e => {
+
+				multiRoute.model.events.add('update', (e: any) => {
 					const routes = multiRoute.getRoutes();
 					if (routes.getLength() > 0) {
 						const activeRoute = routes.get(0);
@@ -60,15 +68,14 @@ export const useRoute = ({ ymaps, map, setPointCollection }) => {
 					}
 					dispatch(setRouteBuilded(true));
 					dispatch(setRouteChanged(false));
+
 					if (urlBuild) {
 						dispatch(setActiveMenu('route'));
 						dispatch(setRouteAddresses(routesArr));
 						routesArr.forEach((address, index) => {
 							ymaps
-								.geocode(address, {
-									results: 1
-								})
-								.then(function (res) {
+								.geocode(address, { results: 1 })
+								.then((res: any) => {
 									let firstGeoObject = res.geoObjects.get(0);
 									let coords = firstGeoObject.geometry.getCoordinates();
 									const myPlacemark = createPlacemark({ ymaps, coords, index });
@@ -76,12 +83,12 @@ export const useRoute = ({ ymaps, map, setPointCollection }) => {
 									map.geoObjects.add(myPlacemark);
 									setPointCollection(prevCollection => [...prevCollection, myPlacemark]);
 								})
-								.catch(error => {
+								.catch((error: any) => {
 									console.error('Ошибка геокодирования:', error);
 								});
 						});
 					} else {
-						dispatch(setRouteAddresses(addressesColletion));
+						dispatch(setRouteAddresses(addressesCollection));
 					}
 				});
 			} else {
@@ -95,7 +102,6 @@ export const useRoute = ({ ymaps, map, setPointCollection }) => {
 		}
 	};
 
-	// отрисосываем маршрут из данных в url
 	useEffect(() => {
 		const queryRoutes = getQueryParams(window.location.href).routes;
 		if (queryRoutes) {
@@ -105,22 +111,19 @@ export const useRoute = ({ ymaps, map, setPointCollection }) => {
 		}
 	}, [map, buildRoute]);
 
-	// при отрисовке маршрута по url складываем коорлинаты точек
 	useEffect(() => {
 		dispatch(setCoords(routeCoordsState));
 	}, [routeCoordsState, dispatch]);
 
-	// строим маршрут
 	useEffect(() => {
 		const condition = buildRoute || routeIsChanged;
 		handleBuildRoute(condition, false, routeCoords);
 	}, [buildRoute, routeIsChanged]);
 
-	// получение адресов из координат
 	useEffect(() => {
 		if (routeCoords.length > 1) {
-			const geocodePromises = routeCoords.map(coord => {
-				return ymaps.geocode(coord).then(function (res) {
+			const geocodePromises = routeCoords.map((coord: number[]) => {
+				return ymaps.geocode(coord).then((res: any) => {
 					const firstGeoObject = res.geoObjects.get(0);
 					const address = firstGeoObject.getAddressLine();
 					return address;

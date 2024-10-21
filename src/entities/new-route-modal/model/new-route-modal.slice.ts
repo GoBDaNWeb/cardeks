@@ -1,6 +1,11 @@
+import { IModalState } from '@/shared/types';
+
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = {
+interface IRouteModalState extends IModalState {
+	isSuccess: boolean;
+}
+const initialState: IRouteModalState = {
 	isOpen: false,
 	isSuccess: false
 };

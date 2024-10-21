@@ -4,16 +4,16 @@ import { Button, EnterIcon, Input, SearchIcon } from '@/shared/ui';
 
 import s from './search-input.module.scss';
 
-type SearchInputType = {
+interface ISearchInput {
 	onChange: (e: FormEvent<HTMLInputElement>) => void;
 	value: string;
 	handleSearchAddress: () => void;
 	handleBuildRoute: () => void;
 	handleFocus: () => void;
 	handleBlur: () => void;
-};
+}
 
-export const SearchInput: FC<SearchInputType> = ({
+export const SearchInput: FC<ISearchInput> = ({
 	onChange,
 	value,
 	handleSearchAddress,

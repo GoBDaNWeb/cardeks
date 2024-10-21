@@ -1,10 +1,49 @@
 import { getQueryParams } from '@/shared/lib';
+import { MapTypes } from '@/shared/types';
 
 import { createSlice } from '@reduxjs/toolkit';
 
 const queryRoutes = getQueryParams(window.location.href).routes;
 
-const initialState = {
+interface ISearchInfo {
+	search: boolean;
+	searchValue: string;
+	buildSearch: boolean;
+}
+
+interface IMapInfo {
+	zoom: number;
+	isWheel: boolean;
+	mapType: MapTypes;
+	panorama: boolean;
+	panoramaIsOpen: boolean;
+}
+
+interface IRouteInfo {
+	isSelectAddress: boolean;
+	selectedAddress: string;
+	routeCoords: number[][];
+	currentPointId: string | null;
+	pointFields: any[];
+	fieldsCount: number;
+	swapPoints: string[];
+	deletePointId: string | null;
+	buildRoute: boolean;
+	changeRoute: boolean;
+	routeIsChanged: boolean;
+	routeIsBuilded: boolean;
+	routeAddresses: string[];
+	routeTime: string;
+	routeLength: string;
+}
+
+interface IRootState {
+	searchInfo: ISearchInfo;
+	mapInfo: IMapInfo;
+	routeInfo: IRouteInfo;
+}
+
+const initialState: IRootState = {
 	searchInfo: {
 		search: false,
 		searchValue: '',

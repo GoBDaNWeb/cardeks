@@ -1,11 +1,11 @@
 import { FC, PropsWithChildren, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-type PortalType = {
+interface IPortal {
 	rootId: string;
-};
+}
 
-export const Portal: FC<PropsWithChildren<PortalType>> = ({ rootId, children }) => {
+export const Portal: FC<PropsWithChildren<IPortal>> = ({ rootId, children }) => {
 	const [mounted, setMounted] = useState(false);
 	const containerRef = useRef<Element | null>(null);
 

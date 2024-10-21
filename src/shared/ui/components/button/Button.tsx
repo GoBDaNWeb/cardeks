@@ -4,15 +4,15 @@ import clsx from 'clsx';
 
 import s from './button.module.scss';
 
-type ButtonType = {
+interface IButton {
 	className?: string;
 	variant?: 'link' | 'primary' | 'icon';
 	onClick: () => void;
 	type?: 'button' | 'submit';
 	isDisabled?: boolean;
-};
+}
 
-export const Button: FC<PropsWithChildren<ButtonType>> = ({
+export const Button: FC<PropsWithChildren<IButton>> = ({
 	children,
 	className,
 	variant,

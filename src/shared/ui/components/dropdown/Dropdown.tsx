@@ -4,11 +4,11 @@ import clsx from 'clsx';
 
 import s from './dropdown.module.scss';
 
-type DropdownType = {
+interface IDropdown {
 	className?: string;
-};
+}
 
-export const Dropdown: FC<PropsWithChildren<DropdownType>> = ({ className, children }) => {
+export const Dropdown: FC<PropsWithChildren<IDropdown>> = ({ className, children }) => {
 	const dropdownClass = clsx(s.dropdown, className);
 
 	return <div className={dropdownClass}>{children}</div>;

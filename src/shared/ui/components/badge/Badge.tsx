@@ -4,11 +4,11 @@ import clsx from 'clsx';
 
 import s from './badge.module.scss';
 
-type BadgeType = {
+interface IBadge {
 	className: string;
-};
+}
 
-export const Badge: FC<PropsWithChildren<BadgeType>> = ({ children, className }) => {
+export const Badge: FC<PropsWithChildren<IBadge>> = ({ children, className }) => {
 	const badgeClass = clsx(s.badge, className);
 
 	return <div className={badgeClass}>{children}</div>;

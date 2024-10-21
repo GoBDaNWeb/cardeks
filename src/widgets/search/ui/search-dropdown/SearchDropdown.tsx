@@ -1,8 +1,16 @@
+import { FC } from 'react';
+
+import { IAddresses } from '@/shared/types';
 import { Dropdown } from '@/shared/ui';
 
 import s from './search-dropdown.module.scss';
 
-export const SearchDropdown = ({ list, handleSeletAddress }) => {
+interface ISearchDropdown {
+	list?: IAddresses;
+	handleSeletAddress: (address: string, subtitle: string) => void;
+}
+
+export const SearchDropdown: FC<ISearchDropdown> = ({ list, handleSeletAddress }) => {
 	return (
 		<Dropdown>
 			{list?.results ? (

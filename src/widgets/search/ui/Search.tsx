@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import clsx from 'clsx';
@@ -43,10 +43,10 @@ export const Search = () => {
 		}, 200);
 	};
 
-	const handleSeletAddress = (address: string, subtitle: string) => {
+	const handleSeletAddress = useCallback((address: string, subtitle: string) => {
 		subtitle ? setSelectedAddress(`${address} ${subtitle}`) : setSelectedAddress(address);
 		setDropdownOpen(false);
-	};
+	}, []);
 
 	const handleChangeInputValue = (e: FormEvent<HTMLInputElement>) => {
 		setInvputValue((e.target as HTMLTextAreaElement).value);

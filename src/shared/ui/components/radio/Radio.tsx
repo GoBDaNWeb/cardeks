@@ -1,5 +1,4 @@
 import { FC } from 'react';
-import { FieldValues, UseFormRegister } from 'react-hook-form';
 
 import { FieldType } from '@/shared/types';
 

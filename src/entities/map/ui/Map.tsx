@@ -1,14 +1,16 @@
 // import { useEffect, useState } from 'react';
 // import { useDispatch } from 'react-redux';
 // import clsx from 'clsx';
+// import { Map as MapType } from 'yandex-maps';
 // import points from '@/shared/config/points.json';
 // import { useTypedSelector } from '@/shared/lib';
+// import { IPlacemark } from '@/shared/types';
 // import { usePoint, useRoute } from '../lib';
 // import { handleWheel, setPanoramaOpen, setZoom } from '../model';
 // import s from './map.module.scss';
 // export const Map = () => {
-// 	const [map, setMap] = useState(null);
-// 	const [pointCollection, setPointCollection] = useState([]);
+// 	const [map, setMap] = useState<null | MapType>(null);
+// 	const [pointCollection, setPointCollection] = useState<IPlacemark[]>([]);
 // 	const dispatch = useDispatch();
 // 	const {
 // 		mapInfo: { zoom, isWheel, mapType, panorama, panoramaIsOpen },
@@ -46,18 +48,14 @@
 // 			dispatch(handleWheel(true));
 // 		});
 // 	};
-// 	// ининтим карту
 // 	useEffect(() => {
 // 		ymaps.ready(init);
 // 	}, []);
-// 	// хук который отвечает за маркеры на карте
 // 	usePoint({ ymaps, map, pointCollection, setPointCollection });
-// 	// хук который отвечает за построение маршрута
 // 	useRoute({ ymaps, map, setPointCollection });
-// 	// хук отвечающий за панораму
 // 	useEffect(() => {
 // 		if (map) {
-// 			map.getPanoramaManager().then(function (manager) {
+// 			map.getPanoramaManager().then(manager => {
 // 				manager.events.add('openplayer', () => {
 // 					dispatch(setPanoramaOpen(true));
 // 				});
@@ -72,36 +70,46 @@
 // 			});
 // 		}
 // 	}, [panorama]);
-// 	// изменение типа карты
 // 	useEffect(() => {
 // 		if (map) {
 // 			map.setType(mapType);
 // 		}
 // 	}, [mapType]);
-// 	// изменения зума карты
 // 	useEffect(() => {
 // 		if (map && !isWheel) {
 // 			map.setZoom(zoom, { checkZoomRange: true });
 // 		}
 // 	}, [map, zoom, isWheel]);
-// 	const mapClass = clsx({ [s.select]: isSelectAddress, [s.panorama]: panoramaIsOpen });
+// 	const mapClass = clsx({
+// 		[s.select]: isSelectAddress,
+// 		[s.panorama]: panoramaIsOpen
+// 	});
 // 	return <div id='map' className={mapClass} style={{ width: '100vw', height: '100vh' }} />;
 // };
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
-import type { YMapLocationRequest } from 'ymaps3';
+import { YMapCollection, type YMapLocationRequest } from 'ymaps3';
 
+import { enLetter } from '@/shared/config';
 import points from '@/shared/config/points.json';
 import {
 	YMap,
 	YMapClusterer,
+	YMapControls,
 	YMapDefaultFeaturesLayer,
 	YMapDefaultMarker,
 	YMapDefaultSchemeLayer,
+	YMapListener,
 	YMapMarker,
+	YMapZoomControl,
 	clusterByGrid,
 	reactify
 } from '@/shared/lib';
+import { getPointId, useTypedSelector } from '@/shared/lib';
+
+import { containsArray, getPointInfo, swapItems } from '../lib';
+import { setAddress, setCoords, setSelectAddress } from '../model';
 
 import type { Feature } from '@yandex/ymaps3-clusterer';
 import type { LngLat, LngLatBounds } from '@yandex/ymaps3-types';
@@ -110,22 +118,39 @@ const LOCATION: YMapLocationRequest = {
 	center: [37.588144, 55.733842],
 	zoom: 9
 };
-
+type MarkerType = {
+	coord: LngLat;
+	id: string;
+	index: number | string;
+};
 export const Map = () => {
+	const map = useRef(null);
+	console.log(map);
+	const [markersList, setMarkersList] = useState<MarkerType[]>([]);
+	const {
+		routeInfo: {
+			isSelectAddress,
+			routeCoords,
+			swapPoints,
+			fieldsCount,
+			currentPointId,
+			deletePointId
+		}
+	} = useTypedSelector(state => state.map);
+	const { activeMenu: mobileActiveMenu } = useTypedSelector(store => store.mobileMenu);
+	const { activeMenu } = useTypedSelector(state => state.menu);
+	const dispatch = useDispatch();
+
+	// тест для кластеризации
 	const seed = (s: number) => () => {
 		s = Math.sin(s) * 10000;
 		return s - Math.floor(s);
 	};
-
 	const rnd = seed(10000); // () => Math.random()
-
-	// Generating random coordinates of a point [lng, lat] in a given boundary
 	const getRandomPointCoordinates = (bounds: LngLatBounds): LngLat => [
 		bounds[0][0] + (bounds[1][0] - bounds[0][0]) * rnd(),
 		bounds[1][1] + (bounds[0][1] - bounds[1][1]) * rnd()
 	];
-
-	// A function that creates an array with parameters for each clusterer random point
 	const getRandomPoints = (count: number, bounds: LngLatBounds): Feature[] => {
 		return Array.from({ length: count }, (_, index) => ({
 			type: 'Feature',
@@ -136,8 +161,8 @@ export const Map = () => {
 
 	//@ts-ignore
 	const gridSizedMethod = useMemo(() => clusterByGrid({ gridSize: 64 }), []);
-	console.log('gridSizedMethod', gridSizedMethod);
-	const marker = (feature: Feature) => (
+
+	const defaultMarker = (feature: Feature) => (
 		<YMapDefaultMarker
 			//@ts-ignore
 			iconName='landmark'
@@ -146,8 +171,6 @@ export const Map = () => {
 		/>
 	);
 	const cluster = (coordinates: LngLat, features: Feature[]) => {
-		console.log(coordinates);
-		console.log('features', features);
 		return (
 			<YMapMarker key={`${features[0].id}-${features.length}`} coordinates={coordinates}>
 				<div className='circle'>
@@ -159,22 +182,147 @@ export const Map = () => {
 		);
 	};
 
-	console.log('cluster', cluster);
+	const handleSetCoords = async (e: any) => {
+		const existingMarker = markersList.find((point: MarkerType) => {
+			return point.id === currentPointId;
+		});
+		const { coordinates } = e;
+
+		if (isSelectAddress) {
+			if (existingMarker) {
+				const currentCoords = routeCoords.slice();
+				//@ts-ignore
+				const newCoords = containsArray(currentCoords, existingMarker.coord, coordinates);
+				dispatch(setCoords(newCoords));
+			} else {
+				const text = await ymaps3.search({
+					text: coordinates
+				});
+				dispatch(setAddress(`${text[0].properties.description} ${text[0].properties.name}`));
+				dispatch(setCoords([...routeCoords, coordinates]));
+				dispatch(setSelectAddress(false));
+				const markerObj = {
+					coord: coordinates,
+					id: currentPointId,
+					index: +currentPointId.split('.')[1]
+				};
+				setMarkersList(prevMarkersList => {
+					const newMarkersList = [...prevMarkersList, markerObj];
+					return newMarkersList;
+				});
+			}
+		}
+	};
+
+	const handleRemovePoint = (id: string) => {
+		const indexToRemove = markersList.findIndex(point => point.id === id);
+		if (indexToRemove !== -1) {
+			const newMarkersList = markersList.filter((_, index) => index !== indexToRemove);
+			const newRouteCoords = routeCoords.filter(
+				(_: number[], index: number) => index !== indexToRemove
+			);
+
+			newMarkersList.forEach((point, index) => {
+				point.id = getPointId(index);
+				point.index = index;
+				point.coord = newRouteCoords[index];
+			});
+			// Обновляем состояние
+			dispatch(setCoords(newRouteCoords));
+			setMarkersList(newMarkersList);
+		} else {
+			markersList.forEach((point, index) => {
+				point.id = getPointId(index);
+				point.index = index;
+			});
+			setMarkersList(markersList);
+		}
+	};
+
+	function swapItemsExceptCoord(array: MarkerType[]) {
+		return array.map((item, index) => {
+			const newItem = { ...item };
+			newItem.id = array[1 - index].id;
+			newItem.index = array[1 - index].index;
+			return newItem;
+		});
+	}
+
+	useEffect(() => {
+		if (fieldsCount === markersList.length) {
+			let tempCoordsArray = routeCoords.slice();
+
+			const newArr = swapItemsExceptCoord(markersList);
+			swapItems(tempCoordsArray, swapPoints);
+			dispatch(setCoords(tempCoordsArray));
+			setMarkersList(newArr);
+		} else {
+			const updatedMarkersList = markersList.map(point => {
+				if (point.index == swapPoints[0]) {
+					return {
+						...point,
+						index: swapPoints[0] + 1,
+						id: getPointId(swapPoints[0] + 1)
+					};
+				} else if (point.index == swapPoints[1]) {
+					return {
+						...point,
+						index: swapPoints[0],
+						id: getPointId(swapPoints[0])
+					};
+				}
+				return point;
+			});
+
+			setMarkersList(updatedMarkersList);
+		}
+	}, [swapPoints]);
+	useEffect(() => {
+		if (deletePointId) {
+			handleRemovePoint(deletePointId);
+		}
+	}, [deletePointId]);
+
+	useEffect(() => {
+		if (activeMenu !== 'route' || mobileActiveMenu !== 'route') {
+			setMarkersList([]);
+		}
+	}, [activeMenu, mobileActiveMenu]);
 	return (
 		<div id='map' style={{ width: '100vw', height: '100vh' }}>
-			<YMap location={reactify.useDefault(LOCATION)}>
+			<YMap location={reactify.useDefault(LOCATION)} ref={map}>
 				<YMapDefaultSchemeLayer />
 				<YMapDefaultFeaturesLayer />
-				<YMapMarker coordinates={reactify.useDefault([37.588144, 55.733842])}></YMapMarker>
+
+				{markersList.map((marker: MarkerType) => {
+					return (
+						<>
+							{marker ? (
+								<YMapMarker key={marker.id} coordinates={marker.coord}>
+									<div className='marker-container'>
+										<img
+											src={`/images/points/point${enLetter[+marker.index].toUpperCase()}.png`}
+											alt=''
+										/>
+									</div>
+								</YMapMarker>
+							) : null}
+						</>
+					);
+				})}
+				<YMapControls position='left'>
+					<YMapZoomControl />
+				</YMapControls>
 				<YMapClusterer
-					marker={marker}
+					marker={defaultMarker}
 					cluster={cluster}
 					method={gridSizedMethod}
 					features={getRandomPoints(100, [
-						[30.2729, 59.9558],
-						[30.4179, 59.9212]
+						[37.11397532421875, 56.053325765098705],
+						[38.218968401504604, 55.40243827841449]
 					])}
 				/>
+				<YMapListener onFastClick={(_, e) => handleSetCoords(e)} />
 			</YMap>
 		</div>
 	);
