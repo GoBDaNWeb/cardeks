@@ -14,7 +14,9 @@ import s from './menu-list.module.scss';
 export const MenuList = () => {
 	const dispatch = useDispatch();
 	const { activeMenu } = useTypedSelector(store => store.menu);
-
+	const {
+		mapInfo: { totalPoints }
+	} = useTypedSelector(state => state.map);
 	const handleSelectMenu = (menu: 'objects-list' | 'route') => {
 		dispatch(setBuildRoute(false));
 		dispatch(setRouteBuilded(false));
@@ -36,7 +38,7 @@ export const MenuList = () => {
 				icon={<ListIcon />}
 				isActive={activeMenu === 'objects-list'}
 				text='Список ТО'
-				count='20 838'
+				count={totalPoints}
 			/>
 			<MenuButton
 				onClick={() => handleSelectMenu('route')}

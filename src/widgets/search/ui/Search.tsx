@@ -24,7 +24,7 @@ export const Search = () => {
 	const [searchData, setSearchData] = useState('');
 	const [selectedAddress, setSelectedAddress] = useState('');
 	const [dropdownOpen, setDropdownOpen] = useState(true);
-	const [inputValue, setInvputValue] = useState('');
+	const [inputValue, setInputValue] = useState('');
 
 	const dispatch = useDispatch();
 	const debounced = useDebounce(inputValue);
@@ -49,7 +49,7 @@ export const Search = () => {
 	}, []);
 
 	const handleChangeInputValue = (e: FormEvent<HTMLInputElement>) => {
-		setInvputValue((e.target as HTMLTextAreaElement).value);
+		setInputValue((e.target as HTMLTextAreaElement).value);
 		setDropdownOpen(true);
 	};
 
@@ -77,7 +77,7 @@ export const Search = () => {
 	};
 
 	useEffect(() => {
-		setInvputValue(selectedAddress);
+		setInputValue(selectedAddress);
 	}, [selectedAddress]);
 
 	useEffect(() => {

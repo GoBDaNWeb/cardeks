@@ -3,11 +3,13 @@ import { useDispatch } from 'react-redux';
 
 import clsx from 'clsx';
 
+import { setWithFilters } from '@/features/route-form';
+
 import { useTypedSelector } from '@/shared/lib';
 import { Accordion, ArrowDownIcon, Button, Checkbox, Chip, FilterIcon, Input } from '@/shared/ui';
 
 import { settingInputs, settingTabs } from '../../config';
-import { setFilterActive } from '../../model';
+import { setAddSettings, setFilterActive } from '../../model';
 
 import s from './route-settings.module.scss';
 
@@ -17,6 +19,8 @@ interface IAccordionTitle {
 }
 
 const AccordionTitle: FC<IAccordionTitle> = ({ handleOpen, isShow }) => {
+	const [filters, setFilters] = useState(true);
+
 	const dispatch = useDispatch();
 
 	const { filterActive } = useTypedSelector(store => store.routeForm);
@@ -25,11 +29,18 @@ const AccordionTitle: FC<IAccordionTitle> = ({ handleOpen, isShow }) => {
 		dispatch(setFilterActive(!filterActive));
 	};
 
+	const handleChangeCheckbox = () => {
+		setFilters(prevState => {
+			dispatch(setWithFilters(!prevState));
+			return !prevState;
+		});
+	};
+
 	const moreBtnClass = clsx(s.moreBtn, { [s.active]: isShow });
 	return (
 		<div className={s.accorionTitle}>
 			<div className={s.filtersBtns}>
-				<Checkbox isChecked label='Учитывать фильтры' />
+				<Checkbox onChange={handleChangeCheckbox} isChecked={filters} label='Учитывать фильтры' />
 				<Button onClick={handleOpenFilters} className={s.filterBtn} variant='link'>
 					<FilterIcon />
 					<p>Фильтры</p>
@@ -43,11 +54,22 @@ const AccordionTitle: FC<IAccordionTitle> = ({ handleOpen, isShow }) => {
 };
 
 const AccordionContent = () => {
-	const [activeChip, setActiveChip] = useState<number | null>(null);
+	const [activeChips, setActiveChips] = useState<number[]>([]);
 
-	const handleSelectChip = useCallback((index: number) => {
-		setActiveChip(prevChip => (prevChip === index ? null : index));
-	}, []);
+	const dispatch = useDispatch();
+
+	const handleSelectChip = (index: number) => {
+		setActiveChips(prevChips => {
+			const newChips = prevChips.includes(index)
+				? prevChips.filter(chip => chip !== index)
+				: [...prevChips, index];
+
+			// Вызываем dispatch с обновленным состоянием
+			dispatch(setAddSettings(newChips));
+
+			return newChips;
+		});
+	};
 
 	return (
 		<div className={s.accordionContent}>
@@ -55,13 +77,17 @@ const AccordionContent = () => {
 				<p>Дополнительные настройки</p>
 				<div className={s.chipList}>
 					{settingTabs.map((tab, index) => (
-						<Chip key={tab} isActive={activeChip === index} onClick={() => handleSelectChip(index)}>
+						<Chip
+							key={tab}
+							isActive={activeChips.includes(index)}
+							onClick={() => handleSelectChip(index)}
+						>
 							{tab}
 						</Chip>
 					))}
 				</div>
 			</div>
-			<div className={s.accordionContentBottom}>
+			{/* <div className={s.accordionContentBottom}>
 				<p>Расчет остановок для заправки</p>
 				<div className={s.inputList}>
 					{settingInputs.map(input => (
@@ -71,7 +97,7 @@ const AccordionContent = () => {
 						</div>
 					))}
 				</div>
-			</div>
+			</div> */}
 		</div>
 	);
 };

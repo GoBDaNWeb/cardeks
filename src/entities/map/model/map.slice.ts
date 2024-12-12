@@ -1,5 +1,5 @@
 import { getQueryParams } from '@/shared/lib';
-import { MapTypes } from '@/shared/types';
+import { Feature, MapTypes } from '@/shared/types';
 
 import { createSlice } from '@reduxjs/toolkit';
 
@@ -17,6 +17,16 @@ interface IMapInfo {
 	mapType: MapTypes;
 	panorama: boolean;
 	panoramaIsOpen: boolean;
+	totalPoints: number;
+	totalViewPoints: number;
+	totalWashing: number;
+	totalViewWashing: number;
+	totalTire: number;
+	totalViewTire: number;
+	totalAzsPoints: number;
+	totalViewAzsPoints: number;
+	points: Feature[];
+	center: number[];
 }
 
 interface IRouteInfo {
@@ -35,6 +45,8 @@ interface IRouteInfo {
 	routeAddresses: string[];
 	routeTime: string;
 	routeLength: string;
+	azsOnRoute: number;
+	pointsOnRoute: number;
 }
 
 interface IRootState {
@@ -54,7 +66,17 @@ const initialState: IRootState = {
 		isWheel: false,
 		mapType: 'yandex#map',
 		panorama: false,
-		panoramaIsOpen: false
+		panoramaIsOpen: false,
+		totalPoints: 0,
+		totalViewPoints: 0,
+		totalWashing: 0,
+		totalViewWashing: 0,
+		totalTire: 0,
+		totalViewTire: 0,
+		totalAzsPoints: 0,
+		totalViewAzsPoints: 0,
+		points: [],
+		center: []
 	},
 	routeInfo: {
 		isSelectAddress: false,
@@ -71,7 +93,9 @@ const initialState: IRootState = {
 		routeIsBuilded: false,
 		routeAddresses: [],
 		routeTime: '',
-		routeLength: ''
+		routeLength: '',
+		azsOnRoute: 0,
+		pointsOnRoute: 0
 	}
 };
 
@@ -85,13 +109,45 @@ const mapSlice = createSlice({
 		handleWheel(state, action) {
 			state.mapInfo.isWheel = action.payload;
 		},
+		setTotalPoints(state, action) {
+			state.mapInfo.totalPoints = action.payload;
+		},
+		setTotalViewPoints(state, action) {
+			state.mapInfo.totalViewPoints = action.payload;
+		},
+		setPoints(state, action) {
+			state.mapInfo.points = action.payload;
+		},
+		setTotalWashing(state, action) {
+			state.mapInfo.totalWashing = action.payload;
+		},
+		setTotalViewWashing(state, action) {
+			state.mapInfo.totalViewWashing = action.payload;
+		},
+		setTotalTire(state, action) {
+			state.mapInfo.totalTire = action.payload;
+		},
+		setTotalViewTire(state, action) {
+			state.mapInfo.totalViewTire = action.payload;
+		},
+		setTotalAzs(state, action) {
+			state.mapInfo.totalAzsPoints = action.payload;
+		},
+		setTotalViewAzs(state, action) {
+			state.mapInfo.totalViewAzsPoints = action.payload;
+		},
+		setPointsOnRoute(state, action) {
+			state.routeInfo.pointsOnRoute = action.payload;
+		},
 		setMapType(state, action) {
 			state.mapInfo.mapType = action.payload;
 		},
 		setSelectAddress(state, action) {
 			state.routeInfo.isSelectAddress = action.payload;
 		},
-
+		setCenter(state, action) {
+			state.mapInfo.center = action.payload;
+		},
 		setAddress(state, action) {
 			state.routeInfo.selectedAddress = action.payload;
 		},
@@ -137,6 +193,9 @@ const mapSlice = createSlice({
 		setFieldsCount(state, action) {
 			state.routeInfo.fieldsCount = action.payload;
 		},
+		setAzsOnRoute(state, action) {
+			state.routeInfo.azsOnRoute = action.payload;
+		},
 		setPanorama(state, action) {
 			state.mapInfo.panorama = action.payload;
 		},
@@ -179,6 +238,18 @@ export const {
 	setSearch,
 	setSearchValue,
 	setBuildSearch,
-	setFieldsCount
+	setFieldsCount,
+	setTotalPoints,
+	setTotalViewPoints,
+	setTotalWashing,
+	setTotalViewWashing,
+	setTotalTire,
+	setTotalViewTire,
+	setAzsOnRoute,
+	setPointsOnRoute,
+	setCenter,
+	setTotalAzs,
+	setTotalViewAzs,
+	setPoints
 } = mapSlice.actions;
 export default mapSlice.reducer;

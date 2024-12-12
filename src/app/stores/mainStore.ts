@@ -12,7 +12,7 @@ import { mapReducer } from '@/entities/map';
 import { mobileMenuReducer } from '@/entities/mobile-menu';
 import { newRouteModalReducer } from '@/entities/new-route-modal';
 
-import { cardeksAPI } from '@/shared/api';
+import { cardeksAPI, cardeksPointsAPI } from '@/shared/api';
 
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 
@@ -28,12 +28,14 @@ const mainReducer = combineReducers({
 	mailModal: mailModalReducer,
 	mobileMenu: mobileMenuReducer,
 	settingsMapMenu: settingsMapMenuReducer,
-	[cardeksAPI.reducerPath]: cardeksAPI.reducer
+	[cardeksAPI.reducerPath]: cardeksAPI.reducer,
+	[cardeksPointsAPI.reducerPath]: cardeksPointsAPI.reducer
 });
 
 export const mainStore = configureStore({
 	reducer: mainReducer,
-	middleware: getDefaultMiddleware => getDefaultMiddleware().concat(cardeksAPI.middleware)
+	middleware: getDefaultMiddleware =>
+		getDefaultMiddleware().concat(cardeksAPI.middleware).concat(cardeksPointsAPI.middleware)
 });
 
 export type RootState = ReturnType<typeof mainStore.getState>;

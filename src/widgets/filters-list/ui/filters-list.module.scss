@@ -1,13 +1,8 @@
 @import '@/shared/styles/mixins';
 @import '@/shared/styles/variables';
 
-.filtersContent {
-	display: flex;
-	flex-direction: column;
-	gap: 20px;
+.filterContentWrapper {
 	max-height: calc(100vh - 375px);
-	padding-right: 12px;
-	margin-top: 20px;
 	overflow-y: auto;
 	scrollbar-width: thin;
 	scrollbar-color: var(--accent-color) #ffffff;
@@ -15,17 +10,30 @@
 		width: 5px;
 	}
 	@media (max-width: $desktop-sm) {
-		right: 16px;
-		top: 189px;
-		max-width: 550px;
 		max-height: calc(100vh - 358px);
 	}
 	@media (max-width: $tab) {
 		max-height: calc(100vh - 388px);
 	}
 	@media (max-width: $tab-sm) {
-		max-width: 100%;
 		max-height: calc(80vh - 388px);
+	}
+}
+.filtersContent {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	padding-right: 12px;
+	margin-top: 20px;
+
+	@media (max-width: $desktop-sm) {
+		right: 16px;
+		top: 189px;
+		max-width: 550px;
+	}
+
+	@media (max-width: $tab-sm) {
+		max-width: 100%;
 	}
 	.filterRow {
 		display: flex;

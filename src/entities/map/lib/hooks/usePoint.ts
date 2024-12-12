@@ -86,7 +86,6 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IU
 					pointId,
 					pointIndex: parseInt(pointIndex)
 				});
-				console.log('myPlacemark', myPlacemark);
 				dispatch(setCoords([...routeCoords, coords]));
 
 				map.geoObjects.add(myPlacemark);

@@ -4,6 +4,14 @@
 .objectItem {
 	padding-bottom: 16px;
 	border-bottom: 1px solid var(--line-color);
+	&.disabled {
+		.objectItemTop {
+			opacity: 0.5;
+		}
+		.objectItemBadges {
+			opacity: 0.5;
+		}
+	}
 	.objectItemTop {
 		display: flex;
 		flex-direction: column;
@@ -53,20 +61,35 @@
 			align-items: flex-start;
 			gap: 12px;
 		}
+
 		.features {
 			display: flex;
 			align-items: center;
 			gap: 24px;
+
 			button {
 				display: flex;
 				align-items: center;
 				gap: 8px;
+
+				&:hover {
+					svg {
+						path {
+							stroke: var(--accent-hover-color);
+							fill: var(--accent-hover-color);
+						}
+					}
+					p {
+						color: var(--accent-hover-color);
+					}
+				}
 				svg {
 					width: 16px;
 					height: 16px;
 					path {
 						stroke: var(--secondary-color);
 						fill: var(--secondary-color);
+						transition: var(--trs-300);
 					}
 					circle {
 						fill: var(--secondary-color);
@@ -75,6 +98,7 @@
 				p {
 					@include text-sm;
 					color: var(--secondary-color);
+					transition: var(--trs-300);
 				}
 			}
 		}

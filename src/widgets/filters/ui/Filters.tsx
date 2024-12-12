@@ -10,12 +10,6 @@ import { setOpenFilters, setSelectedFilter } from '../model';
 
 import s from './filters.module.scss';
 
-const filterTabs = [
-	{ title: 'АЗС / АГЗС', icon: <AZSIcon /> },
-	{ title: 'Шиномонтаж', icon: <TireIcon /> },
-	{ title: 'Мойка', icon: <WashIcon /> }
-];
-
 export const Filters = () => {
 	const [activeTab, setActiveTab] = useState<number | null>(null);
 
@@ -24,7 +18,17 @@ export const Filters = () => {
 	const { filterActive } = useTypedSelector(store => store.routeForm);
 	const { filtersIsOpen } = useTypedSelector(store => store.filters);
 	const { activeMenu: mobileActiveMenu } = useTypedSelector(store => store.mobileMenu);
-
+	const {
+		mapInfo: {
+			totalViewPoints,
+			totalWashing,
+			totalTire,
+			totalViewWashing,
+			totalViewTire,
+			totalAzsPoints,
+			totalViewAzsPoints
+		}
+	} = useTypedSelector(state => state.map);
 	const {
 		routeInfo: { routeIsBuilded }
 	} = useTypedSelector(state => state.map);
@@ -58,6 +62,16 @@ export const Filters = () => {
 		[s.hide]: (routeIsBuilded && activeMenu === 'route') || mobileActiveMenu !== null
 	});
 
+	const filterTabs = [
+		{
+			title: 'АЗС / АГЗС',
+			icon: <AZSIcon />,
+			totalCount: totalAzsPoints,
+			viewCount: totalViewAzsPoints
+		},
+		{ title: 'Шиномонтаж', icon: <TireIcon />, totalCount: totalTire, viewCount: totalViewTire },
+		{ title: 'Мойка', icon: <WashIcon />, totalCount: totalWashing, viewCount: totalViewWashing }
+	];
 	return (
 		<div className={filtersClass}>
 			<div className={s.filtersTop}>
@@ -67,7 +81,7 @@ export const Filters = () => {
 					</div>
 					<p>Фильтры</p>
 				</div>
-				<p className={s.total}>На карте: 551</p>
+				<p className={s.total}>На карте: {totalViewPoints}</p>
 			</div>
 			<div className={s.filtersTabs}>
 				{filterTabs.map((tab, index) => (
@@ -77,8 +91,8 @@ export const Filters = () => {
 						title={tab.title}
 						icon={tab.icon}
 						isActive={index === activeTab}
-						viewCount='5'
-						totalCount='19 411'
+						viewCount={tab.viewCount}
+						totalCount={tab.totalCount}
 					/>
 				))}
 			</div>

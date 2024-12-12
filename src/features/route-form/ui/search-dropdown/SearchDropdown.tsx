@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 
+import { IAddresses, ResultsType } from '@/shared/types';
 import { Dropdown } from '@/shared/ui';
 
 import s from './search-dropdown.module.scss';
@@ -15,7 +16,7 @@ interface IListItem {
 
 interface ISearchDropdownProps {
 	list: {
-		results: IListItem[];
+		results: ResultsType[] | undefined;
 	};
 	handleSelectAddress: (title: string, subtitle: string) => void;
 	isActive: boolean;

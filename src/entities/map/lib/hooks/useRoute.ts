@@ -4,37 +4,55 @@ import { useDispatch } from 'react-redux';
 import { setActiveMenu } from '@/widgets/menu-list';
 
 import { getQueryParams, useTypedSelector } from '@/shared/lib';
+import { Feature } from '@/shared/types';
 
 import {
 	clearRouteAddresses,
 	setCoords,
+	setPointsOnRoute,
 	setRouteAddresses,
 	setRouteBuilded,
 	setRouteChanged,
 	setRouteLength,
 	setRouteTime
 } from '../../model';
-import { createPlacemark } from '../helpers';
+import { createPlacemark, filterFeatures, getAzsOnRoute, routeToLineString } from '../helpers';
 
 interface IUseRouteProps {
 	ymaps: any;
 	map: any;
 	setPointCollection: React.Dispatch<React.SetStateAction<any[]>>;
+	azsArr: Feature[];
+	objectManagerState: any;
 }
 
-export const useRoute = ({ ymaps, map, setPointCollection }: IUseRouteProps) => {
+export const useRoute = ({
+	ymaps,
+	map,
+	setPointCollection,
+	azsArr,
+	objectManagerState
+}: IUseRouteProps) => {
 	const [addressesCollection, setAddressesCollection] = useState<string[]>([]);
 	const [routeCoordsState, setRouteCoordsState] = useState<number[][]>([]);
 
 	const dispatch = useDispatch();
 
 	const {
-		routeInfo: { routeCoords, buildRoute, routeIsChanged }
+		routeInfo: { routeCoords, buildRoute, routeIsChanged, pointsOnRoute }
 	} = useTypedSelector(state => state.map);
+	const {
+		addSettings,
+		filters: { brandTitle, azsTypes },
+		withFilters
+	} = useTypedSelector(state => state.routeForm);
 
 	const multiRouteRef = useRef<any>(null);
 
+	// функция построения маршрута
 	const handleBuildRoute = (condition: boolean, urlBuild: boolean, routesArr: string[]) => {
+		// дальность точки от маршрута в мметрах
+		const threshold = addSettings.includes(2) ? 200 : 500;
 		if (map) {
 			if (multiRouteRef.current) {
 				map.geoObjects.remove(multiRouteRef.current);
@@ -43,7 +61,10 @@ export const useRoute = ({ ymaps, map, setPointCollection }: IUseRouteProps) => 
 			if (condition) {
 				let multiRoute = new ymaps.multiRouter.MultiRoute(
 					{
-						referencePoints: routesArr
+						referencePoints: routesArr,
+						params: {
+							routingMode: 'auto'
+						}
 					},
 					{
 						boundsAutoApply: true,
@@ -53,14 +74,43 @@ export const useRoute = ({ ymaps, map, setPointCollection }: IUseRouteProps) => 
 						routeActiveStrokeColor: '5DAFEE'
 					}
 				);
-
 				map.geoObjects.add(multiRoute);
 				multiRouteRef.current = multiRoute;
+				if (addSettings.includes(0)) {
+					multiRoute.model.setParams({ avoidTrafficJams: true }, true);
+				}
+				multiRoute.model.events.add('update', async () => {
+					if (objectManagerState) {
+						objectManagerState.removeAll();
+					}
+					var lineGeoObjects = multiRoute
+						.getRoutes()
+						.toArray()
+						.map((route: any) => new ymaps.Polyline(routeToLineString(route)));
 
-				multiRoute.model.events.add('update', (e: any) => {
+					var lines = new ymaps.GeoObjectCollection(
+						{ children: lineGeoObjects },
+						{ visible: false }
+					);
+					map.geoObjects.add(lines);
+
+					const filteredPoints = filterFeatures(azsArr, [], brandTitle, azsTypes);
+					const azsOnRoute = await getAzsOnRoute(
+						withFilters ? filteredPoints : azsArr,
+						lines,
+						threshold,
+						routeCoords[0]
+					);
+					if (azsOnRoute && objectManagerState) {
+						objectManagerState.add(azsOnRoute);
+						dispatch(setPointsOnRoute(azsOnRoute));
+					}
+
 					const routes = multiRoute.getRoutes();
+
 					if (routes.getLength() > 0) {
 						const activeRoute = routes.get(0);
+
 						const time = activeRoute.properties.get('duration').text;
 						const length = activeRoute.properties.get('distance').text;
 						dispatch(setRouteTime(time));
@@ -72,6 +122,13 @@ export const useRoute = ({ ymaps, map, setPointCollection }: IUseRouteProps) => 
 					if (urlBuild) {
 						dispatch(setActiveMenu('route'));
 						dispatch(setRouteAddresses(routesArr));
+						objectManagerState.removeAll();
+						const azsOnRoute = await getAzsOnRoute(azsArr, lines, threshold, routeCoords[0]);
+
+						if (azsOnRoute) {
+							objectManagerState.add(azsOnRoute);
+							dispatch(setPointsOnRoute(azsOnRoute));
+						}
 						routesArr.forEach((address, index) => {
 							ymaps
 								.geocode(address, { results: 1 })
@@ -93,6 +150,7 @@ export const useRoute = ({ ymaps, map, setPointCollection }: IUseRouteProps) => 
 				});
 			} else {
 				if (multiRouteRef.current) {
+					objectManagerState.add(azsArr);
 					map.geoObjects.remove(multiRouteRef.current);
 					multiRouteRef.current = null;
 					dispatch(clearRouteAddresses());
@@ -103,23 +161,34 @@ export const useRoute = ({ ymaps, map, setPointCollection }: IUseRouteProps) => 
 	};
 
 	useEffect(() => {
-		const queryRoutes = getQueryParams(window.location.href).routes;
-		if (queryRoutes) {
-			const condition = queryRoutes && buildRoute;
-			const queryRoutesArray = queryRoutes.split(';');
-			handleBuildRoute(condition, true, queryRoutesArray);
+		if (objectManagerState && pointsOnRoute) {
+			objectManagerState.removeAll();
+			objectManagerState.add(pointsOnRoute);
 		}
-	}, [map, buildRoute]);
+	}, [pointsOnRoute]);
 
+	// обновление координат
 	useEffect(() => {
 		dispatch(setCoords(routeCoordsState));
 	}, [routeCoordsState, dispatch]);
 
+	// построение маршрута
 	useEffect(() => {
 		const condition = buildRoute || routeIsChanged;
 		handleBuildRoute(condition, false, routeCoords);
 	}, [buildRoute, routeIsChanged]);
 
+	// построение маршрута по данным из url
+	useEffect(() => {
+		const queryRoutes = getQueryParams(window.location.href).routes;
+		if (queryRoutes && objectManagerState) {
+			const condition = queryRoutes && buildRoute;
+			const queryRoutesArray = queryRoutes.split(';');
+			handleBuildRoute(condition, true, queryRoutesArray);
+		}
+	}, [map, buildRoute, objectManagerState]);
+
+	// получение адресов по координатам
 	useEffect(() => {
 		if (routeCoords.length > 1) {
 			const geocodePromises = routeCoords.map((coord: number[]) => {

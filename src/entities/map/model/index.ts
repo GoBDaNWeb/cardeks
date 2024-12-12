@@ -23,5 +23,17 @@ export {
 	setSearchValue,
 	setBuildSearch,
 	setFieldsCount,
+	setTotalPoints,
+	setTotalViewPoints,
+	setTotalWashing,
+	setTotalViewWashing,
+	setTotalTire,
+	setTotalViewTire,
+	setAzsOnRoute,
+	setPointsOnRoute,
+	setCenter,
+	setTotalAzs,
+	setTotalViewAzs,
+	setPoints,
 	default as mapReducer
 } from './map.slice';

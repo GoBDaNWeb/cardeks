@@ -6,9 +6,10 @@ import s from './checkbox.module.scss';
 interface ICheckbox {
 	label?: string;
 	isChecked?: boolean;
+	onChange?: () => void;
 }
 
-export const Checkbox: FC<ICheckbox> = ({ label, isChecked = false }) => {
+export const Checkbox: FC<ICheckbox> = ({ onChange, label, isChecked = false }) => {
 	const [isActive, setActive] = useState(isChecked);
 
 	const handleChange = () => {
@@ -22,15 +23,15 @@ export const Checkbox: FC<ICheckbox> = ({ label, isChecked = false }) => {
 			{label ? (
 				<label className={s.checkboxWrapper}>
 					<input
-						checked={isActive}
-						onChange={handleChange}
+						checked={isChecked}
+						onChange={onChange ? onChange : handleChange}
 						className={s.checkbox}
 						type='checkbox'
 					/>
 					<p>{label}</p>
 				</label>
 			) : (
-				<input checked={isActive} onChange={handleChange} className={s.checkbox} type='checkbox' />
+				<input checked={isChecked} onChange={handleChange} className={s.checkbox} type='checkbox' />
 			)}
 		</>
 	);

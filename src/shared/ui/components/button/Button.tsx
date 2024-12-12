@@ -7,7 +7,7 @@ import s from './button.module.scss';
 interface IButton {
 	className?: string;
 	variant?: 'link' | 'primary' | 'icon';
-	onClick: () => void;
+	onClick?: () => void;
 	type?: 'button' | 'submit';
 	isDisabled?: boolean;
 }
