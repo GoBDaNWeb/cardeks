@@ -3,7 +3,7 @@ import Loader from 'react-js-loader';
 import { useDispatch } from 'react-redux';
 
 import clsx from 'clsx';
-import { Map as MapType } from 'yandex-maps';
+import { Map as MapType, ObjectManager } from 'yandex-maps';
 
 import { useGetPointsQuery } from '@/shared/api';
 import { useTypedSelector } from '@/shared/lib';
@@ -12,6 +12,8 @@ import { Feature, IPlacemark } from '@/shared/types';
 import { createPoints, filterAzs, filterFeatures, usePoint, useRoute } from '../lib';
 import {
 	handleWheel,
+	setIsUrlBuid,
+	setMapLoading,
 	setPanoramaOpen,
 	setPoints,
 	setTotalAzs,
@@ -29,9 +31,9 @@ import s from './map.module.scss';
 
 export const Map = () => {
 	const ymaps = window.ymaps;
-	const [loading, setLoading] = useState(true);
 	const [map, setMap] = useState<null | MapType>(null);
-	const [objectManagerState, setObjectManagerState] = useState<any>(null);
+	const [isMounted, setIsMounted] = useState<boolean>(false);
+	const [objectManagerState, setObjectManagerState] = useState<ObjectManager | null>(null);
 	const [pointCollection, setPointCollection] = useState<IPlacemark[]>([]);
 	const dispatch = useDispatch();
 
@@ -39,7 +41,7 @@ export const Map = () => {
 	const { data, isLoading } = useGetPointsQuery();
 
 	const {
-		mapInfo: { zoom, isWheel, mapType, panorama, panoramaIsOpen, center },
+		mapInfo: { zoom, isWheel, mapType, panorama, panoramaIsOpen, center, mapLoading },
 		routeInfo: { isSelectAddress }
 	} = useTypedSelector(state => state.map);
 
@@ -50,7 +52,7 @@ export const Map = () => {
 	}, [data?.data]);
 
 	const getVisibleMarkers = useCallback(
-		(map: any, objectManager: any) => {
+		(map: MapType, objectManager: any) => {
 			const bounds = map.getBounds();
 			const visibleMarkers = objectManager.objects.getAll().filter((marker: Feature) => {
 				const coordinates = marker.geometry.coordinates;
@@ -102,6 +104,9 @@ export const Map = () => {
 
 	useEffect(() => {
 		ymaps.ready(init);
+		if (window.location.search.length > 0) {
+			dispatch(setIsUrlBuid(true));
+		}
 	}, []);
 
 	useEffect(() => {
@@ -125,7 +130,7 @@ export const Map = () => {
 							}
 							return acc;
 						},
-						{} as Record<string, any>
+						{} as Record<string, number | boolean>
 					)
 				};
 				return newObject;
@@ -140,20 +145,24 @@ export const Map = () => {
 			dispatch(setTotalTire(tirePoints.length));
 			dispatch(setTotalAzs(azsPoints.length));
 
-			setLoading(false);
-
 			map.events.add('boundschange', () => getVisibleMarkers(map, objectManager));
 			getVisibleMarkers(map, objectManager);
+			dispatch(setMapLoading(false));
+			setIsMounted(true);
 		}
 	}, [isLoading, map, azsArr]);
 
 	useEffect(() => {
-		if (objectManagerState) {
+		if (map && objectManagerState) {
 			filterAzs({ objectManagerState, azsArr, selectedFilter, filtersIsOpen });
-
 			getVisibleMarkers(map, objectManagerState);
 		}
 	}, [selectedFilter, filtersIsOpen, objectManagerState, azsArr, map]);
+	useEffect(() => {
+		if (map && objectManagerState) {
+			dispatch(setMapLoading(true));
+		}
+	}, [objectManagerState]);
 
 	useEffect(() => {
 		if (!objectManagerState) return;
@@ -232,7 +241,7 @@ export const Map = () => {
 
 	return (
 		<div>
-			{loading ? (
+			{mapLoading ? (
 				<div
 					style={{
 						width: '100vw',

@@ -3,7 +3,6 @@ import { useDispatch } from 'react-redux';
 
 import clsx from 'clsx';
 
-import { RouteFilters } from '@/features/route-filters';
 import { setFilterActive } from '@/features/route-form';
 
 import { setActiveMenu } from '@/entities/mobile-menu';
@@ -11,6 +10,7 @@ import { setActiveMenu } from '@/entities/mobile-menu';
 import { useTypedSelector } from '@/shared/lib';
 import { Button, CloseIcon } from '@/shared/ui';
 
+import { RouteFilters } from './route-filters';
 import s from './route-filters-list.module.scss';
 
 export const RouteFiltersList = () => {

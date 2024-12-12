@@ -86,6 +86,7 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IU
 					pointId,
 					pointIndex: parseInt(pointIndex)
 				});
+
 				dispatch(setCoords([...routeCoords, coords]));
 
 				map.geoObjects.add(myPlacemark);
@@ -196,7 +197,6 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IU
 				(firstInput.geometry as IPointGeometry).setCoordinates(secondPointCoords);
 				(secondInput.geometry as IPointGeometry).setCoordinates(firstPointCoords);
 				swapItems(tempCoordsArray, swapPoints);
-
 				dispatch(setCoords(tempCoordsArray));
 			}
 		} else {

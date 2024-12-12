@@ -8,7 +8,7 @@ import { useDebounce, useTypedSelector } from '@/shared/lib';
 import { IList } from '@/shared/types';
 import { Chip, Input } from '@/shared/ui';
 
-import { addChipsList, catChipsList } from '../config';
+import { addChipsList, catChipsList } from '../../config';
 
 import s from './route-filters.module.scss';
 

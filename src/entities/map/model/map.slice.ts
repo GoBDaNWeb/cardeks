@@ -27,6 +27,7 @@ interface IMapInfo {
 	totalViewAzsPoints: number;
 	points: Feature[];
 	center: number[];
+	mapLoading: boolean;
 }
 
 interface IRouteInfo {
@@ -34,7 +35,6 @@ interface IRouteInfo {
 	selectedAddress: string;
 	routeCoords: number[][];
 	currentPointId: string | null;
-	pointFields: any[];
 	fieldsCount: number;
 	swapPoints: string[];
 	deletePointId: string | null;
@@ -47,6 +47,7 @@ interface IRouteInfo {
 	routeLength: string;
 	azsOnRoute: number;
 	pointsOnRoute: number;
+	isUrlBuild: boolean;
 }
 
 interface IRootState {
@@ -76,14 +77,14 @@ const initialState: IRootState = {
 		totalAzsPoints: 0,
 		totalViewAzsPoints: 0,
 		points: [],
-		center: []
+		center: [],
+		mapLoading: true
 	},
 	routeInfo: {
 		isSelectAddress: false,
 		selectedAddress: '',
 		routeCoords: [],
 		currentPointId: null,
-		pointFields: [],
 		fieldsCount: 2,
 		swapPoints: [],
 		deletePointId: null,
@@ -95,7 +96,8 @@ const initialState: IRootState = {
 		routeTime: '',
 		routeLength: '',
 		azsOnRoute: 0,
-		pointsOnRoute: 0
+		pointsOnRoute: 0,
+		isUrlBuild: false
 	}
 };
 
@@ -123,6 +125,9 @@ const mapSlice = createSlice({
 		},
 		setTotalViewWashing(state, action) {
 			state.mapInfo.totalViewWashing = action.payload;
+		},
+		setMapLoading(state, action) {
+			state.mapInfo.mapLoading = action.payload;
 		},
 		setTotalTire(state, action) {
 			state.mapInfo.totalTire = action.payload;
@@ -157,9 +162,7 @@ const mapSlice = createSlice({
 		setCurrentPointId(state, action) {
 			state.routeInfo.currentPointId = action.payload;
 		},
-		setPointFields(state, action) {
-			state.routeInfo.pointFields = action.payload;
-		},
+
 		setSwapPoints(state, action) {
 			state.routeInfo.swapPoints = action.payload;
 		},
@@ -171,6 +174,9 @@ const mapSlice = createSlice({
 		},
 		setRouteBuilded(state, action) {
 			state.routeInfo.routeIsBuilded = action.payload;
+		},
+		setIsUrlBuid(state, action) {
+			state.routeInfo.isUrlBuild = action.payload;
 		},
 		setRouteAddresses(state, action) {
 			state.routeInfo.routeAddresses = action.payload;
@@ -221,7 +227,6 @@ export const {
 	setSelectAddress,
 	setCoords,
 	setAddress,
-	setPointFields,
 	setSwapPoints,
 	setCurrentPointId,
 	setDeletePointId,
@@ -250,6 +255,8 @@ export const {
 	setCenter,
 	setTotalAzs,
 	setTotalViewAzs,
-	setPoints
+	setPoints,
+	setMapLoading,
+	setIsUrlBuid
 } = mapSlice.actions;
 export default mapSlice.reducer;

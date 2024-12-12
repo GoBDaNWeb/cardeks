@@ -177,9 +177,9 @@ export const RouteForm: React.FC = () => {
 		if (activeMenu !== 'route' || mobileActiveMenu !== 'route') {
 			handleClearInputs();
 			dispatch(setFieldsCount(2));
-			setTimeout(() => {
-				dispatch(setCoords([]));
-			}, 300);
+			// setTimeout(() => {
+			// 	dispatch(setCoords([]));
+			// }, 300);
 		}
 	}, [activeMenu, mobileActiveMenu]);
 

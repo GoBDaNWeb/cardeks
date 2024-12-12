@@ -6,7 +6,6 @@ export {
 	setAddress,
 	setCoords,
 	setCurrentPointId,
-	setPointFields,
 	setSwapPoints,
 	setDeletePointId,
 	setBuildRoute,
@@ -35,5 +34,7 @@ export {
 	setTotalAzs,
 	setTotalViewAzs,
 	setPoints,
+	setMapLoading,
+	setIsUrlBuid,
 	default as mapReducer
 } from './map.slice';
