@@ -158,11 +158,11 @@ export const Map = () => {
 			getVisibleMarkers(map, objectManagerState);
 		}
 	}, [selectedFilter, filtersIsOpen, objectManagerState, azsArr, map]);
-	useEffect(() => {
-		if (map && objectManagerState) {
-			dispatch(setMapLoading(true));
-		}
-	}, [objectManagerState]);
+	// useEffect(() => {
+	// 	if (map && objectManagerState) {
+	// 		dispatch(setMapLoading(true));
+	// 	}
+	// }, [objectManagerState]);
 
 	useEffect(() => {
 		if (!objectManagerState) return;
