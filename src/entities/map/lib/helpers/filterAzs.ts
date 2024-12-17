@@ -5,13 +5,18 @@ interface FilterAzs {
 	azsArr: Feature[];
 	selectedFilter: number;
 	filtersIsOpen: boolean;
+	handleLoading?: (bool: boolean) => void;
 }
 export const filterAzs = ({
 	objectManagerState,
 	azsArr,
 	selectedFilter,
-	filtersIsOpen
+	filtersIsOpen,
+	handleLoading
 }: FilterAzs) => {
+	if (handleLoading) {
+		handleLoading(true);
+	}
 	objectManagerState.removeAll();
 	let filteredPoints = azsArr;
 	if (selectedFilter === 0 && filtersIsOpen) {
@@ -21,6 +26,8 @@ export const filterAzs = ({
 	} else if (selectedFilter === 2 && filtersIsOpen) {
 		filteredPoints = azsArr.filter((marker: Feature) => marker.options.washing);
 	}
-
 	objectManagerState.add(filteredPoints);
+	if (handleLoading) {
+		handleLoading(false);
+	}
 };

@@ -24,7 +24,7 @@ interface IUseRouteProps {
 	ymaps: any;
 	map: any;
 	setPointCollection: React.Dispatch<React.SetStateAction<any[]>>;
-	azsArr: Feature[];
+	features: Feature[];
 	objectManagerState: any;
 }
 
@@ -32,7 +32,7 @@ export const useRoute = ({
 	ymaps,
 	map,
 	setPointCollection,
-	azsArr,
+	features,
 	objectManagerState
 }: IUseRouteProps) => {
 	const [addressesCollection, setAddressesCollection] = useState<string[]>([]);
@@ -109,7 +109,7 @@ export const useRoute = ({
 					dispatch(setRouteBuilded(true));
 					dispatch(setRouteChanged(false));
 
-					if (urlBuild && azsArr) {
+					if (urlBuild && features) {
 						dispatch(setMapLoading(true));
 						dispatch(setActiveMenu('route'));
 						dispatch(setRouteAddresses(routesArr));
@@ -130,7 +130,7 @@ export const useRoute = ({
 									return coordsList;
 								})
 								.then(async (res: number[][]) => {
-									const azsOnRoute = await getAzsOnRoute(azsArr, lines, threshold, res[0]);
+									const azsOnRoute = await getAzsOnRoute(features, lines, threshold, res[0]);
 									if (azsOnRoute) {
 										objectManagerState.add(azsOnRoute);
 										dispatch(setPointsOnRoute(azsOnRoute));
@@ -143,9 +143,9 @@ export const useRoute = ({
 								});
 						});
 					} else {
-						const filteredPoints = filterFeatures(azsArr, [], brandTitle, azsTypes);
+						const filteredPoints = filterFeatures(features, [], brandTitle, azsTypes);
 						const azsOnRoute = await getAzsOnRoute(
-							withFilters ? filteredPoints : azsArr,
+							withFilters ? filteredPoints : features,
 							lines,
 							threshold,
 							routeCoords[0]
@@ -159,7 +159,7 @@ export const useRoute = ({
 				});
 			} else {
 				if (multiRouteRef.current) {
-					objectManagerState.add(azsArr);
+					objectManagerState.add(features);
 					map.geoObjects.remove(multiRouteRef.current);
 					multiRouteRef.current = null;
 					dispatch(clearRouteAddresses());

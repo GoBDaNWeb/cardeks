@@ -6,7 +6,7 @@ import clsx from 'clsx';
 import { Map as MapType, ObjectManager } from 'yandex-maps';
 
 import { useGetPointsQuery } from '@/shared/api';
-import { useTypedSelector } from '@/shared/lib';
+import { useIndexedDB, useTypedSelector } from '@/shared/lib';
 import { Feature, IPlacemark } from '@/shared/types';
 
 import { createPoints, filterAzs, filterFeatures, usePoint, useRoute } from '../lib';
@@ -31,12 +31,12 @@ import s from './map.module.scss';
 
 export const Map = () => {
 	const ymaps = window.ymaps;
+	const [features, setFeatures] = useState<Feature[]>([]);
 	const [map, setMap] = useState<null | MapType>(null);
-	const [isMounted, setIsMounted] = useState<boolean>(false);
 	const [objectManagerState, setObjectManagerState] = useState<ObjectManager | null>(null);
 	const [pointCollection, setPointCollection] = useState<IPlacemark[]>([]);
 	const dispatch = useDispatch();
-
+	const { saveData, getAllData, filterDataByOptions, filterDataByType } = useIndexedDB();
 	//@ts-ignore
 	const { data, isLoading } = useGetPointsQuery();
 
@@ -118,9 +118,9 @@ export const Map = () => {
 				clusterOpenBalloonOnClick: true
 			});
 			map.geoObjects.add(objectManager);
-			objectManager.add(azsArr);
+			objectManager.add(features);
 			setObjectManagerState(objectManager);
-			const mappedAzsPoints = azsArr.map((marker: Feature) => {
+			const mappedAzsPoints = features.map((marker: Feature) => {
 				const newObject = {
 					...marker,
 					options: Object.keys(marker.options).reduce(
@@ -138,31 +138,42 @@ export const Map = () => {
 			const azsPoints = mappedAzsPoints.filter((marker: Feature) => {
 				return Object.values(marker.options).some(value => value === true);
 			});
-			const washingPoints = azsArr.filter((marker: Feature) => marker.options.washing);
-			const tirePoints = azsArr.filter((marker: Feature) => marker.options.tire);
-			dispatch(setTotalPoints(azsArr.length));
+			const washingPoints = features.filter((marker: Feature) => marker.options.washing);
+			const tirePoints = features.filter((marker: Feature) => marker.options.tire);
+			dispatch(setTotalPoints(features.length));
 			dispatch(setTotalWashing(washingPoints.length));
 			dispatch(setTotalTire(tirePoints.length));
 			dispatch(setTotalAzs(azsPoints.length));
-
 			map.events.add('boundschange', () => getVisibleMarkers(map, objectManager));
 			getVisibleMarkers(map, objectManager);
 			dispatch(setMapLoading(false));
-			setIsMounted(true);
 		}
-	}, [isLoading, map, azsArr]);
+	}, [isLoading, map, features]);
+	const filter = useCallback(async () => {
+		if (objectManagerState && map) {
+			objectManagerState.removeAll();
+			const filteredData = await filterDataByType(selectedFilter, filtersIsOpen);
+			getVisibleMarkers(map, objectManagerState);
+			objectManagerState.add(filteredData);
+		}
+	}, [selectedFilter, filtersIsOpen]);
 
 	useEffect(() => {
 		if (map && objectManagerState) {
-			filterAzs({ objectManagerState, azsArr, selectedFilter, filtersIsOpen });
-			getVisibleMarkers(map, objectManagerState);
+			filter();
 		}
-	}, [selectedFilter, filtersIsOpen, objectManagerState, azsArr, map]);
-	// useEffect(() => {
-	// 	if (map && objectManagerState) {
-	// 		dispatch(setMapLoading(true));
-	// 	}
-	// }, [objectManagerState]);
+	}, [filter, map]);
+
+	useEffect(() => {
+		const fetch = async () => {
+			await saveData(createPoints(data.data));
+			const allData = await getAllData();
+			setFeatures(allData);
+		};
+		if (!isLoading) {
+			fetch();
+		}
+	}, [isLoading]);
 
 	useEffect(() => {
 		if (!objectManagerState) return;
@@ -185,7 +196,7 @@ export const Map = () => {
 			);
 			objectManagerState.add(filteredPoints);
 		} else {
-			filterAzs({ objectManagerState, azsArr, selectedFilter, filtersIsOpen });
+			filter();
 		}
 	}, [
 		filters.fuelFilters,
@@ -193,13 +204,13 @@ export const Map = () => {
 		filters.addServices,
 		filters.gateHeight,
 		objectManagerState,
-		azsArr,
+		features,
 		selectedFilter,
 		filtersIsOpen
 	]);
 
 	usePoint({ ymaps, map, pointCollection, setPointCollection });
-	useRoute({ ymaps, map, setPointCollection, azsArr, objectManagerState });
+	useRoute({ ymaps, map, setPointCollection, features, objectManagerState });
 
 	useEffect(() => {
 		if (map) {

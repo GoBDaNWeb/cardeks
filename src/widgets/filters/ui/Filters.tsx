@@ -3,6 +3,8 @@ import { useDispatch } from 'react-redux';
 
 import clsx from 'clsx';
 
+import { setMapLoading } from '@/entities/map';
+
 import { useTypedSelector } from '@/shared/lib';
 import { AZSIcon, FilterIcon, FilterTab, TireIcon, WashIcon } from '@/shared/ui';
 
@@ -38,9 +40,12 @@ export const Filters = () => {
 			setActiveTab(null);
 			dispatch(setOpenFilters(false));
 		} else {
-			dispatch(setSelectedFilter(index));
-			dispatch(setOpenFilters(true));
 			setActiveTab(index);
+			// dispatch(setMapLoading(true));
+			setTimeout(() => {
+				dispatch(setOpenFilters(true));
+				dispatch(setSelectedFilter(index));
+			}, 500);
 		}
 	};
 
