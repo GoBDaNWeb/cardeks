@@ -38,7 +38,8 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IU
 			swapPoints,
 			deletePointId,
 			selectedAddress,
-			fieldsCount
+			fieldsCount,
+			isCursorPoint
 		}
 	} = useTypedSelector(store => store.map);
 
@@ -58,9 +59,9 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IU
 	const handleSelectCoords = (e: any) => {
 		const coords = e.get('coords');
 		getAddress(coords);
-		setTimeout(() => {
-			dispatch(setSelectAddress(false));
-		}, 300);
+		// setTimeout(() => {
+		dispatch(setSelectAddress(false));
+		// }, 300);
 	};
 
 	const addPoint = (coords: number[]) => {
@@ -95,15 +96,17 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IU
 		}
 	};
 
-	const handleAddPoint = (e?: any) => {
-		if (e) {
+	const handleAddPoint = (e?: any, pingPoint?: boolean) => {
+		if (e && pingPoint && isCursorPoint) {
 			const coords = e.get('coords');
 			addPoint(coords);
-		} else if (selectedAddress && !isSelectAddress && !buildSearch) {
+		} else if (selectedAddress && !isSelectAddress && !buildSearch && !isCursorPoint) {
 			ymaps.geocode(selectedAddress).then((res: any) => {
-				const firstGeoObject = res.geoObjects.get(0);
-				const coords = firstGeoObject.geometry.getCoordinates();
-				addPoint(coords);
+				if (!isSelectAddress) {
+					const firstGeoObject = res.geoObjects.get(0);
+					const coords = firstGeoObject.geometry.getCoordinates();
+					addPoint(coords);
+				}
 			});
 		}
 	};
@@ -149,13 +152,15 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IU
 
 	useEffect(() => {
 		if (buildSearch) {
-			handleAddPoint();
+			handleAddPoint(null, false);
 		}
 	}, [buildSearch]);
 
 	useEffect(() => {
-		handleAddPoint();
-	}, [selectedAddress]);
+		if (selectedAddress) {
+			handleAddPoint(null, false);
+		}
+	}, [selectedAddress, isSelectAddress]);
 
 	useEffect(() => {
 		if (map) {
@@ -246,7 +251,7 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IU
 				cursor.setKey('crosshair');
 				map.events.group().events.types.click = undefined;
 				map.events.group().add('click', (e: any) => handleSelectCoords(e));
-				map.events.group().add('click', (e: any) => handleAddPoint(e));
+				map.events.group().add('click', (e: any) => handleAddPoint(e, true));
 			} else {
 				cursor.setKey('grab');
 

@@ -36,5 +36,6 @@ export {
 	setPoints,
 	setMapLoading,
 	setIsUrlBuid,
+	setIsCursorPoint,
 	default as mapReducer
 } from './map.slice';

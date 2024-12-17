@@ -48,6 +48,7 @@ interface IRouteInfo {
 	azsOnRoute: number;
 	pointsOnRoute: number;
 	isUrlBuild: boolean;
+	isCursorPoint: boolean;
 }
 
 interface IRootState {
@@ -97,7 +98,8 @@ const initialState: IRootState = {
 		routeLength: '',
 		azsOnRoute: 0,
 		pointsOnRoute: 0,
-		isUrlBuild: false
+		isUrlBuild: false,
+		isCursorPoint: false
 	}
 };
 
@@ -143,6 +145,9 @@ const mapSlice = createSlice({
 		},
 		setPointsOnRoute(state, action) {
 			state.routeInfo.pointsOnRoute = action.payload;
+		},
+		setIsCursorPoint(state, action) {
+			state.routeInfo.isCursorPoint = action.payload;
 		},
 		setMapType(state, action) {
 			state.mapInfo.mapType = action.payload;
@@ -257,6 +262,7 @@ export const {
 	setTotalViewAzs,
 	setPoints,
 	setMapLoading,
-	setIsUrlBuid
+	setIsUrlBuid,
+	setIsCursorPoint
 } = mapSlice.actions;
 export default mapSlice.reducer;

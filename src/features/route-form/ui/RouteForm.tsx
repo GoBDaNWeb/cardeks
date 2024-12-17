@@ -10,6 +10,7 @@ import {
 	setCurrentPointId,
 	setDeletePointId,
 	setFieldsCount,
+	setIsCursorPoint,
 	setRouteChanged,
 	setSearchValue,
 	setSelectAddress,
@@ -87,6 +88,7 @@ export const RouteForm: React.FC = () => {
 	};
 
 	const handleSelectPoint = (id: string) => {
+		dispatch(setIsCursorPoint(true));
 		dispatch(setSelectAddress(true));
 		dispatch(setCurrentPointId(id));
 		setSearchData('');
@@ -101,6 +103,7 @@ export const RouteForm: React.FC = () => {
 				// dispatch(setBuildSearch(true));
 				dispatch(setSearchValue(getInputValue(index)));
 				dispatch(setCurrentPointId(getPointId(index)));
+
 				dispatch(setAddress(getInputValue(index)));
 
 				setTimeout(() => {
@@ -113,7 +116,7 @@ export const RouteForm: React.FC = () => {
 	};
 	const handleFocus = (index: number) => {
 		setCurrentPointIndex(getPointId(index));
-
+		dispatch(setIsCursorPoint(false));
 		setTimeout(() => {
 			setDropdownOpen(true);
 			dispatch(setCurrentPointId(getPointId(index)));
@@ -179,9 +182,10 @@ export const RouteForm: React.FC = () => {
 		if (activeMenu !== 'route' || mobileActiveMenu !== 'route') {
 			handleClearInputs();
 			dispatch(setFieldsCount(2));
-			// setTimeout(() => {
-			// 	dispatch(setCoords([]));
-			// }, 300);
+			dispatch(setIsCursorPoint(false));
+			setTimeout(() => {
+				dispatch(setCoords([]));
+			}, 300);
 		}
 	}, [activeMenu, mobileActiveMenu]);
 
