@@ -98,13 +98,13 @@ export const RouteForm: React.FC = () => {
 			if (!isNaN(index)) {
 				const pointId = getPointId(index);
 				setValue(pointId, subtitle ? `${address} ${subtitle}` : address);
-				dispatch(setBuildSearch(true));
+				// dispatch(setBuildSearch(true));
 				dispatch(setSearchValue(getInputValue(index)));
 				dispatch(setCurrentPointId(getPointId(index)));
 				dispatch(setAddress(getInputValue(index)));
 
 				setTimeout(() => {
-					dispatch(setBuildSearch(false));
+					// dispatch(setBuildSearch(false));
 					setDropdownOpen(false);
 					setSearchData('');
 				}, 300);
@@ -112,6 +112,8 @@ export const RouteForm: React.FC = () => {
 		}
 	};
 	const handleFocus = (index: number) => {
+		setCurrentPointIndex(getPointId(index));
+
 		setTimeout(() => {
 			setDropdownOpen(true);
 			dispatch(setCurrentPointId(getPointId(index)));
@@ -219,6 +221,12 @@ export const RouteForm: React.FC = () => {
 
 		return () => subscription.unsubscribe();
 	}, [watch]);
+
+	const onChange = (e: any) => {
+		const { value } = e.target;
+		setCurrentPointValue(value);
+	};
+
 	return (
 		<div className={s.routeForm}>
 			<div className={s.routeInputs}>
@@ -232,6 +240,7 @@ export const RouteForm: React.FC = () => {
 							fields={fields}
 							//@ts-ignore
 							field={field}
+							onChange={onChange}
 							handleSelectPoint={() => handleSelectPoint(getPointId(index))}
 							handleFocus={() => handleFocus(index)}
 							handleBlur={handleBlur}

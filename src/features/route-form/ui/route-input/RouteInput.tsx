@@ -23,7 +23,7 @@ interface IRouteInput {
 	removeQuestion: () => void;
 	id: InputIdType;
 	handleSelectPoint: () => void;
-	onChange: () => void;
+	onChange: (e: any) => void;
 	handleFocus: () => void;
 	handleBlur: () => void;
 	isSelect: boolean;

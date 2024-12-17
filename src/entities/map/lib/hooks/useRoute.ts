@@ -65,7 +65,8 @@ export const useRoute = ({
 					{
 						referencePoints: routesArr,
 						params: {
-							routingMode: 'auto'
+							routingMode: 'auto',
+							results: 1
 						}
 					},
 					{

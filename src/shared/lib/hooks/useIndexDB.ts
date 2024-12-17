@@ -28,6 +28,7 @@ export const useIndexedDB = () => {
 					});
 				}
 			});
+			//@ts-ignore
 			setDb(database);
 		};
 
@@ -44,7 +45,7 @@ export const useIndexedDB = () => {
 		data.forEach(item => {
 			store.put(item); // Сохраняем данные в объект store
 		});
-
+		//@ts-ignore
 		await tx.done;
 	};
 
@@ -54,7 +55,7 @@ export const useIndexedDB = () => {
 
 		const tx = db.transaction('points', 'readonly');
 		const store = tx.objectStore('points');
-
+		//@ts-ignore
 		return await store.getAll(); // Получаем все данные
 	};
 
@@ -70,22 +71,17 @@ export const useIndexedDB = () => {
 		return data.filter(item => {
 			const { options, types, title } = item;
 
-			// Проверка соответствия топлива
 			const optionsMatch = filters.length === 0 || filters.every(filter => options[filter.value]);
 
-			// Проверка соответствия заголовка
 			const titleMatch = !titleFilter || title.toLowerCase().includes(titleFilter.toLowerCase());
 
-			// Проверка соответствия AZS типов
 			const azsOptionsMatch = azsTypes.length === 0 || azsTypes.some(type => options[type.value]);
 
-			// Проверка соответствия дополнительных сервисов
 			const matchingServices = addServices.length === 0 || filterObj(types, addServices);
 
 			//@ts-ignore
 			const matchingGate = !gateHeight || options.gateHeight > gateHeight;
 
-			// Возвращаем результат проверки
 			return optionsMatch && titleMatch && azsOptionsMatch && matchingServices && matchingGate;
 		});
 	};
