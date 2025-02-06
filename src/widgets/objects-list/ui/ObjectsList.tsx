@@ -64,21 +64,21 @@ export const ObjectsList = () => {
 		dispatch(setActiveObject(id));
 	};
 
-	useEffect(() => {
-		const mergedPoints = points.map((point: Feature) => {
-			const matchingData = data.data.find((item: any) => item[0] === point.id);
+	// useEffect(() => {
+	// 	const mergedPoints = points.map((point: Feature) => {
+	// 		const matchingData = data.data.find((item: any) => item[0] === point.id);
 
-			if (matchingData) {
-				return {
-					...point,
-					address: matchingData[1]
-				};
-			}
+	// 		if (matchingData) {
+	// 			return {
+	// 				...point,
+	// 				address: matchingData[1]
+	// 			};
+	// 		}
 
-			return point;
-		});
-		setMergedPointsList(mergedPoints);
-	}, [points]);
+	// 		return point;
+	// 	});
+	// 	setMergedPointsList(mergedPoints);
+	// }, [points]);
 
 	useEffect(() => {
 		if (observer.current) observer.current.disconnect();
@@ -90,7 +90,7 @@ export const ObjectsList = () => {
 		if (lastElementRef.current) observer.current.observe(lastElementRef.current);
 	}, [page, points]);
 
-	const displayedPoints = mergedPointsList.slice(0, page * itemsPerPage);
+	const displayedPoints = points.slice(0, page * itemsPerPage);
 
 	const objectsListClass = clsx(s.objectsList, {
 		[s.active]: activeMenu === 'objects-list' || mobileActiveMenu === 'objects'
@@ -126,10 +126,10 @@ export const ObjectsList = () => {
 					<div key={point.id} ref={index === displayedPoints.length - 1 ? lastElementRef : null}>
 						<ObjectItem
 							title={point.title}
-							address={point.address}
-							viewOnMap={() => handleViewOnMap(point.geometry.coordinates)}
-							buildRoute={() => handleBuildRoute(point.address ?? '')}
-							aboutObject={() => handleAboutObject(point.id)}
+							// address={point.address}
+							// viewOnMap={() => handleViewOnMap(point.geometry.coordinates)}
+							// buildRoute={() => handleBuildRoute(point.address ?? '')}
+							// aboutObject={() => handleAboutObject(point.id)}
 						/>
 					</div>
 				))}
