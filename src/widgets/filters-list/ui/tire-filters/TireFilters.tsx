@@ -13,9 +13,10 @@ import { WashFilters } from '../wash-filters';
 
 interface IFilters {
 	withoutServices?: boolean;
+	resetFilters?: boolean;
 }
 
-export const TireFilters: FC<IFilters> = ({ withoutServices }) => {
+export const TireFilters: FC<IFilters> = ({ withoutServices, resetFilters }) => {
 	const [services, setServices] = useState<string[]>([]);
 
 	const dispatch = useDispatch();
@@ -30,6 +31,10 @@ export const TireFilters: FC<IFilters> = ({ withoutServices }) => {
 			return newFuels;
 		});
 	};
+
+	useEffect(() => {
+		setServices([]);
+	}, [resetFilters]);
 
 	useEffect(() => {
 		if (!withoutServices) {

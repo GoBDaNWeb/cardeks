@@ -23,6 +23,7 @@ export const NewRouteModal = () => {
 		dispatch(setRouteBuilded(false));
 		dispatch(handleSuccess(true));
 		dispatch(setRouteAddresses([]));
+		dispatch(handleOpenModal(false));
 		setTimeout(() => {
 			dispatch(handleSuccess(false));
 		}, 100);

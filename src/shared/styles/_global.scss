@@ -4,65 +4,134 @@
 #root {
 	overflow: hidden;
 }
-.ymaps-2-1-79-controls__control {
-	@media (max-width: $desktop-sm) {
-		inset: 71px auto auto 73px !important;
+#map {
+	.ymaps-2-1-79-controls__control {
+		@media (max-width: $desktop-sm) {
+			inset: 71px auto auto 73px !important;
+		}
+		@media (max-width: $tab) {
+			inset: 57px auto auto 60px !important;
+		}
+		@media (max-width: $tab-sm) {
+			display: none;
+		}
 	}
-	@media (max-width: $tab) {
-		inset: 57px auto auto 60px !important;
+	.ymaps-2-1-79-gotoymaps,
+	// .ymaps-2-1-79-copyright,
+	// .ymaps-2-1-79-float-button,
+	.ymaps-2-1-79-controls__control_toolbar,
+	.ymaps-2-1-79-gototaxi,
+	.ymaps-2-1-79-gototech {
+		display: none !important;
 	}
-	@media (max-width: $tab-sm) {
-		display: none;
+	.ymaps-2-1-79-image {
+		background-repeat: no-repeat !important;
+	}
+	.ymaps-2-1-79-float-button {
+		min-width: 40px !important;
+		min-height: 40px !important;
+		max-width: 40px !important;
+		max-height: 40px !important;
+		position: absolute !important;
+		display: flex !important;
+		align-items: center !important;
+		justify-content: center !important;
+		border-radius: var(--radius-s) !important;
+		box-shadow: var(--shadow) !important;
+		top: 0 !important;
+		@media (max-width: $tab) {
+			min-width: 36px !important;
+			min-height: 36px !important;
+			max-width: 36px !important;
+			max-height: 36px !important;
+		}
+	}
+	.ymaps-2-1-79-_checked {
+		background: var(--white-color) !important;
+		border: 1px solid var(--accent-color) !important;
+	}
+	.ymaps-2-1-79-scaleline {
+		margin-top: 8px;
+		@media (max-width: $tab) {
+			margin-top: 4px;
+		}
+	}
+	.ymaps-2-1-79-float-button-icon {
+		background-image: url('/images/icons/line.svg') !important;
+		width: 100% !important;
+		height: 100% !important;
+		border: none !important;
+		@media (max-width: $tab) {
+			background-image: url('/images/icons/line-mob.svg') !important;
+		}
+	}
+	.ymaps3x0--controls {
+		height: fit-content !important;
+		position: absolute !important;
+		top: auto !important;
+		bottom: 24px !important;
+		left: 13px !important;
 	}
 }
-.ymaps-2-1-79-gotoymaps,
-// .ymaps-2-1-79-copyright,
-// .ymaps-2-1-79-float-button,
-.ymaps-2-1-79-controls__control_toolbar,
-.ymaps-2-1-79-gototaxi,
-.ymaps-2-1-79-gototech {
-	display: none !important;
-}
+#print_map {
+	.ymaps-2-1-79-controls__control {
+		inset: 12px auto auto 47px !important;
+	}
+	.ymaps-2-1-79-gotoymaps,
+	// .ymaps-2-1-79-copyright,
+	// .ymaps-2-1-79-float-button,
+	.ymaps-2-1-79-controls__control_toolbar,
+	.ymaps-2-1-79-gototaxi,
+	.ymaps-2-1-79-gototech {
+		display: none !important;
+	}
 
-.ymaps-2-1-79-float-button {
-	min-width: 40px !important;
-	min-height: 40px !important;
-	max-width: 40px !important;
-	max-height: 40px !important;
-	position: absolute !important;
-	display: flex !important;
-	align-items: center !important;
-	justify-content: center !important;
-	border-radius: var(--radius-s) !important;
-	box-shadow: var(--shadow) !important;
-	top: 0 !important;
-	@media (max-width: $tab) {
-		min-width: 36px !important;
-		min-height: 36px !important;
-		max-width: 36px !important;
-		max-height: 36px !important;
+	.ymaps-2-1-79-float-button {
+		min-width: 40px !important;
+		min-height: 40px !important;
+		max-width: 40px !important;
+		max-height: 40px !important;
+		position: absolute !important;
+		display: flex !important;
+		align-items: center !important;
+		justify-content: center !important;
+		border-radius: var(--radius-s) !important;
+		box-shadow: var(--shadow) !important;
+		top: 0 !important;
+		@media (max-width: $tab) {
+			min-width: 36px !important;
+			min-height: 36px !important;
+			max-width: 36px !important;
+			max-height: 36px !important;
+		}
+	}
+	.ymaps-2-1-79-_checked {
+		background: var(--white-color) !important;
+		border: 1px solid var(--accent-color) !important;
+	}
+	.ymaps-2-1-79-scaleline {
+		margin-top: 8px;
+		@media (max-width: $tab) {
+			margin-top: 4px;
+		}
+	}
+	.ymaps-2-1-79-float-button-icon {
+		background-image: url('/images/icons/line.svg') !important;
+		width: 100% !important;
+		height: 100% !important;
+		border: none !important;
+		@media (max-width: $tab) {
+			background-image: url('/images/icons/line-mob.svg') !important;
+		}
+	}
+	.ymaps3x0--controls {
+		height: fit-content !important;
+		position: absolute !important;
+		top: auto !important;
+		bottom: 24px !important;
+		left: 13px !important;
 	}
 }
-.ymaps-2-1-79-_checked {
-	background: var(--white-color) !important;
-	border: 1px solid var(--accent-color) !important;
-}
-.ymaps-2-1-79-scaleline {
-	margin-top: 8px;
-	@media (max-width: $tab) {
-		margin-top: 4px;
-	}
-}
-.ymaps-2-1-79-float-button-icon {
-	background-image: url('/images/icons/line.svg') !important;
-	width: 100% !important;
-	height: 100% !important;
-	border: none !important;
-	@media (max-width: $tab) {
-		background-image: url('/images/icons/line-mob.svg') !important;
-	}
-}
-
 body {
 	overflow: hidden;
 }
@@ -186,11 +255,4 @@ h5 {
 	border: none;
 	border-top: 1px solid rgba(92, 94, 102, 0.1);
 	margin: 8px 0;
-}
-.ymaps3x0--controls {
-	height: fit-content !important;
-	position: absolute !important;
-	top: auto !important;
-	bottom: 24px !important;
-	left: 13px !important;
 }

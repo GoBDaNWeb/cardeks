@@ -1,34 +1,33 @@
 import { useEffect, useState } from 'react';
 
-import { DBSchema, openDB } from 'idb';
+import { DBSchema, IDBPDatabase, openDB } from 'idb';
 
 import { Feature, IList } from '@/shared/types';
 
 import { filterObj } from '../helpers';
+import FilterWorker from '../helpers/filterWorker?worker';
 
-// Определение схемы для базы данных
+// Определение схемы для IndexedDB
 interface AppDB extends DBSchema {
 	points: {
-		key: string; // ID элемента
-		value: Feature; // Данные, которые мы сохраняем
+		key: string;
+		value: Feature; // Гарантируем наличие id
 	};
 }
 
 export const useIndexedDB = () => {
-	const [db, setDb] = useState<IDBDatabase | null>(null);
-
+	const [db, setDb] = useState<IDBPDatabase<AppDB> | null>(null);
+	const worker = new FilterWorker();
 	// Инициализация базы данных
 	useEffect(() => {
 		const initDB = async () => {
 			const database = await openDB<AppDB>('azsDatabase', 1, {
 				upgrade(db) {
-					db.createObjectStore('points', {
-						keyPath: 'id',
-						autoIncrement: false
-					});
+					if (!db.objectStoreNames.contains('points')) {
+						db.createObjectStore('points', { keyPath: 'id' });
+					}
 				}
 			});
-			//@ts-ignore
 			setDb(database);
 		};
 
@@ -42,72 +41,131 @@ export const useIndexedDB = () => {
 		const tx = db.transaction('points', 'readwrite');
 		const store = tx.objectStore('points');
 
-		data.forEach(item => {
-			store.put(item); // Сохраняем данные в объект store
-		});
-		//@ts-ignore
+		for (const item of data) {
+			store.put(item);
+		}
+
 		await tx.done;
 	};
 
 	// Получение всех данных из IndexedDB
 	const getAllData = async (): Promise<Feature[]> => {
 		if (!db) return [];
-
 		const tx = db.transaction('points', 'readonly');
 		const store = tx.objectStore('points');
-		//@ts-ignore
-		return await store.getAll(); // Получаем все данные
+		return await store.getAll();
 	};
 
-	// Фильтрация данных по первому примеру
+	// Фильтрация данных на уровне IndexedDB
 	const filterDataByOptions = async (
-		filters: IList[] = [],
-		titleFilter?: string,
+		fuels: IList[] = [],
+		featuresList: IList[] = [],
+		titleFilter?: any,
 		azsTypes: IList[] = [],
 		addServices: string[] = [],
 		gateHeight?: number
 	): Promise<Feature[]> => {
-		const data = await getAllData();
-		return data.filter(item => {
-			const { options, types, title } = item;
+		if (!db) return [];
 
-			const optionsMatch = filters.length === 0 || filters.every(filter => options[filter.value]);
+		const tx = db.transaction('points', 'readonly');
+		const store = tx.objectStore('points');
+		const result: Feature[] = [];
 
-			const titleMatch = !titleFilter || title.toLowerCase().includes(titleFilter.toLowerCase());
+		let cursor = await store.openCursor();
+		while (cursor) {
+			const feature = cursor.value;
+			const { options, types, features, title, fuels: featureFuels, filters } = feature;
+			// Проверка топлива
 
-			const azsOptionsMatch = azsTypes.length === 0 || azsTypes.some(type => options[type.value]);
+			// Проверка соответствия топлива
+			// const optionsMatch = fuels.length === 0 || fuels.every(fuel => options[fuel.value]);
+			const fuelsMatch = fuels.length === 0 || fuels.every(fuel => featureFuels[fuel.value]);
 
+			const featuresMatch =
+				featuresList.length === 0 || featuresList.every(feature => features[feature.value]);
+
+			// Проверка соответствия заголовка
+			const titleMatch =
+				titleFilter.length === 0 ||
+				titleFilter.some((brand: string) => title.toLowerCase().includes(brand.toLowerCase()));
+			// const titleMatch = !titleFilter || title.toLowerCase().includes(titleFilter.toLowerCase());
+
+			// Проверка соответствия AZS типов
+			const azsOptionsMatch = azsTypes.length === 0 || azsTypes.some(type => types[type.value]);
+
+			// Проверка соответствия дополнительных сервисов
 			const matchingServices = addServices.length === 0 || filterObj(types, addServices);
 
 			//@ts-ignore
-			const matchingGate = !gateHeight || options.gateHeight > gateHeight;
+			const matchingGate = !gateHeight || filters.gateHeight > gateHeight;
 
-			return optionsMatch && titleMatch && azsOptionsMatch && matchingServices && matchingGate;
-		});
+			if (
+				fuelsMatch &&
+				featuresMatch &&
+				titleMatch &&
+				azsOptionsMatch &&
+				matchingServices &&
+				matchingGate
+			) {
+				result.push(feature);
+			}
+
+			cursor = await cursor.continue();
+		}
+
+		return result;
 	};
 
-	// Фильтрация данных по второму примеру
+	// Фильтрация данных по типу через IndexedDB
 	const filterDataByType = async (
 		selectedFilter: number,
 		filtersIsOpen: boolean
 	): Promise<Feature[]> => {
-		const data = await getAllData();
-		let filteredPoints = data;
-		if (selectedFilter === 0 && filtersIsOpen) {
-			filteredPoints = data.filter(item => item.types.azs);
-		} else if (selectedFilter === 1 && filtersIsOpen) {
-			filteredPoints = data.filter(item => item.options.tire);
-		} else if (selectedFilter === 2 && filtersIsOpen) {
-			filteredPoints = data.filter(item => item.options.washing);
-		}
+		if (!db) return [];
+		const tx = db.transaction('points', 'readonly');
+		const store = tx.objectStore('points');
+		const data = await store.getAll();
 
-		return filteredPoints;
+		return new Promise(resolve => {
+			worker.postMessage({ data, selectedFilter, filtersIsOpen });
+			worker.onmessage = event => resolve(event.data);
+		});
+	};
+
+	const getBrands = async (): Promise<string[]> => {
+		if (!db) return [];
+
+		const tx = db.transaction('points', 'readonly');
+		const store = tx.objectStore('points');
+		const data = await store.getAll();
+
+		// Создаем Set для уникальных значений
+		const uniqueTitles = new Set<string>();
+
+		data.forEach(item => {
+			const title = item.title?.trim(); // Убираем пробелы
+			if (title) {
+				uniqueTitles.add(title); // Добавляем только если не пустой
+			}
+		});
+
+		// Преобразуем Set в массив и сортируем в алфавитном порядке
+		return Array.from(uniqueTitles).sort((a, b) => a.localeCompare(b));
+	};
+
+	const getDataById = async (id: string): Promise<Feature | undefined> => {
+		if (!db) return undefined;
+		const tx = db.transaction('points', 'readonly');
+		const store = tx.objectStore('points');
+		return await store.get(id);
 	};
 
 	return {
 		saveData,
 		getAllData,
 		filterDataByOptions,
-		filterDataByType
+		filterDataByType,
+		getBrands,
+		getDataById
 	};
 };

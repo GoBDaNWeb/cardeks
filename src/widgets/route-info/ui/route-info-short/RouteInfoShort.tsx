@@ -6,6 +6,7 @@ import { handleOpenModal as openMailModal } from '@/features/mail-modal';
 
 import { setChangeRoute, setRouteBuilded } from '@/entities/map';
 import { handleOpenModal } from '@/entities/new-route-modal';
+import { handleOpenModal as openPrintModal } from '@/entities/print-modal';
 
 import { handleCopyLink, useTypedSelector } from '@/shared/lib';
 import { Button, CloseIcon, DownloadIcon, LinkIcon, MailIcon, PrintIcon } from '@/shared/ui';
@@ -21,7 +22,7 @@ export const RouteInfoShort: FC<IRouteInfoShort> = ({ setDetail, handleClose }) 
 	const dispatch = useDispatch();
 
 	const {
-		routeInfo: { routeAddresses, routeTime, routeLength }
+		routeInfo: { routeAddresses, routeTime, routeLength, routeCoords }
 	} = useTypedSelector(state => state.map);
 
 	const handleOpenNewRouteModal = () => {
@@ -32,6 +33,9 @@ export const RouteInfoShort: FC<IRouteInfoShort> = ({ setDetail, handleClose }) 
 	};
 	const handeOpenMailModal = () => {
 		dispatch(openMailModal(true));
+	};
+	const handeOpenPrintModal = () => {
+		dispatch(openPrintModal(true));
 	};
 	const handleChangeRoute = () => {
 		dispatch(setRouteBuilded(false));
@@ -67,10 +71,10 @@ export const RouteInfoShort: FC<IRouteInfoShort> = ({ setDetail, handleClose }) 
 						<Button onClick={() => handeOpenDownloadModal()}>
 							<DownloadIcon />
 						</Button>
-						<Button onClick={() => handleCopyLink(routeAddresses)}>
+						<Button onClick={() => handleCopyLink(routeCoords)}>
 							<LinkIcon />
 						</Button>
-						<Button onClick={() => {}}>
+						<Button onClick={() => handeOpenPrintModal()}>
 							<PrintIcon />
 						</Button>
 						<Button onClick={() => handeOpenMailModal()}>

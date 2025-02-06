@@ -9,6 +9,7 @@ import { FiltersList } from '@/widgets/filters-list';
 import { MenuList } from '@/widgets/menu-list';
 import { MobileMenu } from '@/widgets/mobile-menu';
 import { ModalsMenu } from '@/widgets/modals-menu';
+import { ObjectInfo } from '@/widgets/object-info';
 import { ObjectsList } from '@/widgets/objects-list';
 import { RouteBuild } from '@/widgets/route-build';
 import { RouteFiltersList } from '@/widgets/route-filters-list';
@@ -23,6 +24,7 @@ import { ReviewModal } from '@/features/review-modal';
 
 import { GuideModal } from '@/entities/guide-modal';
 import { NewRouteModal } from '@/entities/new-route-modal';
+import { PrintModal } from '@/entities/print-modal';
 
 import s from './layout.module.scss';
 
@@ -35,6 +37,7 @@ export const Layout: FC<PropsWithChildren> = ({ children }) => {
 				<MobileMenu />
 				<ReviewModal />
 				<NewRouteModal />
+				<PrintModal />
 				<GuideModal />
 				<DownloadModal />
 				<MailModal />
@@ -44,6 +47,7 @@ export const Layout: FC<PropsWithChildren> = ({ children }) => {
 				<Zoom />
 				<ChangeLayer />
 				<ObjectsList />
+				<ObjectInfo />
 				<RouteBuild />
 				<RouteFiltersList />
 				<SettingsMapMenu />

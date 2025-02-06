@@ -22,6 +22,28 @@
 			}
 		}
 	}
+	&:hover {
+		background: var(--accent-color);
+		.content {
+			.title {
+				color: var(--white-color);
+			}
+			.count {
+				color: var(--white-color);
+				span {
+					color: var(--white-color);
+					opacity: 0.5;
+				}
+			}
+		}
+		.icon {
+			svg {
+				path {
+					fill: var(--white-color);
+				}
+			}
+		}
+	}
 }
 .filterTab {
 	border: 1px solid var(--line-color);
@@ -74,6 +96,7 @@
 			}
 		}
 	}
+
 	.content {
 		display: flex;
 		flex-direction: column;

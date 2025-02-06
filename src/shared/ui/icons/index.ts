@@ -25,3 +25,4 @@ export { ArrowTopIcon } from './ArrowTopIcon';
 export { SettingsIcon } from './SettingsIcon';
 export { LocationIcon } from './LocationIcon';
 export { MenuIcon } from './MenuIcon';
+export { CardeksLogo } from './CardeksLogo';

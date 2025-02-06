@@ -1,29 +1,24 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Loader from 'react-js-loader';
 import { useDispatch } from 'react-redux';
 
 import clsx from 'clsx';
 import { Map as MapType, ObjectManager } from 'yandex-maps';
 
+import { setActiveObject } from '@/entities/object-info';
+
 import { useGetPointsQuery } from '@/shared/api';
 import { useIndexedDB, useTypedSelector } from '@/shared/lib';
 import { Feature, IPlacemark } from '@/shared/types';
 
-import { createPoints, filterAzs, filterFeatures, usePoint, useRoute } from '../lib';
+import { createPoints, usePoint, useRoute } from '../lib';
 import {
 	handleWheel,
+	setCategoryTotals,
 	setIsUrlBuid,
 	setMapLoading,
 	setPanoramaOpen,
 	setPoints,
-	setTotalAzs,
-	setTotalPoints,
-	setTotalTire,
-	setTotalViewAzs,
-	setTotalViewPoints,
-	setTotalViewTire,
-	setTotalViewWashing,
-	setTotalWashing,
 	setZoom
 } from '../model';
 
@@ -36,8 +31,8 @@ export const Map = () => {
 	const [objectManagerState, setObjectManagerState] = useState<ObjectManager | null>(null);
 	const [pointCollection, setPointCollection] = useState<IPlacemark[]>([]);
 	const dispatch = useDispatch();
-	const { saveData, getAllData, filterDataByOptions, filterDataByType } = useIndexedDB();
-	//@ts-ignore
+	const { saveData, getAllData, filterDataByType, filterDataByOptions } = useIndexedDB();
+
 	const { data, isLoading } = useGetPointsQuery();
 
 	const {
@@ -46,10 +41,6 @@ export const Map = () => {
 	} = useTypedSelector(state => state.map);
 
 	const { selectedFilter, filtersIsOpen, filters } = useTypedSelector(state => state.filters);
-
-	const azsArr = useMemo(() => {
-		return data?.data ? createPoints(data.data) : [];
-	}, [data?.data]);
 
 	const getVisibleMarkers = useCallback(
 		(map: MapType, objectManager: any) => {
@@ -63,14 +54,33 @@ export const Map = () => {
 					coordinates[1] <= bounds[1][1]
 				);
 			});
-			const visibleWashingPoints = visibleMarkers.filter(
-				(marker: Feature) => marker.options.washing
+			const visibleWashingPoints = visibleMarkers.filter((marker: Feature) => marker.types.washing);
+			const visibleTirePoints = visibleMarkers.filter((marker: Feature) => marker.types.tire);
+
+			dispatch(
+				setCategoryTotals({
+					category: 'azs',
+					totalView: visibleMarkers.length
+				})
 			);
-			const visibleTirePoints = visibleMarkers.filter((marker: Feature) => marker.options.tire);
-			dispatch(setTotalViewTire(visibleTirePoints.length));
-			dispatch(setTotalViewWashing(visibleWashingPoints.length));
-			dispatch(setTotalViewPoints(visibleMarkers.length));
-			dispatch(setTotalViewAzs(visibleMarkers.length));
+			dispatch(
+				setCategoryTotals({
+					category: 'points',
+					totalView: visibleMarkers.length
+				})
+			);
+			dispatch(
+				setCategoryTotals({
+					category: 'washing',
+					totalView: visibleWashingPoints.length
+				})
+			);
+			dispatch(
+				setCategoryTotals({
+					category: 'tire',
+					totalView: visibleTirePoints.length
+				})
+			);
 			dispatch(setPoints(visibleMarkers));
 		},
 		[dispatch]
@@ -100,6 +110,9 @@ export const Map = () => {
 			dispatch(setZoom(map.getZoom()));
 			dispatch(handleWheel(true));
 		});
+		map.geoObjects.events.add('click', function (e) {
+			dispatch(setActiveObject(e.get('objectId')));
+		});
 	};
 
 	useEffect(() => {
@@ -123,10 +136,10 @@ export const Map = () => {
 			const mappedAzsPoints = features.map((marker: Feature) => {
 				const newObject = {
 					...marker,
-					options: Object.keys(marker.options).reduce(
+					options: Object.keys(marker.types).reduce(
 						(acc, key) => {
 							if (key !== 'washing' && key !== 'tire') {
-								acc[key] = marker.options[key];
+								acc[key] = marker.types[key];
 							}
 							return acc;
 						},
@@ -136,38 +149,87 @@ export const Map = () => {
 				return newObject;
 			});
 			const azsPoints = mappedAzsPoints.filter((marker: Feature) => {
-				return Object.values(marker.options).some(value => value === true);
+				return Object.values(marker.fuels).some(value => value === true);
 			});
-			const washingPoints = features.filter((marker: Feature) => marker.options.washing);
-			const tirePoints = features.filter((marker: Feature) => marker.options.tire);
-			dispatch(setTotalPoints(features.length));
-			dispatch(setTotalWashing(washingPoints.length));
-			dispatch(setTotalTire(tirePoints.length));
-			dispatch(setTotalAzs(azsPoints.length));
+			const washingPoints = features.filter((marker: Feature) => marker.types.washing);
+			const tirePoints = features.filter((marker: Feature) => marker.types.tire);
+			dispatch(
+				setCategoryTotals({
+					category: 'azs',
+					total: azsPoints.length
+				})
+			);
+			dispatch(
+				setCategoryTotals({
+					category: 'tire',
+					total: tirePoints.length
+				})
+			);
+			dispatch(
+				setCategoryTotals({
+					category: 'washing',
+					total: washingPoints.length
+				})
+			);
+			dispatch(
+				setCategoryTotals({
+					category: 'points',
+					total: features.length
+				})
+			);
 			map.events.add('boundschange', () => getVisibleMarkers(map, objectManager));
 			getVisibleMarkers(map, objectManager);
 			dispatch(setMapLoading(false));
 		}
 	}, [isLoading, map, features]);
+
 	const filter = useCallback(async () => {
 		if (objectManagerState && map) {
-			objectManagerState.removeAll();
 			const filteredData = await filterDataByType(selectedFilter, filtersIsOpen);
-			getVisibleMarkers(map, objectManagerState);
-			objectManagerState.add(filteredData);
+			if (filteredData) {
+				objectManagerState.removeAll();
+				objectManagerState.add(filteredData);
+				getVisibleMarkers(map, objectManagerState);
+			}
 		}
 	}, [selectedFilter, filtersIsOpen]);
 
+	const filterOptions = useCallback(async () => {
+		if (objectManagerState && map) {
+			objectManagerState.removeAll();
+			getVisibleMarkers(map, objectManagerState);
+			const filteredData = await filterDataByOptions(
+				filters.fuelFilters,
+				filters.features,
+				filters.brandTitles,
+				[],
+				filters.addServices,
+				filters.gateHeight
+			);
+
+			objectManagerState.add(filteredData);
+		}
+	}, [
+		filters.fuelFilters,
+		filters.features,
+		filters.brandTitles,
+		filters.addServices,
+		filters.gateHeight
+	]);
+
 	useEffect(() => {
-		if (map && objectManagerState) {
+		if (!map || !objectManagerState) return;
+
+		if (selectedFilter !== null || filtersIsOpen) {
 			filter();
 		}
-	}, [filter, map]);
+	}, [filter, map, selectedFilter, filtersIsOpen]);
 
 	useEffect(() => {
 		const fetch = async () => {
 			await saveData(createPoints(data.data));
 			const allData = await getAllData();
+
 			setFeatures(allData);
 		};
 		if (!isLoading) {
@@ -179,30 +241,27 @@ export const Map = () => {
 		if (!objectManagerState) return;
 
 		const hasActiveFilters =
+			filters.features.length > 0 ||
 			filters.fuelFilters.length > 0 ||
-			filters.brandTitle ||
+			filters.brandTitles.length > 0 ||
 			filters.addServices.length > 0 ||
 			filters.gateHeight;
 
-		if (hasActiveFilters) {
-			objectManagerState.removeAll();
-			const filteredPoints = filterFeatures(
-				azsArr,
-				filters.fuelFilters,
-				filters.brandTitle,
-				[],
-				filters.addServices,
-				filters.gateHeight
-			);
-			objectManagerState.add(filteredPoints);
-		} else {
-			filter();
-		}
+		const applyFilters = async () => {
+			if (hasActiveFilters) {
+				await filterOptions();
+			} else {
+				await filter();
+			}
+		};
+
+		applyFilters();
 	}, [
 		filters.fuelFilters,
-		filters.brandTitle,
+		filters.brandTitles,
 		filters.addServices,
 		filters.gateHeight,
+		filters.features,
 		objectManagerState,
 		features,
 		selectedFilter,

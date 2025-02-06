@@ -11,6 +11,8 @@ import { guideModalSlice } from '@/entities/guide-modal';
 import { mapReducer } from '@/entities/map';
 import { mobileMenuReducer } from '@/entities/mobile-menu';
 import { newRouteModalReducer } from '@/entities/new-route-modal';
+import { objectInfoReducer } from '@/entities/object-info';
+import { printModalReducer } from '@/entities/print-modal';
 
 import { cardeksAPI, cardeksPointsAPI } from '@/shared/api';
 
@@ -28,6 +30,8 @@ const mainReducer = combineReducers({
 	mailModal: mailModalReducer,
 	mobileMenu: mobileMenuReducer,
 	settingsMapMenu: settingsMapMenuReducer,
+	printModal: printModalReducer,
+	objectInfo: objectInfoReducer,
 	[cardeksAPI.reducerPath]: cardeksAPI.reducer,
 	[cardeksPointsAPI.reducerPath]: cardeksPointsAPI.reducer
 });

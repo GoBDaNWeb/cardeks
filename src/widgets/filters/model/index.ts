@@ -2,8 +2,9 @@ export {
 	setSelectedFilter,
 	setOpenFilters,
 	setFuelFilters,
-	setBrandTitle,
+	setBrandTitles,
 	setAddServices,
 	setGateHeight,
+	setFeatures,
 	default as filtersReducer
 } from './filters.slice';

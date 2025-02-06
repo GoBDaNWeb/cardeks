@@ -18,6 +18,7 @@ import s from './route-build.module.scss';
 export const RouteBuild = () => {
 	const { activeMenu } = useTypedSelector(store => store.menu);
 	const { activeMenu: mobileActiveMenu } = useTypedSelector(store => store.mobileMenu);
+	const { objectId } = useTypedSelector(store => store.objectInfo);
 
 	const {
 		routeInfo: { routeIsBuilded }
@@ -35,7 +36,7 @@ export const RouteBuild = () => {
 	};
 
 	const routeBuildClass = clsx(s.routeBuild, {
-		[s.active]: activeMenu === 'route' || mobileActiveMenu === 'route',
+		[s.active]: activeMenu === 'route' || (mobileActiveMenu === 'route' && !objectId),
 		[s.hide]: routeIsBuilded
 	});
 

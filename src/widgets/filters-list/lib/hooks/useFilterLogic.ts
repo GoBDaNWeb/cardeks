@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { setAddServices, setBrandTitle, setFuelFilters, setGateHeight } from '@/widgets/filters';
+import { setAddServices, setBrandTitles, setFuelFilters, setGateHeight } from '@/widgets/filters';
 
 import { useDebounce, useTypedSelector } from '@/shared/lib';
 import { IList } from '@/shared/types';
@@ -49,7 +49,7 @@ export const useFiltersLogic = (withoutServices: boolean, type: string) => {
 	}, [gateHeights, dispatch]);
 
 	useEffect(() => {
-		dispatch(setBrandTitle(inputBrandValue));
+		dispatch(setBrandTitles(inputBrandValue));
 	}, [debounced, dispatch]);
 
 	useEffect(() => {
@@ -74,7 +74,7 @@ export const useFiltersLogic = (withoutServices: boolean, type: string) => {
 			setGateHeights(null);
 			setInputBrandValue('');
 			setFuels([]);
-			dispatch(setBrandTitle(''));
+			dispatch(setBrandTitles(''));
 			dispatch(setFuelFilters([]));
 			dispatch(setAddServices([]));
 		}

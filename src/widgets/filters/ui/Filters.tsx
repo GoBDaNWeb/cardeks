@@ -3,8 +3,6 @@ import { useDispatch } from 'react-redux';
 
 import clsx from 'clsx';
 
-import { setMapLoading } from '@/entities/map';
-
 import { useTypedSelector } from '@/shared/lib';
 import { AZSIcon, FilterIcon, FilterTab, TireIcon, WashIcon } from '@/shared/ui';
 
@@ -22,6 +20,7 @@ export const Filters = () => {
 	const { activeMenu: mobileActiveMenu } = useTypedSelector(store => store.mobileMenu);
 	const {
 		mapInfo: {
+			pointsData,
 			totalViewPoints,
 			totalWashing,
 			totalTire,
@@ -29,7 +28,8 @@ export const Filters = () => {
 			totalViewTire,
 			totalAzsPoints,
 			totalViewAzsPoints
-		}
+		},
+		routeInfo: { changeRoute }
 	} = useTypedSelector(state => state.map);
 	const {
 		routeInfo: { routeIsBuilded }
@@ -64,18 +64,28 @@ export const Filters = () => {
 	const filtersClass = clsx(s.filters, {
 		[s.left]: activeMenu === 'route',
 		[s.routeFilterActive]: filterActive || filtersIsOpen,
-		[s.hide]: (routeIsBuilded && activeMenu === 'route') || mobileActiveMenu !== null
+		[s.hide]: (routeIsBuilded && activeMenu === 'route') || mobileActiveMenu !== null || changeRoute
 	});
 
 	const filterTabs = [
 		{
 			title: 'АЗС / АГЗС',
 			icon: <AZSIcon />,
-			totalCount: totalAzsPoints,
-			viewCount: totalViewAzsPoints
+			totalCount: pointsData.azs.total,
+			viewCount: pointsData.azs.totalView
 		},
-		{ title: 'Шиномонтаж', icon: <TireIcon />, totalCount: totalTire, viewCount: totalViewTire },
-		{ title: 'Мойка', icon: <WashIcon />, totalCount: totalWashing, viewCount: totalViewWashing }
+		{
+			title: 'Шиномонтаж',
+			icon: <TireIcon />,
+			totalCount: pointsData.tire.total,
+			viewCount: pointsData.tire.totalView
+		},
+		{
+			title: 'Мойка',
+			icon: <WashIcon />,
+			totalCount: pointsData.washing.total,
+			viewCount: pointsData.washing.totalView
+		}
 	];
 	return (
 		<div className={filtersClass}>
@@ -86,7 +96,7 @@ export const Filters = () => {
 					</div>
 					<p>Фильтры</p>
 				</div>
-				<p className={s.total}>На карте: {totalViewPoints}</p>
+				<p className={s.total}>На карте: {pointsData.points.totalView}</p>
 			</div>
 			<div className={s.filtersTabs}>
 				{filterTabs.map((tab, index) => (

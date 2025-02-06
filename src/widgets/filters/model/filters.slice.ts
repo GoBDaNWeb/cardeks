@@ -4,7 +4,8 @@ import { createSlice } from '@reduxjs/toolkit';
 
 type FiltersType = {
 	fuelFilters: IList[];
-	brandTitle: string;
+	features: IList[];
+	brandTitles: string[];
 	addServices: string[];
 	gateHeight: number | null;
 };
@@ -19,8 +20,9 @@ const initialState: IFilters = {
 	filtersIsOpen: false,
 	filters: {
 		fuelFilters: [],
-		brandTitle: '',
+		brandTitles: [],
 		addServices: [],
+		features: [],
 		gateHeight: null
 	}
 };
@@ -41,11 +43,14 @@ const filters = createSlice({
 		setAddServices(state, action) {
 			state.filters.addServices = action.payload;
 		},
-		setBrandTitle(state, action) {
-			state.filters.brandTitle = action.payload;
+		setBrandTitles(state, action) {
+			state.filters.brandTitles = action.payload;
 		},
 		setGateHeight(state, action) {
 			state.filters.gateHeight = action.payload;
+		},
+		setFeatures(state, action) {
+			state.filters.features = action.payload;
 		}
 	}
 });
@@ -56,6 +61,7 @@ export const {
 	setFuelFilters,
 	setAddServices,
 	setGateHeight,
-	setBrandTitle
+	setBrandTitles,
+	setFeatures
 } = filters.actions;
 export default filters.reducer;

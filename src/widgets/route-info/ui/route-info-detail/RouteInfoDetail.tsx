@@ -6,6 +6,7 @@ import { handleOpenModal as openMailModal } from '@/features/mail-modal';
 
 import { setCenter, setPointsOnRoute } from '@/entities/map';
 import { ObjectItem } from '@/entities/object-item';
+import { handleOpenModal as openPrintModal } from '@/entities/print-modal';
 
 import { ruLetters } from '@/shared/config';
 import { handleCopyLink, useTypedSelector } from '@/shared/lib';
@@ -40,6 +41,9 @@ export const RouteInfoDetail: FC<IRouteInfoDetail> = ({ handleClose }) => {
 	};
 	const handeOpenMailModal = () => {
 		dispatch(openMailModal(true));
+	};
+	const handeOpenPrintModal = () => {
+		dispatch(openPrintModal(true));
 	};
 	const handleViewOnMap = (coords: number[]) => {
 		dispatch(setCenter(coords));
@@ -78,7 +82,7 @@ export const RouteInfoDetail: FC<IRouteInfoDetail> = ({ handleClose }) => {
 						<Button onClick={() => handleCopyLink(routeAddresses)}>
 							<LinkIcon />
 						</Button>
-						<Button onClick={() => {}}>
+						<Button onClick={() => handeOpenPrintModal()}>
 							<PrintIcon />
 						</Button>
 						<Button onClick={() => handeOpenMailModal()}>

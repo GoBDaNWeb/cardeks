@@ -6,6 +6,7 @@ import s from './dropdown.module.scss';
 
 interface IDropdown {
 	className?: string;
+	onMouseLeave?: () => void;
 }
 
 export const Dropdown: FC<PropsWithChildren<IDropdown>> = ({ className, children }) => {

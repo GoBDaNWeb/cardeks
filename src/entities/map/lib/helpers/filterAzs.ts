@@ -22,9 +22,9 @@ export const filterAzs = ({
 	if (selectedFilter === 0 && filtersIsOpen) {
 		filteredPoints = azsArr.filter((marker: Feature) => marker.types.azs);
 	} else if (selectedFilter === 1 && filtersIsOpen) {
-		filteredPoints = azsArr.filter((marker: Feature) => marker.options.tire);
+		filteredPoints = azsArr.filter((marker: Feature) => marker.types.tire);
 	} else if (selectedFilter === 2 && filtersIsOpen) {
-		filteredPoints = azsArr.filter((marker: Feature) => marker.options.washing);
+		filteredPoints = azsArr.filter((marker: Feature) => marker.types.washing);
 	}
 	objectManagerState.add(filteredPoints);
 	if (handleLoading) {

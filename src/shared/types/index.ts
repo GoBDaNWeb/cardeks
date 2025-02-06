@@ -50,10 +50,27 @@ export interface Feature {
 	options: {
 		[key: string]: boolean | number;
 	};
+	fuels: {
+		[key: string]: boolean | number;
+	};
+	filters: {
+		[key: string]: boolean | number;
+	};
+	features: {
+		[key: string]: boolean | number;
+	};
 	distance?: number;
 	address?: string;
 }
 export interface IList {
 	title: string;
 	value: string;
+}
+export interface IBrand {
+	name: string;
+}
+export interface IGPX {
+	lat: number;
+	lon: number;
+	name: string;
 }

@@ -5,7 +5,6 @@ import { useDispatch } from 'react-redux';
 import {
 	setAddress,
 	setBuildRoute,
-	setBuildSearch,
 	setCoords,
 	setCurrentPointId,
 	setDeletePointId,

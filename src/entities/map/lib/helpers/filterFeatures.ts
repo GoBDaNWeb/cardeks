@@ -4,7 +4,7 @@ import { Feature, IList } from '@/shared/types';
 export const filterFeatures = (
 	features: Feature[],
 	filters: IList[] = [],
-	titleFilter?: string,
+	titleFilter?: any,
 	azsTypes: IList[] = [],
 	addServices: string[] = [],
 	gateHeight?: number
@@ -16,8 +16,10 @@ export const filterFeatures = (
 		const optionsMatch = filters.length === 0 || filters.every(filter => options[filter.value]);
 
 		// Проверка соответствия заголовка
-		const titleMatch = !titleFilter || title.toLowerCase().includes(titleFilter.toLowerCase());
-
+		const titleMatch =
+			titleFilter.length === 0 ||
+			titleFilter.some((brand: any) => title.toLowerCase().includes(brand.toLowerCase()));
+		// const titleMatch = !titleFilter || title.toLowerCase().includes(titleFilter.toLowerCase());
 		// Проверка соответствия AZS типов
 		const azsOptionsMatch = azsTypes.length === 0 || azsTypes.some(type => options[type.value]);
 

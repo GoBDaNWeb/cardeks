@@ -45,14 +45,14 @@ export const useRoute = ({
 	} = useTypedSelector(state => state.map);
 	const {
 		addSettings,
-		filters: { brandTitle, azsTypes },
+		filters: { brandTitles, azsTypes },
 		withFilters
 	} = useTypedSelector(state => state.routeForm);
 
 	const multiRouteRef = useRef<any>(null);
 
 	// функция построения маршрута
-	const handleBuildRoute = (condition: boolean, urlBuild: boolean, routesArr: string[]) => {
+	const handleBuildRoute = (condition: boolean, urlBuild: boolean, routesArr: number[][]) => {
 		// дальность точки от маршрута в мметрах
 		const threshold = addSettings.includes(2) ? 200 : 500;
 		if (map) {
@@ -113,38 +113,64 @@ export const useRoute = ({
 					if (urlBuild && features) {
 						dispatch(setMapLoading(true));
 						dispatch(setActiveMenu('route'));
-						dispatch(setRouteAddresses(routesArr));
+						dispatch(setRouteAddresses(addressesCollection));
 						objectManagerState.removeAll();
-						let coordsList = [];
 
-						routesArr.forEach((address, index) => {
-							ymaps
-								.geocode(address, { results: 1 })
-								.then((res: any) => {
-									let firstGeoObject = res.geoObjects.get(0);
-									let coords = firstGeoObject.geometry.getCoordinates();
-									const myPlacemark = createPlacemark({ ymaps, coords, index });
-									setRouteCoordsState(prevCoords => [...prevCoords, coords]);
-									map.geoObjects.add(myPlacemark);
-									setPointCollection(prevCollection => [...prevCollection, myPlacemark]);
-									coordsList.push(coords);
-									return coordsList;
-								})
-								.then(async (res: number[][]) => {
-									const azsOnRoute = await getAzsOnRoute(features, lines, threshold, res[0]);
-									if (azsOnRoute) {
-										objectManagerState.add(azsOnRoute);
-										dispatch(setPointsOnRoute(azsOnRoute));
-										dispatch(setMapLoading(false));
-										dispatch(setIsUrlBuid(false));
-									}
-								})
-								.catch((error: any) => {
-									console.error('Ошибка геокодирования:', error);
-								});
+						const azsOnRoute = await getAzsOnRoute(features, lines, threshold, routesArr[0]);
+						if (azsOnRoute) {
+							objectManagerState.add(azsOnRoute);
+							dispatch(setPointsOnRoute(azsOnRoute));
+							// dispatch(setMapLoading(false));
+							// dispatch(setIsUrlBuid(false));
+						}
+						setRouteCoordsState([...routesArr]);
+
+						const geocodePromises = routesArr.map((coord: number[]) => {
+							return ymaps.geocode(coord).then((res: any) => {
+								const firstGeoObject = res.geoObjects.get(0);
+								const address = firstGeoObject.getAddressLine();
+								return address;
+							});
+						});
+
+						Promise.all(geocodePromises).then(addresses => {
+							// setAddressesCollection(addresses);
+							dispatch(setRouteAddresses(addresses));
+							dispatch(setMapLoading(false));
+							dispatch(setIsUrlBuid(false));
+						});
+						routesArr.forEach((coords, index) => {
+							const myPlacemark = createPlacemark({ ymaps, coords, index });
+							map.geoObjects.add(myPlacemark);
+							setPointCollection(prevCollection => [...prevCollection, myPlacemark]);
+
+							// ymaps
+							// 	.geocode(address, { results: 1 })
+							// 	.then((res: any) => {
+							// 		let firstGeoObject = res.geoObjects.get(0);
+							// 		let coords = firstGeoObject.geometry.getCoordinates();
+							// 		const myPlacemark = createPlacemark({ ymaps, coords, index });
+							// 		setRouteCoordsState(prevCoords => [...prevCoords, coords]);
+							// 		map.geoObjects.add(myPlacemark);
+							// 		setPointCollection(prevCollection => [...prevCollection, myPlacemark]);
+							// 		coordsList.push(coords);
+							// 		return coordsList;
+							// 	})
+							// 	.then(async (res: number[][]) => {
+							// 		const azsOnRoute = await getAzsOnRoute(features, lines, threshold, res[0]);
+							// 		if (azsOnRoute) {
+							// 			objectManagerState.add(azsOnRoute);
+							// 			dispatch(setPointsOnRoute(azsOnRoute));
+							// 			dispatch(setMapLoading(false));
+							// 			dispatch(setIsUrlBuid(false));
+							// 		}
+							// 	})
+							// 	.catch((error: any) => {
+							// 		console.error('Ошибка геокодирования:', error);
+							// 	});
 						});
 					} else {
-						const filteredPoints = filterFeatures(features, [], brandTitle, azsTypes);
+						const filteredPoints = filterFeatures(features, [], brandTitles, azsTypes);
 						const azsOnRoute = await getAzsOnRoute(
 							withFilters ? filteredPoints : features,
 							lines,
@@ -194,7 +220,11 @@ export const useRoute = ({
 		if (queryRoutes && objectManagerState && isUrlBuild) {
 			const condition = queryRoutes && buildRoute;
 			const queryRoutesArray = queryRoutes.split(';');
-			handleBuildRoute(condition, true, queryRoutesArray);
+			const queryCoordsArray = queryRoutesArray.map((str: any) => {
+				// Разделяем строку по символу "-" и преобразуем каждую часть в число
+				return str.split('-').map(Number);
+			});
+			handleBuildRoute(condition, true, queryCoordsArray);
 		}
 	}, [map, buildRoute, objectManagerState]);
 

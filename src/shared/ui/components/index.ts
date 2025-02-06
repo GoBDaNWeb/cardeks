@@ -13,3 +13,4 @@ export * from './textarea';
 export * from './selector';
 export * from './radio';
 export * from './dropdown';
+export * from './excel-template';

@@ -46,6 +46,40 @@
 		input {
 			margin: 0;
 		}
+		.brandWrapper {
+			position: relative;
+			width: 100%;
+			.chips {
+				margin-bottom: 10px;
+				display: flex;
+				flex-wrap: wrap;
+				gap: 5px;
+			}
+			.dropdown {
+				max-height: 200px;
+				overflow: auto;
+				gap: 0;
+				padding: 0;
+				left: 10px;
+				right: 10px;
+				width: auto;
+				display: none;
+				&.active {
+					display: flex;
+				}
+				.brand {
+					@include text-m;
+					cursor: pointer;
+					padding: 12px 16px;
+					// &:hover {
+					// 	background: var(--line-color);
+					// }
+					&.active {
+						background: var(--line-color);
+					}
+				}
+			}
+		}
 		.inputList {
 			display: flex;
 			flex-wrap: wrap;
@@ -121,6 +155,17 @@
 		padding-top: 20px;
 		margin-top: 20px;
 		border-top: 1px solid var(--line-color);
+		display: flex;
+		justify-content: space-between;
+		.clearBtn,
+		.clearBtn {
+			&:hover {
+				p {
+					color: var(--accent-hover-color);
+				}
+			}
+		}
+		.clearBtn,
 		.closeBtn {
 			display: flex;
 			align-items: center;
@@ -128,6 +173,7 @@
 			p {
 				@include text-sm;
 				color: var(--secondary-color);
+				transition: var(--trs-300);
 			}
 		}
 	}

@@ -1,0 +1,158 @@
+@import '@/shared/styles/variables';
+@import '@/shared/styles/mixins';
+.objectInfo.active {
+	transform: translateX(0);
+	opacity: 1;
+	pointer-events: all;
+}
+.objectInfo {
+	pointer-events: none;
+	background: var(--white-color);
+	border-radius: var(--radius-s);
+	box-shadow: var(--shadow);
+	width: 633px;
+	height: fit-content;
+	position: absolute;
+	top: 213px;
+	right: 24px;
+	transform: translateX(680px);
+	transition:
+		transform var(--trs-300),
+		opacity var(--trs-300);
+	padding: 20px 0 24px 20px;
+	bottom: 24px;
+	z-index: 3;
+	scrollbar-width: thin;
+	scrollbar-color: var(--accent-color) #ffffff;
+	&::-webkit-scrollbar {
+		width: 5px;
+	}
+	opacity: 0;
+	@media (max-width: $desktop-sm) {
+		right: 16px;
+		width: 550px;
+		top: 204px;
+		bottom: 16px;
+		max-height: calc(100vh - 221px);
+	}
+	@media (max-width: $tab) {
+		right: 16px;
+		width: 360px;
+		top: 243px;
+		padding: 16px 0 16px 16px;
+	}
+	@media (max-width: $tab-sm) {
+		top: 49px;
+		width: 100%;
+		right: 0;
+		left: 0;
+		border-radius: 0 0 var(--radius-s) var(--radius-s);
+		box-shadow: var(--shadow-bottom);
+		max-height: calc(80vh - 221px);
+		transform: translateX(0);
+	}
+	.objectInfoTop {
+		padding-right: 24px;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		@media (max-width: $tab) {
+			padding-right: 16px;
+		}
+		.titleWrapper {
+			display: flex;
+			justify-content: space-between;
+			width: 100%;
+
+			p {
+				@include h5;
+			}
+		}
+		.features {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 16px;
+			margin-top: 20px;
+			.feature {
+				padding-left: 20px;
+				position: relative;
+				@include text-s;
+				&:before {
+					content: '';
+					position: absolute;
+					top: 4px;
+					left: 0;
+					border-radius: 999px;
+					width: 12px;
+					height: 12px;
+					background: var(--success-color);
+				}
+			}
+		}
+		.address {
+			margin-top: 8px;
+			@include text-m;
+		}
+		.coords {
+			margin-top: 4px;
+			@include text-s;
+			color: var(--secondary-color);
+			&:hover {
+				color: var(--accent-color);
+			}
+		}
+		.buildRoute {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			margin-top: 8px;
+			&:hover {
+				svg {
+					path {
+						stroke: var(--accent-hover-color);
+						fill: var(--accent-hover-color);
+					}
+				}
+				p {
+					color: var(--accent-hover-color);
+				}
+			}
+			svg {
+				width: 16px;
+				height: 16px;
+				path {
+					stroke: var(--secondary-color);
+					fill: var(--secondary-color);
+					transition: var(--trs-300);
+				}
+				circle {
+					fill: var(--secondary-color);
+				}
+			}
+			p {
+				@include text-sm;
+				color: var(--secondary-color);
+				transition: var(--trs-300);
+			}
+		}
+	}
+	.objectInfoContent {
+		margin-top: 20px;
+		padding-top: 20px;
+		border-top: 1px solid var(--line-color);
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+		.infoItem {
+			display: flex;
+			flex-direction: column;
+			gap: 4px;
+			h6 {
+				@include text-m;
+			}
+			p {
+				@include text-s;
+			}
+		}
+	}
+}

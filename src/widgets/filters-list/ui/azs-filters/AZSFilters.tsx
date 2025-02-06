@@ -1,30 +1,57 @@
-import { FC, FormEvent, useEffect, useState } from 'react';
+import { FC, FormEvent, useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { setAddServices, setBrandTitle, setFuelFilters, setGateHeight } from '@/widgets/filters';
+import clsx from 'clsx';
 
-import { useDebounce, useTypedSelector } from '@/shared/lib';
+import {
+	setAddServices,
+	setBrandTitles,
+	setFeatures,
+	setFuelFilters,
+	setGateHeight
+} from '@/widgets/filters';
+
+import { azsMainFilters, fuelList } from '@/shared/config';
+import { useIndexedDB, useTypedSelector } from '@/shared/lib';
 import { IList } from '@/shared/types';
-import { Chip, Input } from '@/shared/ui';
+import { Chip, Dropdown, Input } from '@/shared/ui';
 
-import { addServicesAzsList, fuelList } from '../../config';
+import { addServicesAzsList } from '../../config';
 import s from '../filters-list.module.scss';
 import { TireFilters } from '../tire-filters';
 import { WashFilters } from '../wash-filters';
 
 interface IFilters {
 	withoutServices?: boolean;
+	resetFilters?: boolean;
 }
 
-export const AZSFilters: FC<IFilters> = ({ withoutServices }) => {
+export const AZSFilters: FC<IFilters> = ({ withoutServices, resetFilters }) => {
 	const [inputBrandValue, setInputBrandValue] = useState('');
 	const [fuels, setFuels] = useState<IList[]>([]);
+	const [features, setMainFeatures] = useState<IList[]>([]);
 	const [services, setServices] = useState<string[]>([]);
+	const [currentBrands, setCurrentBrands] = useState<string[]>([]);
+	const [dataBrands, setDataBrands] = useState<string[]>([]);
+	const [filteredBrands, setFilteredBrands] = useState<string[]>([]);
+	const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+	const [activeBrand, setActiveBrand] = useState(0);
+	const [dropdownActive, setDropdownActive] = useState(false);
 	const { filtersIsOpen } = useTypedSelector(store => store.filters);
 
 	const dispatch = useDispatch();
-	const debounced = useDebounce(inputBrandValue);
+	const { getBrands } = useIndexedDB();
 
+	const handleGetBradns = useCallback(async () => {
+		const brands = await getBrands();
+		setDataBrands(brands);
+	}, [getBrands]);
+
+	useEffect(() => {
+		handleGetBradns();
+	}, [filtersIsOpen]);
+
+	// Обработчик выбора топлива
 	const handleSetFuels = (fuel: IList) => {
 		setFuels(prevFuels => {
 			const isSet = prevFuels.some(item => item.value === fuel.value);
@@ -34,10 +61,52 @@ export const AZSFilters: FC<IFilters> = ({ withoutServices }) => {
 			return newFuels;
 		});
 	};
-	const handleChangeInputValue = (e: FormEvent<HTMLInputElement>) => {
-		setInputBrandValue((e.target as HTMLTextAreaElement).value);
+
+	// Обработчик выбора основных фильтров
+	const handleSetFeatures = (feature: IList) => {
+		setMainFeatures(prevFeatures => {
+			const isSet = prevFeatures.some(item => item.value === feature.value);
+			const newFeatures = isSet
+				? prevFeatures.filter(item => item.value !== feature.value)
+				: [...prevFeatures, feature];
+			return newFeatures;
+		});
 	};
 
+	// Обработчик изменения значения в поле ввода бренда
+	const handleChangeInputValue = (e: FormEvent<HTMLInputElement>) => {
+		const value = (e.target as HTMLInputElement).value;
+		setInputBrandValue(value);
+		setActiveBrand(0);
+		if (value.length === 0) {
+			setCurrentBrands(filteredBrands);
+		} else {
+			const filterBrands = filteredBrands.filter((brand: string) => {
+				return brand.toLowerCase().trim().includes(value.toLowerCase());
+			});
+			setCurrentBrands(filterBrands);
+		}
+	};
+
+	// Обработчик добавления бренда в выбранные
+	const handleSearchBrands = (brand: string) => {
+		setSelectedBrands((prevBrands: string[]) => [...prevBrands, brand]);
+		setFilteredBrands((prevBrands: string[]) => prevBrands.filter(b => b !== brand));
+		setInputBrandValue(''); // Очищаем поле ввода
+		setDropdownActive(false); // Закрываем dropdown
+		if (dataBrands) {
+			setCurrentBrands(() => dataBrands.filter(b => b !== brand));
+		}
+	};
+
+	// Обработчик удаления бренда из выбранных
+	const handleRemoveBrand = (brand: string) => {
+		setSelectedBrands((prevBrands: string[]) => prevBrands.filter(b => b !== brand));
+		setFilteredBrands((prevBrands: string[]) => [...prevBrands, brand]);
+		setCurrentBrands((prevBrands: string[]) => [...prevBrands, brand]);
+	};
+
+	// Обработчик добавления/удаления услуги
 	const handleAddServices = (service: string) => {
 		setServices(prevServices => {
 			const isSet = prevServices.some(item => item === service);
@@ -49,9 +118,32 @@ export const AZSFilters: FC<IFilters> = ({ withoutServices }) => {
 	};
 
 	useEffect(() => {
-		dispatch(setBrandTitle(inputBrandValue));
-	}, [debounced]);
+		setInputBrandValue('');
+		setFuels([]);
+		setMainFeatures([]);
 
+		setServices([]);
+		setCurrentBrands([]);
+		setFilteredBrands([]);
+		setSelectedBrands([]);
+		setActiveBrand(0);
+		setDropdownActive(false);
+	}, [resetFilters]);
+
+	// Инициализация брендов при загрузке данных
+	useEffect(() => {
+		if (dataBrands) {
+			setFilteredBrands(dataBrands);
+			setCurrentBrands(dataBrands);
+		}
+	}, [dataBrands]);
+
+	// Обновление фильтров в Redux
+	useEffect(() => {
+		dispatch(setFeatures(features));
+	}, [features, dispatch]);
+
+	// Обновление фильтров в Redux
 	useEffect(() => {
 		dispatch(setFuelFilters(fuels));
 	}, [fuels, dispatch]);
@@ -66,35 +158,92 @@ export const AZSFilters: FC<IFilters> = ({ withoutServices }) => {
 		}
 	}, [services, dispatch]);
 
+	// Сброс фильтров при открытии/закрытии
 	useEffect(() => {
 		setFuels([]);
+		setMainFeatures([]);
 		setInputBrandValue('');
-		dispatch(setBrandTitle(''));
+		if (dataBrands) {
+			setFilteredBrands(dataBrands);
+			setCurrentBrands(dataBrands);
+		}
+		dispatch(setFeatures([]));
+
+		dispatch(setBrandTitles([]));
 		dispatch(setFuelFilters([]));
 		dispatch(setAddServices([]));
 		dispatch(setGateHeight(null));
-
+		setSelectedBrands([]);
 		setServices([]);
 	}, [filtersIsOpen]);
 
+	useEffect(() => {
+		dispatch(setBrandTitles(selectedBrands));
+	}, [selectedBrands]);
+
+	// Закрытие dropdown при потере фокуса
+	const handleBlur = () => {
+		setTimeout(() => {
+			setDropdownActive(false);
+		}, 150);
+	};
+
+	const dropdownClass = clsx(s.dropdown, { [s.active]: dropdownActive });
+
 	return (
 		<div className={s.filtersContent}>
-			{/* <div className={s.filterRow}>
+			<div className={s.filterRow}>
 				<p>Основное</p>
-				<Chip onClick={() => {}}>Сбросить счетчик PIN кода</Chip>
-			</div> */}
+				<div className={s.inputList}>
+					{azsMainFilters.map(filter => (
+						<Chip
+							onClick={() => handleSetFeatures(filter)}
+							key={filter.title}
+							isActive={features.some(f => f.value === filter.value)}
+						>
+							{filter.title}
+						</Chip>
+					))}
+				</div>
+			</div>
 			{/* <div className={s.filterRow}>
 				<p>Карта</p>
 				<Input isStyled placeholder='Номер или название' />
 			</div> */}
 			<div className={s.filterRow}>
 				<p>Бренд</p>
-				<Input
-					onChange={handleChangeInputValue}
-					value={inputBrandValue}
-					isStyled
-					placeholder='Номер или название'
-				/>
+				<div className={s.brandWrapper}>
+					<div className={s.chips}>
+						{selectedBrands.map((brand: string) => (
+							<Chip key={brand} onClick={() => handleRemoveBrand(brand)} isActive>
+								{brand}
+							</Chip>
+						))}
+					</div>
+					<Input
+						onChange={handleChangeInputValue}
+						value={inputBrandValue}
+						isStyled
+						placeholder='Номер или название'
+						onFocus={() => setDropdownActive(true)}
+						onBlur={() => handleBlur()}
+					/>
+
+					<Dropdown className={dropdownClass}>
+						{currentBrands.length > 0
+							? currentBrands.map((brand: string, index: number) => (
+									<div
+										onMouseEnter={() => setActiveBrand(index)}
+										className={`${s.brand} ${index === activeBrand ? s.active : ''}`}
+										key={brand}
+										onClick={() => handleSearchBrands(brand)}
+									>
+										{brand}
+									</div>
+								))
+							: null}
+					</Dropdown>
+				</div>
 			</div>
 			{/* <div className={s.filterRow}>
 				<p>Выделить категории</p>

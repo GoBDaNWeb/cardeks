@@ -4,12 +4,15 @@ export const cardeksPointsAPI = createApi({
 	reducerPath: 'cardeksPointsAPI',
 	baseQuery: fetchBaseQuery({ baseUrl: '/' }),
 	endpoints: build => ({
-		getPoints: build.query({
+		getPoints: build.query<any, void>({
 			query: () => `FilterAZS.json`
+		}),
+		getTerminals: build.query<any, void>({
+			query: () => `TerminalsAZS.json`
 		})
 	})
 });
 
-export const { useGetPointsQuery } = cardeksPointsAPI;
+export const { useGetPointsQuery, useGetTerminalsQuery } = cardeksPointsAPI;
 
-export const { getPoints } = cardeksPointsAPI.endpoints;
+export const { getPoints, getTerminals } = cardeksPointsAPI.endpoints;

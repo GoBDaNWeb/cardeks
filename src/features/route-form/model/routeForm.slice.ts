@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 type Filters = {
-	brandTitle: string;
+	brandTitles: string[];
 	azsTypes: number[];
 };
 interface IRouteForm {
@@ -15,7 +15,7 @@ const initialState: IRouteForm = {
 	addSettings: [],
 	withFilters: true,
 	filters: {
-		brandTitle: '',
+		brandTitles: [],
 		azsTypes: []
 	}
 };
@@ -30,8 +30,8 @@ const routeForm = createSlice({
 		setAddSettings(state, action) {
 			state.addSettings = action.payload;
 		},
-		setBrandTitle(state, action) {
-			state.filters.brandTitle = action.payload;
+		setBrandTitles(state, action) {
+			state.filters.brandTitles = action.payload;
 		},
 		setWithFilters(state, action) {
 			state.withFilters = action.payload;
@@ -40,7 +40,7 @@ const routeForm = createSlice({
 			state.filters.azsTypes = action.payload;
 		},
 		clearFilters(state) {
-			state.filters.brandTitle = '';
+			state.filters.brandTitles = [];
 			state.filters.azsTypes = [];
 		}
 	}
@@ -48,7 +48,7 @@ const routeForm = createSlice({
 
 export const {
 	setFilterActive,
-	setBrandTitle,
+	setBrandTitles,
 	setAddSettings,
 	setWithFilters,
 	setAzsTypes,

@@ -99,11 +99,12 @@
 		gap: 16px;
 		overflow-y: auto;
 		max-height: calc(100% - 37px);
-		scrollbar-width: thin;
-		scrollbar-color: var(--accent-color) #ffffff;
+
 		height: 100%;
 		padding-right: 12px;
 		margin-right: 12px;
+		scrollbar-width: thin;
+		scrollbar-color: var(--accent-color) #ffffff;
 		&::-webkit-scrollbar {
 			width: 5px;
 		}

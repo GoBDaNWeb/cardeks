@@ -1,7 +1,7 @@
 export {
 	setFilterActive,
 	setAddSettings,
-	setBrandTitle,
+	setBrandTitles,
 	setWithFilters,
 	setAzsTypes,
 	clearFilters,

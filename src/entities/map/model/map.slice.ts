@@ -10,24 +10,20 @@ interface ISearchInfo {
 	searchValue: string;
 	buildSearch: boolean;
 }
-
+interface ICategoryTotals {
+	total: number;
+	totalView: number;
+}
 interface IMapInfo {
 	zoom: number;
 	isWheel: boolean;
 	mapType: MapTypes;
 	panorama: boolean;
 	panoramaIsOpen: boolean;
-	totalPoints: number;
-	totalViewPoints: number;
-	totalWashing: number;
-	totalViewWashing: number;
-	totalTire: number;
-	totalViewTire: number;
-	totalAzsPoints: number;
-	totalViewAzsPoints: number;
 	points: Feature[];
 	center: number[];
 	mapLoading: boolean;
+	pointsData: Record<'points' | 'washing' | 'tire' | 'azs', ICategoryTotals>;
 }
 
 interface IRouteInfo {
@@ -46,7 +42,7 @@ interface IRouteInfo {
 	routeTime: string;
 	routeLength: string;
 	azsOnRoute: number;
-	pointsOnRoute: number;
+	pointsOnRoute: Feature[];
 	isUrlBuild: boolean;
 	isCursorPoint: boolean;
 }
@@ -69,14 +65,12 @@ const initialState: IRootState = {
 		mapType: 'yandex#map',
 		panorama: false,
 		panoramaIsOpen: false,
-		totalPoints: 0,
-		totalViewPoints: 0,
-		totalWashing: 0,
-		totalViewWashing: 0,
-		totalTire: 0,
-		totalViewTire: 0,
-		totalAzsPoints: 0,
-		totalViewAzsPoints: 0,
+		pointsData: {
+			points: { total: 0, totalView: 0 },
+			washing: { total: 0, totalView: 0 },
+			tire: { total: 0, totalView: 0 },
+			azs: { total: 0, totalView: 0 }
+		},
 		points: [],
 		center: [],
 		mapLoading: true
@@ -97,7 +91,7 @@ const initialState: IRootState = {
 		routeTime: '',
 		routeLength: '',
 		azsOnRoute: 0,
-		pointsOnRoute: 0,
+		pointsOnRoute: [],
 		isUrlBuild: false,
 		isCursorPoint: false
 	}
@@ -113,36 +107,15 @@ const mapSlice = createSlice({
 		handleWheel(state, action) {
 			state.mapInfo.isWheel = action.payload;
 		},
-		setTotalPoints(state, action) {
-			state.mapInfo.totalPoints = action.payload;
-		},
-		setTotalViewPoints(state, action) {
-			state.mapInfo.totalViewPoints = action.payload;
-		},
+
 		setPoints(state, action) {
 			state.mapInfo.points = action.payload;
 		},
-		setTotalWashing(state, action) {
-			state.mapInfo.totalWashing = action.payload;
-		},
-		setTotalViewWashing(state, action) {
-			state.mapInfo.totalViewWashing = action.payload;
-		},
+
 		setMapLoading(state, action) {
 			state.mapInfo.mapLoading = action.payload;
 		},
-		setTotalTire(state, action) {
-			state.mapInfo.totalTire = action.payload;
-		},
-		setTotalViewTire(state, action) {
-			state.mapInfo.totalViewTire = action.payload;
-		},
-		setTotalAzs(state, action) {
-			state.mapInfo.totalAzsPoints = action.payload;
-		},
-		setTotalViewAzs(state, action) {
-			state.mapInfo.totalViewAzsPoints = action.payload;
-		},
+
 		setPointsOnRoute(state, action) {
 			state.routeInfo.pointsOnRoute = action.payload;
 		},
@@ -221,6 +194,27 @@ const mapSlice = createSlice({
 		},
 		setBuildSearch(state, action) {
 			state.searchInfo.buildSearch = action.payload;
+		},
+		setCategoryTotals(
+			state,
+			action: {
+				payload: {
+					category: keyof IMapInfo['pointsData'];
+					total?: number;
+					totalView?: number;
+				};
+			}
+		) {
+			const { category, total, totalView } = action.payload;
+
+			if (state.mapInfo.pointsData[category]) {
+				if (total !== undefined) {
+					state.mapInfo.pointsData[category].total = total;
+				}
+				if (totalView !== undefined) {
+					state.mapInfo.pointsData[category].totalView = totalView;
+				}
+			}
 		}
 	}
 });
@@ -249,20 +243,13 @@ export const {
 	setSearchValue,
 	setBuildSearch,
 	setFieldsCount,
-	setTotalPoints,
-	setTotalViewPoints,
-	setTotalWashing,
-	setTotalViewWashing,
-	setTotalTire,
-	setTotalViewTire,
 	setAzsOnRoute,
 	setPointsOnRoute,
 	setCenter,
-	setTotalAzs,
-	setTotalViewAzs,
 	setPoints,
 	setMapLoading,
 	setIsUrlBuid,
-	setIsCursorPoint
+	setIsCursorPoint,
+	setCategoryTotals
 } = mapSlice.actions;
 export default mapSlice.reducer;

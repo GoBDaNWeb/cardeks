@@ -1,0 +1,35 @@
+@import '@/shared/styles/mixins';
+
+.print-table {
+	width: 100%;
+	thead {
+		tr {
+			display: grid;
+			grid-template-columns: 1fr 0.8fr 0.8fr 0.3fr;
+			gap: 20px;
+			padding-bottom: 12px;
+			margin-bottom: 12px;
+			border-bottom: 1px solid var(--line-color);
+		}
+		th {
+			@include text-s;
+			text-align: left;
+		}
+	}
+	tbody {
+		display: grid;
+		grid-template-columns: 1fr 0.8fr 0.8fr 0.3fr;
+		gap: 20px;
+		tr {
+			display: flex;
+			flex-direction: column;
+			gap: 4px;
+			p {
+				@include text-m;
+			}
+			td {
+				@include text-sm;
+			}
+		}
+	}
+}

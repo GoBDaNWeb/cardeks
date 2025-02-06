@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { Controller, FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 
+import { DownloadFiles } from '@/features/download-files';
+
 import { useTypedSelector } from '@/shared/lib';
 import { Button, CloseIcon, Input, Modal, Radio, Selector } from '@/shared/ui';
 
@@ -11,39 +13,11 @@ import { handleOpenModal } from '../model';
 import s from './mail-modal.module.scss';
 
 export const MailModal = () => {
-	const [selectDisabled, setSeletDisabled] = useState(true);
-	const [buttonDisabled, setButtonDisabled] = useState(true);
-
 	const { isOpen } = useTypedSelector(store => store.mailModal);
 	const dispatch = useDispatch();
-
-	const { handleSubmit, control, getValues, watch } = useForm({
-		defaultValues: {
-			radio: null,
-			selector: null,
-			mail: null
-		}
-	});
-
-	const watchRaio = watch('radio');
-	const watchSelector = watch('selector');
-
-	const onSubmit: SubmitHandler<FieldValues> = data => {
-		console.log(data);
-	};
-
 	const handleCloseModal = () => {
 		dispatch(handleOpenModal(false));
 	};
-
-	useEffect(() => {
-		if (getValues('radio') === 'exel' || (getValues('radio') === 'poi' && getValues('selector'))) {
-			setButtonDisabled(false);
-		} else {
-			setButtonDisabled(true);
-		}
-		getValues('radio') === 'poi' ? setSeletDisabled(false) : setSeletDisabled(true);
-	}, [watchRaio, watchSelector]);
 
 	return (
 		<Modal isOpen={isOpen} className={s.mailModal} close={handleCloseModal}>
@@ -51,7 +25,14 @@ export const MailModal = () => {
 				<Button className={s.closeBtn} onClick={() => handleCloseModal()}>
 					<CloseIcon />
 				</Button>
-				<form onSubmit={handleSubmit(onSubmit)}>
+				<DownloadFiles
+					title='Скачать список'
+					text='Загружаемый файл будет содержать все станции видимые на карте.'
+					btnText='Скачать список'
+					download={false}
+				/>
+
+				{/* <form onSubmit={handleSubmit(onSubmit)}>
 					<h5 className={s.title}>Отправить список по E-mail</h5>
 					<p className={s.description}>
 						Загружаемый файл будет содержать все станции видимые на карте.
@@ -75,6 +56,7 @@ export const MailModal = () => {
 								render={({ field: { onChange, value } }) => (
 									<Selector
 										placeholder='Выберите формат'
+										//@ts-ignore
 										options={selectorOptions}
 										isDisabled={selectDisabled}
 										onChange={onChange}
@@ -109,7 +91,7 @@ export const MailModal = () => {
 							Скачать список
 						</Button>
 					</div>
-				</form>
+				</form> */}
 			</div>
 		</Modal>
 	);

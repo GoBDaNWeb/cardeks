@@ -1,1 +1,4 @@
-export const selectorOptions = ['CSV', 'GPX'];
+export const selectorOptions = [
+	{ value: 'CSV', label: 'CSV' },
+	{ value: 'GPX', label: 'GPX' }
+];

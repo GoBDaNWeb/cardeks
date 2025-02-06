@@ -19,14 +19,7 @@
 			top: 14px;
 			right: 14px;
 		}
-		.description {
-			@include text-m;
-			margin-top: 4px;
-			max-width: 90%;
-			@media (max-width: $tab) {
-				@include text-s;
-			}
-		}
+
 		form {
 			.inputs {
 				margin-top: 20px;

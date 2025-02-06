@@ -13,8 +13,9 @@ import { TireFilters } from '../tire-filters';
 
 interface IFilters {
 	withoutServices?: boolean;
+	resetFilters?: boolean;
 }
-export const WashFilters: FC<IFilters> = ({ withoutServices }) => {
+export const WashFilters: FC<IFilters> = ({ withoutServices, resetFilters }) => {
 	const [services, setServices] = useState<string[]>([]);
 	const [gateHeights, setGateHeights] = useState<number | null>(null);
 
@@ -38,6 +39,11 @@ export const WashFilters: FC<IFilters> = ({ withoutServices }) => {
 			setGateHeights(height);
 		}
 	};
+
+	useEffect(() => {
+		setServices([]);
+		setGateHeights(null);
+	}, [resetFilters]);
 
 	useEffect(() => {
 		if (!withoutServices) {

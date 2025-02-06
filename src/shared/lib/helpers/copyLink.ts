@@ -8,9 +8,13 @@ const notify = () =>
 		autoClose: 1500
 	});
 
-export const handleCopyLink = (routeAddresses: string[]) => {
-	const currentHref = `${window.location.href}?`;
-	const routes = `routes=${routeAddresses.join(';')}`;
+export const handleCopyLink = (routeCoords: number[]) => {
+	const currentHref = `${window.location.origin}?`;
+	const result = routeCoords
+		//@ts-ignore
+		.map(pair => pair.join('-'))
+		.join(';');
+	const routes = `routes=${result}`;
 	const resultLink = currentHref + routes;
 	console.log(window.location);
 	console.log(decodeURIComponent(window.location.search));

@@ -14,6 +14,7 @@ type ObjectItemType = {
 	viewOnMap?: () => void;
 	buildRoute?: () => void;
 	handleDeletePoint?: () => void;
+	aboutObject?: () => void;
 	isDisabled?: boolean;
 };
 
@@ -25,7 +26,8 @@ export const ObjectItem: FC<ObjectItemType> = ({
 	viewOnMap,
 	buildRoute,
 	handleDeletePoint,
-	isDisabled
+	isDisabled,
+	aboutObject
 }) => {
 	const objectItemClass = clsx(s.objectItem, { [s.disabled]: isDisabled });
 
@@ -76,9 +78,9 @@ export const ObjectItem: FC<ObjectItemType> = ({
 						</Button>
 					)}
 				</div>
-				{/* <Button onClick={() => {}} className={s.aboutBtn}>
+				<Button onClick={aboutObject} className={s.aboutBtn}>
 					Подробнее о ТО
-				</Button> */}
+				</Button>
 			</div>
 		</div>
 	);
