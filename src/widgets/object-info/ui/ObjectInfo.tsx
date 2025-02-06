@@ -53,8 +53,11 @@ export const ObjectInfo = () => {
 	};
 	const handleBuildRoute = () => {
 		dispatch(setActiveMenu('route'));
-		dispatch(setCurrentPointId('points.0.inputText'));
-		dispatch(setAddress(terminal[1]));
+		setTimeout(() => {
+			dispatch(setCurrentPointId('points.0.inputText'));
+			dispatch(setAddress(terminal[1]));
+		}, 500);
+
 		dispatch(setActiveObject(null));
 	};
 

@@ -32,7 +32,7 @@ export const ObjectsList = () => {
 	} = useTypedSelector(state => state.map);
 	const { activeMenu } = useTypedSelector(store => store.menu);
 	const { activeMenu: mobileActiveMenu } = useTypedSelector(store => store.mobileMenu);
-	const { data, isLoading } = useGetTerminalsQuery();
+	// const { data, isLoading } = useGetTerminalsQuery();
 
 	const handleClose = () => {
 		dispatch(clearActiveMenu());
