@@ -26,7 +26,7 @@ export const RouteFiltersList = () => {
 
 	const handleCloseFilters = () => {
 		dispatch(setFilterActive(false));
-		dispatch(setActiveMenu(null));
+		// dispatch(setActiveMenu(null));
 	};
 
 	useEffect(() => {

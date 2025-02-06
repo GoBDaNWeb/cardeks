@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 
 import { setFilterActive } from '@/features/route-form';
 
+import { setBuildRoute, setChangeRoute, setRouteBuilded } from '@/entities/map';
 import { setActiveMenu } from '@/entities/mobile-menu';
 
 import { useTypedSelector } from '@/shared/lib';
@@ -45,6 +46,9 @@ export const MobileMenu = () => {
 		if (activeMenu === type) {
 			dispatch(setActiveMenu(null));
 			dispatch(setFilterActive(false));
+			dispatch(setBuildRoute(false));
+			dispatch(setRouteBuilded(false));
+			dispatch(setChangeRoute(false));
 		} else {
 			dispatch(setActiveMenu(type));
 			if (type !== 'filters') {
