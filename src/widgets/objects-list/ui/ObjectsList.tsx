@@ -6,14 +6,19 @@ import clsx from 'clsx';
 import { clearActiveMenu } from '@/widgets/menu-list';
 import { setActiveMenu } from '@/widgets/menu-list';
 
+import { handleOpenModal as openDownloadModal } from '@/features/download-modal';
+import { handleOpenModal as openMailModal } from '@/features/mail-modal';
+
 import { setAddress, setCenter, setCurrentPointId } from '@/entities/map';
 import { setActiveMenu as setActiveMenuMob } from '@/entities/mobile-menu';
+import { handleOpenModal } from '@/entities/new-route-modal';
 import { setActiveObject } from '@/entities/object-info';
 import { ObjectItem } from '@/entities/object-item';
+import { handleOpenModal as openPrintModal } from '@/entities/print-modal';
 
-import { useGetTerminalsQuery } from '@/shared/api';
 import { useTypedSelector } from '@/shared/lib';
 import { Feature } from '@/shared/types';
+import { Button, CloseIcon, DownloadIcon, MailIcon, PrintIcon } from '@/shared/ui';
 
 import s from './objects-list.module.scss';
 
@@ -80,6 +85,19 @@ export const ObjectsList = () => {
 	// 	setMergedPointsList(mergedPoints);
 	// }, [points]);
 
+	const handleOpenNewRouteModal = () => {
+		dispatch(handleOpenModal(true));
+	};
+	const handeOpenDownloadModal = () => {
+		dispatch(openDownloadModal(true));
+	};
+	const handeOpenMailModal = () => {
+		dispatch(openMailModal(true));
+	};
+	const handeOpenPrintModal = () => {
+		dispatch(openPrintModal(true));
+	};
+
 	useEffect(() => {
 		if (observer.current) observer.current.disconnect();
 		observer.current = new IntersectionObserver(entries => {
@@ -104,32 +122,32 @@ export const ObjectsList = () => {
 						{pointsData.points.total} отфильтровано / {pointsData.points.totalView} на карте
 					</p>
 				</div>
-				{/* <div className={s.right}>
+				<div className={s.right}>
 					<div className={s.features}>
-						<Button onClick={() => {}}>
+						<Button onClick={() => handeOpenDownloadModal()}>
 							<DownloadIcon />
 						</Button>
-						<Button onClick={() => {}}>
+						{/* <Button onClick={() => handeOpenPrintModal()}>
 							<PrintIcon />
-						</Button>
-						<Button onClick={() => {}}>
+						</Button> */}
+						<Button onClick={() => handeOpenMailModal()}>
 							<MailIcon />
 						</Button>
 					</div>
 					<Button onClick={() => handleClose()}>
 						<CloseIcon />
 					</Button>
-				</div> */}
+				</div>
 			</div>
 			<div className={s.objectListContent}>
 				{displayedPoints.map((point: Feature, index: number) => (
 					<div key={point.id} ref={index === displayedPoints.length - 1 ? lastElementRef : null}>
 						<ObjectItem
 							title={point.title}
-							// address={point.address}
-							// viewOnMap={() => handleViewOnMap(point.geometry.coordinates)}
-							// buildRoute={() => handleBuildRoute(point.address ?? '')}
-							// aboutObject={() => handleAboutObject(point.id)}
+							address={point.address}
+							viewOnMap={() => handleViewOnMap(point.geometry.coordinates)}
+							buildRoute={() => handleBuildRoute(point.address ?? '')}
+							aboutObject={() => handleAboutObject(point.id)}
 						/>
 					</div>
 				))}

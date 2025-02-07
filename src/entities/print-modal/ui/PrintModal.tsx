@@ -54,6 +54,7 @@ export const PrintModal = () => {
 			clusterOpenBalloonOnClick: true
 		});
 
+		// e.get('newCenter')
 		let map = new ymaps.Map('print_map', {
 			center: [55.686736, 37.440496],
 			zoom: 15

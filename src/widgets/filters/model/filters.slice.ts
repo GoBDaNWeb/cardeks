@@ -8,6 +8,7 @@ type FiltersType = {
 	brandTitles: string[];
 	addServices: string[];
 	gateHeight: number | null;
+	terminal: string;
 };
 
 interface IFilters {
@@ -23,7 +24,8 @@ const initialState: IFilters = {
 		brandTitles: [],
 		addServices: [],
 		features: [],
-		gateHeight: null
+		gateHeight: null,
+		terminal: ''
 	}
 };
 
@@ -51,6 +53,9 @@ const filters = createSlice({
 		},
 		setFeatures(state, action) {
 			state.filters.features = action.payload;
+		},
+		setTerminal(state, action) {
+			state.filters.terminal = action.payload;
 		}
 	}
 });
@@ -62,6 +67,7 @@ export const {
 	setAddServices,
 	setGateHeight,
 	setBrandTitles,
-	setFeatures
+	setFeatures,
+	setTerminal
 } = filters.actions;
 export default filters.reducer;

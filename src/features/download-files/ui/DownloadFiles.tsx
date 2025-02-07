@@ -25,7 +25,8 @@ export const DownloadFiles: FC<IDownloadFiles> = ({ title, text, btnText, downlo
 
 	const { isOpen } = useTypedSelector(store => store.downloadModal);
 	const {
-		routeInfo: { pointsOnRoute }
+		routeInfo: { pointsOnRoute },
+		mapInfo: { points }
 	} = useTypedSelector(store => store.map);
 
 	const tableRef = useRef(null);
@@ -56,18 +57,33 @@ export const DownloadFiles: FC<IDownloadFiles> = ({ title, text, btnText, downlo
 
 	useEffect(() => {
 		if (isOpen) {
-			const mappedCVSPoints = pointsOnRoute.map((point: Feature) => {
-				return [point.geometry.coordinates, point.address, point.title];
-			});
-			setCsvData(mappedCVSPoints);
-			const mappedGPXoints = pointsOnRoute.map((point: Feature) => {
-				return {
-					lat: point.geometry.coordinates[0],
-					lon: point.geometry.coordinates[1],
-					name: point.title
-				};
-			});
-			setGpxData(mappedGPXoints);
+			if (pointsOnRoute.length > 0) {
+				const mappedCVSPoints = pointsOnRoute.map((point: Feature) => {
+					return [point.geometry.coordinates, point.address, point.title];
+				});
+				setCsvData(mappedCVSPoints);
+				const mappedGPXoints = pointsOnRoute.map((point: Feature) => {
+					return {
+						lat: point.geometry.coordinates[0],
+						lon: point.geometry.coordinates[1],
+						name: point.title
+					};
+				});
+				setGpxData(mappedGPXoints);
+			} else {
+				const mappedCVSPoints = points.map((point: Feature) => {
+					return [point.geometry.coordinates, point.address, point.title];
+				});
+				setCsvData(mappedCVSPoints);
+				const mappedGPXoints = points.map((point: Feature) => {
+					return {
+						lat: point.geometry.coordinates[0],
+						lon: point.geometry.coordinates[1],
+						name: point.title
+					};
+				});
+				setGpxData(mappedGPXoints);
+			}
 		} else {
 			setValue('radio', 'poi');
 			setValue('selector', null);

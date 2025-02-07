@@ -63,7 +63,8 @@ export const useIndexedDB = () => {
 		titleFilter?: any,
 		azsTypes: IList[] = [],
 		addServices: string[] = [],
-		gateHeight?: number
+		gateHeight?: number,
+		terminal: string = ''
 	): Promise<Feature[]> => {
 		if (!db) return [];
 
@@ -74,11 +75,10 @@ export const useIndexedDB = () => {
 		let cursor = await store.openCursor();
 		while (cursor) {
 			const feature = cursor.value;
-			const { options, types, features, title, fuels: featureFuels, filters } = feature;
+			const { options, types, features, title, fuels: featureFuels, filters, terminals } = feature;
 			// Проверка топлива
 
 			// Проверка соответствия топлива
-			// const optionsMatch = fuels.length === 0 || fuels.every(fuel => options[fuel.value]);
 			const fuelsMatch = fuels.length === 0 || fuels.every(fuel => featureFuels[fuel.value]);
 
 			const featuresMatch =
@@ -88,7 +88,6 @@ export const useIndexedDB = () => {
 			const titleMatch =
 				titleFilter.length === 0 ||
 				titleFilter.some((brand: string) => title.toLowerCase().includes(brand.toLowerCase()));
-			// const titleMatch = !titleFilter || title.toLowerCase().includes(titleFilter.toLowerCase());
 
 			// Проверка соответствия AZS типов
 			const azsOptionsMatch = azsTypes.length === 0 || azsTypes.some(type => types[type.value]);
@@ -99,13 +98,17 @@ export const useIndexedDB = () => {
 			//@ts-ignore
 			const matchingGate = !gateHeight || filters.gateHeight > gateHeight;
 
+			const terminalMatch =
+				terminal.trim().length === 0 || terminals?.some(t => t.trim() === terminal.trim());
+
 			if (
 				fuelsMatch &&
 				featuresMatch &&
 				titleMatch &&
 				azsOptionsMatch &&
 				matchingServices &&
-				matchingGate
+				matchingGate &&
+				terminalMatch
 			) {
 				result.push(feature);
 			}

@@ -44,6 +44,7 @@ export interface Feature {
 		clusterCaption: string;
 		hintContent: string;
 	};
+	terminals?: string[];
 	types: {
 		[key: string]: boolean;
 	};

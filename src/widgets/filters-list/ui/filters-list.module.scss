@@ -35,64 +35,68 @@
 	@media (max-width: $tab-sm) {
 		max-width: 100%;
 	}
-	.filterRow {
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
-		align-items: flex-start;
-		p {
-			@include text-m;
-		}
-		input {
-			margin: 0;
-		}
-		.brandWrapper {
-			position: relative;
-			width: 100%;
-			.chips {
-				margin-bottom: 10px;
-				display: flex;
-				flex-wrap: wrap;
-				gap: 5px;
-			}
-			.dropdown {
-				max-height: 200px;
-				overflow: auto;
-				gap: 0;
-				padding: 0;
-				left: 10px;
-				right: 10px;
-				width: auto;
-				display: none;
-				&.active {
-					display: flex;
-				}
-				.brand {
-					@include text-m;
-					cursor: pointer;
-					padding: 12px 16px;
-					// &:hover {
-					// 	background: var(--line-color);
-					// }
-					&.active {
-						background: var(--line-color);
-					}
-				}
-			}
-		}
-		.inputList {
+}
+.terminalWrapper {
+	margin-top: 20px;
+}
+.filterRow {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	align-items: flex-start;
+	p {
+		@include text-m;
+	}
+	input {
+		margin: 0;
+		width: 100%;
+	}
+	.brandWrapper {
+		position: relative;
+		width: 100%;
+		.chips {
+			margin-bottom: 10px;
 			display: flex;
 			flex-wrap: wrap;
-			gap: 8px;
+			gap: 5px;
 		}
-		.inputGrid {
-			display: grid;
-			grid-template-columns: repeat(2, 1fr);
-			gap: 8px;
+		.dropdown {
+			max-height: 200px;
+			overflow: auto;
+			gap: 0;
+			padding: 0;
+			left: 10px;
+			right: 10px;
+			width: auto;
+			display: none;
+			&.active {
+				display: flex;
+			}
+			.brand {
+				@include text-m;
+				cursor: pointer;
+				padding: 12px 16px;
+				// &:hover {
+				// 	background: var(--line-color);
+				// }
+				&.active {
+					background: var(--line-color);
+				}
+			}
 		}
 	}
+	.inputList {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		width: 100%;
+	}
+	.inputGrid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 8px;
+	}
 }
-
 .filtersList.active {
 	transform: translateY(0);
 	pointer-events: all;

@@ -6,5 +6,6 @@ export {
 	setAddServices,
 	setGateHeight,
 	setFeatures,
+	setTerminal,
 	default as filtersReducer
 } from './filters.slice';

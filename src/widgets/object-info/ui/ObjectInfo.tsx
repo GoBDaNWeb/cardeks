@@ -63,7 +63,7 @@ export const ObjectInfo = () => {
 
 	useEffect(() => {
 		const fetch = async () => {
-			if (!objectId.includes('__cluster__')) {
+			if (objectId && !objectId.includes('__cluster__')) {
 				const currentAzs = await getDataById(objectId);
 				const filterTerminal = data.data.find((item: any) => {
 					return item[0] === objectId;

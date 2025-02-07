@@ -7,7 +7,7 @@ import { Map as MapType, ObjectManager } from 'yandex-maps';
 
 import { setActiveObject } from '@/entities/object-info';
 
-import { useGetPointsQuery } from '@/shared/api';
+import { useGetPointsQuery, useGetTerminalsQuery } from '@/shared/api';
 import { useIndexedDB, useTypedSelector } from '@/shared/lib';
 import { Feature, IPlacemark } from '@/shared/types';
 
@@ -15,6 +15,7 @@ import { createPoints, usePoint, useRoute } from '../lib';
 import {
 	handleWheel,
 	setCategoryTotals,
+	setCenter,
 	setIsUrlBuid,
 	setMapLoading,
 	setPanoramaOpen,
@@ -24,7 +25,7 @@ import {
 
 import s from './map.module.scss';
 
-export const Map = () => {
+export const CustomMap = () => {
 	const ymaps = window.ymaps;
 	const [features, setFeatures] = useState<Feature[]>([]);
 	const [map, setMap] = useState<null | MapType>(null);
@@ -34,6 +35,7 @@ export const Map = () => {
 	const { saveData, getAllData, filterDataByType, filterDataByOptions } = useIndexedDB();
 
 	const { data, isLoading } = useGetPointsQuery();
+	const { data: terminalsList, isLoading: isLoadingTerminal } = useGetTerminalsQuery();
 
 	const {
 		mapInfo: { zoom, isWheel, mapType, panorama, panoramaIsOpen, center, mapLoading },
@@ -204,7 +206,8 @@ export const Map = () => {
 				filters.brandTitles,
 				[],
 				filters.addServices,
-				filters.gateHeight
+				filters.gateHeight,
+				filters.terminal
 			);
 
 			objectManagerState.add(filteredData);
@@ -214,7 +217,8 @@ export const Map = () => {
 		filters.features,
 		filters.brandTitles,
 		filters.addServices,
-		filters.gateHeight
+		filters.gateHeight,
+		filters.terminal
 	]);
 
 	useEffect(() => {
@@ -225,14 +229,25 @@ export const Map = () => {
 		}
 	}, [filter, map, selectedFilter, filtersIsOpen]);
 
+	const mergeData = (data1: any[][], data2: any[][]) => {
+		const data2Map = new Map(data2.map(item => [item[0], { address: item[1], list: item[2] }]));
+
+		return data1.map(item => {
+			const id = item[0];
+			const extraData = data2Map.get(id) || { address: '', list: [] }; // Подставляем пустые значения, если совпадения нет
+			return [...item, extraData.address, extraData.list]; // Добавляем новые данные в конец массива
+		});
+	};
+
 	useEffect(() => {
 		const fetch = async () => {
-			await saveData(createPoints(data.data));
+			const mergedData = mergeData(data.data, terminalsList.data);
+			await saveData(createPoints(mergedData));
 			const allData = await getAllData();
 
 			setFeatures(allData);
 		};
-		if (!isLoading) {
+		if (!isLoading && !isLoadingTerminal) {
 			fetch();
 		}
 	}, [isLoading]);
@@ -245,7 +260,8 @@ export const Map = () => {
 			filters.fuelFilters.length > 0 ||
 			filters.brandTitles.length > 0 ||
 			filters.addServices.length > 0 ||
-			filters.gateHeight;
+			filters.gateHeight ||
+			filters.terminal.length > 0;
 
 		const applyFilters = async () => {
 			if (hasActiveFilters) {
@@ -262,6 +278,7 @@ export const Map = () => {
 		filters.addServices,
 		filters.gateHeight,
 		filters.features,
+		filters.terminal,
 		objectManagerState,
 		features,
 		selectedFilter,

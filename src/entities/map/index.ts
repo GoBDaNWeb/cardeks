@@ -1,2 +1,2 @@
-export { Map } from './ui/Map';
+export { CustomMap } from './ui/Map';
 export * from './model';

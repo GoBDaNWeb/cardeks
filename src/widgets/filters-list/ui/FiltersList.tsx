@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { FormEvent, useCallback, useState } from 'react';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -9,11 +9,12 @@ import {
 	setBrandTitles,
 	setFuelFilters,
 	setGateHeight,
-	setOpenFilters
+	setOpenFilters,
+	setTerminal
 } from '@/widgets/filters';
 
 import { useTypedSelector } from '@/shared/lib';
-import { ArrowTopIcon, Button, CloseIcon } from '@/shared/ui';
+import { ArrowTopIcon, Button, CloseIcon, Input } from '@/shared/ui';
 
 import { AZSFilters } from './azs-filters';
 import s from './filters-list.module.scss';
@@ -31,6 +32,8 @@ const filters = [
 
 export const FiltersList = () => {
 	const [resetFilters, setResetFilters] = useState(false);
+	const [inputTerminalValue, setInputTerminalValue] = useState('');
+
 	const dispatch = useDispatch();
 
 	const { selectedFilter, filtersIsOpen } = useTypedSelector(store => store.filters);
@@ -49,10 +52,18 @@ export const FiltersList = () => {
 		setResetFilters(prev => !prev);
 	}, []);
 
+	const handleChangeInputValue = (e: FormEvent<HTMLInputElement>) => {
+		const value = (e.target as HTMLInputElement).value;
+		setInputTerminalValue(value);
+		dispatch(setTerminal(value));
+	};
+
 	const filterListClass = clsx(s.filtersList, {
 		[s.left]: activeMenu || objectId,
 		[s.active]: filtersIsOpen
 	});
+
+	const terminalClass = clsx(s.filterRow, s.terminalWrapper);
 
 	return (
 		<div className={filterListClass}>
@@ -65,6 +76,17 @@ export const FiltersList = () => {
 			<div className={s.filterContentWrapper}>
 				{filters[selectedFilter].content &&
 					React.cloneElement(filters[selectedFilter].content, { resetFilters })}
+				<div className={terminalClass}>
+					<p>Введите код объекта</p>
+					<div className={s.inputList}>
+						<Input
+							onChange={handleChangeInputValue}
+							value={inputTerminalValue}
+							isStyled
+							placeholder='Введите код'
+						/>
+					</div>
+				</div>
 			</div>
 			<div className={s.filterListBottom}>
 				<Button onClick={() => handleCloseFiltersList()} className={s.closeBtn}>

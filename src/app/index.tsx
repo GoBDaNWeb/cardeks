@@ -1,4 +1,4 @@
-import { Map } from '@/entities/map';
+import { CustomMap } from '@/entities/map';
 
 import './index.scss';
 import { Layout } from './layout';
@@ -8,7 +8,7 @@ export const App = () => {
 	return (
 		<MainProviders>
 			<Layout>
-				<Map />
+				<CustomMap />
 			</Layout>
 		</MainProviders>
 	);

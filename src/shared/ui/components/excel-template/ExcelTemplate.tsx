@@ -9,7 +9,8 @@ export const ExcelTemplate = forwardRef(({}, ref) => {
 	const nodeRef = useRef<HTMLDivElement | null>(null);
 
 	const {
-		routeInfo: { pointsOnRoute }
+		routeInfo: { pointsOnRoute },
+		mapInfo: { points }
 	} = useTypedSelector(store => store.map);
 
 	return (
@@ -31,16 +32,27 @@ export const ExcelTemplate = forwardRef(({}, ref) => {
 					<td>Километраж</td>
 					<td colSpan={3}>Тип</td>
 				</tr>
-				{pointsOnRoute.map((point: Feature) => (
-					<tr key={point.id}>
-						<td>{point.title}</td>
-						<td>{point.address}</td>
-						<td>{point.distance && (Math.round(point.distance) / 1000).toFixed(2)}км</td>
-						<td>{point.types.washing ? 'Автомойка' : ''}</td>
-						<td>{point.types.tire ? 'Шиномонтаж' : ''}</td>
-						<td>{point.types.azs ? 'АЗС' : ''}</td>
-					</tr>
-				))}
+				{pointsOnRoute.length > 0
+					? pointsOnRoute.map((point: Feature) => (
+							<tr key={point.id}>
+								<td>{point.title}</td>
+								<td>{point.address}</td>
+								<td>{point.distance && (Math.round(point.distance) / 1000).toFixed(2)}км</td>
+								<td>{point.types.washing ? 'Автомойка' : ''}</td>
+								<td>{point.types.tire ? 'Шиномонтаж' : ''}</td>
+								<td>{point.types.azs ? 'АЗС' : ''}</td>
+							</tr>
+						))
+					: points.map((point: Feature) => (
+							<tr key={point.id}>
+								<td>{point.title}</td>
+								<td>{point.address}</td>
+								<td>{point.distance && (Math.round(point.distance) / 1000).toFixed(2)}км</td>
+								<td>{point.types.washing ? 'Автомойка' : ''}</td>
+								<td>{point.types.tire ? 'Шиномонтаж' : ''}</td>
+								<td>{point.types.azs ? 'АЗС' : ''}</td>
+							</tr>
+						))}
 			</tbody>
 		</table>
 	);
