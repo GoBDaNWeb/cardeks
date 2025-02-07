@@ -201,7 +201,6 @@ export const CustomMap = () => {
 	const filterOptions = useCallback(async () => {
 		if (objectManagerState && map) {
 			objectManagerState.removeAll();
-			getVisibleMarkers(map, objectManagerState);
 			const filteredData = await filterDataByOptions(
 				filters.fuelFilters,
 				filters.features,
@@ -213,6 +212,7 @@ export const CustomMap = () => {
 			);
 
 			objectManagerState.add(filteredData);
+			getVisibleMarkers(map, objectManagerState);
 		}
 	}, [
 		filters.fuelFilters,
