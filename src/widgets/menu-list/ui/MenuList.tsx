@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { setFilterActive } from '@/features/route-form';
 
 import { setBuildRoute, setChangeRoute, setRouteBuilded } from '@/entities/map';
+import { setActiveObject } from '@/entities/object-info';
 
 import { useTypedSelector } from '@/shared/lib';
 import { ListIcon, MenuButton, RouteIcon } from '@/shared/ui';
@@ -21,6 +22,7 @@ export const MenuList = () => {
 		dispatch(setBuildRoute(false));
 		dispatch(setRouteBuilded(false));
 		dispatch(setChangeRoute(false));
+		dispatch(setActiveObject(null));
 
 		if (menu === activeMenu) {
 			dispatch(clearActiveMenu());

@@ -36,6 +36,7 @@ export const ObjectsList = () => {
 	const { activeMenu } = useTypedSelector(store => store.menu);
 	const { activeMenu: mobileActiveMenu } = useTypedSelector(store => store.mobileMenu);
 	// const { data, isLoading } = useGetTerminalsQuery();
+	const { objectId } = useTypedSelector(store => store.objectInfo);
 
 	const handleClose = () => {
 		dispatch(clearActiveMenu());
@@ -90,7 +91,7 @@ export const ObjectsList = () => {
 	const displayedPoints = points.slice(0, page * itemsPerPage);
 
 	const objectsListClass = clsx(s.objectsList, {
-		[s.active]: activeMenu === 'objects-list' || mobileActiveMenu === 'objects'
+		[s.active]: (activeMenu === 'objects-list' || mobileActiveMenu === 'objects') && !objectId
 	});
 
 	return (
