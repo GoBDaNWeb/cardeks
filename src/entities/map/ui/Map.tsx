@@ -246,13 +246,13 @@ export const CustomMap = () => {
 			const mergedData = mergeData(data.data, terminalsList.data);
 			await saveData(createPoints(mergedData));
 			const allData = await getAllData();
-
+			console.log(allData);
 			setFeatures(allData);
 		};
 		if (!isLoading && !isLoadingTerminal) {
 			fetch();
 		}
-	}, [isLoading]);
+	}, [isLoading, isLoadingTerminal]);
 
 	useEffect(() => {
 		if (!objectManagerState) return;
