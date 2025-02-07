@@ -22,6 +22,7 @@ interface IMapInfo {
 	panoramaIsOpen: boolean;
 	points: Feature[];
 	center: number[];
+	fixedCenter: number[];
 	mapLoading: boolean;
 	pointsData: Record<'points' | 'washing' | 'tire' | 'azs', ICategoryTotals>;
 }
@@ -73,6 +74,7 @@ const initialState: IRootState = {
 		},
 		points: [],
 		center: [],
+		fixedCenter: [],
 		mapLoading: true
 	},
 	routeInfo: {
@@ -130,6 +132,9 @@ const mapSlice = createSlice({
 		},
 		setCenter(state, action) {
 			state.mapInfo.center = action.payload;
+		},
+		setFixedCenter(state, action) {
+			state.mapInfo.fixedCenter = action.payload;
 		},
 		setAddress(state, action) {
 			state.routeInfo.selectedAddress = action.payload;
@@ -246,6 +251,7 @@ export const {
 	setAzsOnRoute,
 	setPointsOnRoute,
 	setCenter,
+	setFixedCenter,
 	setPoints,
 	setMapLoading,
 	setIsUrlBuid,

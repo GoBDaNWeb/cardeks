@@ -127,9 +127,9 @@ export const ObjectsList = () => {
 						<Button onClick={() => handeOpenDownloadModal()}>
 							<DownloadIcon />
 						</Button>
-						{/* <Button onClick={() => handeOpenPrintModal()}>
+						<Button onClick={() => handeOpenPrintModal()}>
 							<PrintIcon />
-						</Button> */}
+						</Button>
 						<Button onClick={() => handeOpenMailModal()}>
 							<MailIcon />
 						</Button>

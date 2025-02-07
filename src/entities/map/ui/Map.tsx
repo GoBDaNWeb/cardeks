@@ -16,6 +16,7 @@ import {
 	handleWheel,
 	setCategoryTotals,
 	setCenter,
+	setFixedCenter,
 	setIsUrlBuid,
 	setMapLoading,
 	setPanoramaOpen,
@@ -108,7 +109,8 @@ export const CustomMap = () => {
 				left: '73px'
 			}
 		});
-		map.events.add('boundschange', () => {
+		map.events.add('boundschange', e => {
+			dispatch(setFixedCenter(e.get('newCenter')));
 			dispatch(setZoom(map.getZoom()));
 			dispatch(handleWheel(true));
 		});

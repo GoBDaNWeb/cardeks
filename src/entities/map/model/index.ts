@@ -25,6 +25,7 @@ export {
 	setAzsOnRoute,
 	setPointsOnRoute,
 	setCenter,
+	setFixedCenter,
 	setPoints,
 	setMapLoading,
 	setIsUrlBuid,

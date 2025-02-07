@@ -24,7 +24,7 @@ export const PrintModal = () => {
 	const { filters } = useTypedSelector(store => store.routeForm);
 
 	const {
-		mapInfo: { mapType },
+		mapInfo: { mapType, fixedCenter, zoom },
 		routeInfo: { pointsOnRoute, routeCoords }
 	} = useTypedSelector(store => store.map);
 	const contentRef = useRef<HTMLDivElement>(null);
@@ -54,10 +54,9 @@ export const PrintModal = () => {
 			clusterOpenBalloonOnClick: true
 		});
 
-		// e.get('newCenter')
 		let map = new ymaps.Map('print_map', {
-			center: [55.686736, 37.440496],
-			zoom: 15
+			center: fixedCenter,
+			zoom: zoom
 		});
 		setMap(map);
 
