@@ -39,7 +39,6 @@ export const useRoute = ({
 	const [routeCoordsState, setRouteCoordsState] = useState<number[][]>([]);
 
 	const dispatch = useDispatch();
-
 	const {
 		routeInfo: { routeCoords, buildRoute, routeIsChanged, pointsOnRoute, isUrlBuild }
 	} = useTypedSelector(state => state.map);

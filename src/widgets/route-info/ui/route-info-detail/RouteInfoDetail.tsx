@@ -85,9 +85,9 @@ export const RouteInfoDetail: FC<IRouteInfoDetail> = ({ handleClose }) => {
 						<Button onClick={() => handeOpenPrintModal()}>
 							<PrintIcon />
 						</Button>
-						<Button onClick={() => handeOpenMailModal()}>
+						{/* <Button onClick={() => handeOpenMailModal()}>
 							<MailIcon />
-						</Button>
+						</Button> */}
 					</div>
 					<Button className={s.closeBtn} onClick={handleClose}>
 						<CloseIcon />

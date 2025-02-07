@@ -6,19 +6,7 @@ import clsx from 'clsx';
 
 import { setActiveMenu } from '@/widgets/menu-list';
 
-import {
-	setAddress,
-	setBuildRoute,
-	setCoords,
-	setCurrentPointId,
-	setDeletePointId,
-	setFieldsCount,
-	setIsCursorPoint,
-	setRouteChanged,
-	setSearchValue,
-	setSelectAddress,
-	setSwapPoints
-} from '@/entities/map';
+import { setAddress, setCurrentPointId } from '@/entities/map';
 import { setActiveObject } from '@/entities/object-info';
 
 import { useGetTerminalsQuery } from '@/shared/api';

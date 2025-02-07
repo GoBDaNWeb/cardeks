@@ -11,7 +11,6 @@ import { handleOpenModal as openMailModal } from '@/features/mail-modal';
 
 import { setAddress, setCenter, setCurrentPointId } from '@/entities/map';
 import { setActiveMenu as setActiveMenuMob } from '@/entities/mobile-menu';
-import { handleOpenModal } from '@/entities/new-route-modal';
 import { setActiveObject } from '@/entities/object-info';
 import { ObjectItem } from '@/entities/object-item';
 import { handleOpenModal as openPrintModal } from '@/entities/print-modal';
@@ -25,7 +24,6 @@ import s from './objects-list.module.scss';
 export const ObjectsList = () => {
 	const [page, setPage] = useState(1);
 	const [itemsPerPage, setItemsPerPage] = useState(10);
-	const [mergedPointsList, setMergedPointsList] = useState([]);
 
 	const observer = useRef<IntersectionObserver | null>(null);
 	const lastElementRef = useRef<HTMLDivElement | null>(null);
@@ -69,25 +67,6 @@ export const ObjectsList = () => {
 		dispatch(setActiveObject(id));
 	};
 
-	// useEffect(() => {
-	// 	const mergedPoints = points.map((point: Feature) => {
-	// 		const matchingData = data.data.find((item: any) => item[0] === point.id);
-
-	// 		if (matchingData) {
-	// 			return {
-	// 				...point,
-	// 				address: matchingData[1]
-	// 			};
-	// 		}
-
-	// 		return point;
-	// 	});
-	// 	setMergedPointsList(mergedPoints);
-	// }, [points]);
-
-	const handleOpenNewRouteModal = () => {
-		dispatch(handleOpenModal(true));
-	};
 	const handeOpenDownloadModal = () => {
 		dispatch(openDownloadModal(true));
 	};
@@ -130,9 +109,9 @@ export const ObjectsList = () => {
 						<Button onClick={() => handeOpenPrintModal()}>
 							<PrintIcon />
 						</Button>
-						<Button onClick={() => handeOpenMailModal()}>
+						{/* <Button onClick={() => handeOpenMailModal()}>
 							<MailIcon />
-						</Button>
+						</Button> */}
 					</div>
 					<Button onClick={() => handleClose()}>
 						<CloseIcon />

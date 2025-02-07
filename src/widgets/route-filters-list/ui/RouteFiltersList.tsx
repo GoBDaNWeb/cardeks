@@ -5,8 +5,6 @@ import clsx from 'clsx';
 
 import { setFilterActive } from '@/features/route-form';
 
-import { setActiveMenu } from '@/entities/mobile-menu';
-
 import { useTypedSelector } from '@/shared/lib';
 import { Button, CloseIcon } from '@/shared/ui';
 

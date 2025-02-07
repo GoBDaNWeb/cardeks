@@ -77,9 +77,9 @@ export const RouteInfoShort: FC<IRouteInfoShort> = ({ setDetail, handleClose }) 
 						<Button onClick={() => handeOpenPrintModal()}>
 							<PrintIcon />
 						</Button>
-						<Button onClick={() => handeOpenMailModal()}>
+						{/* <Button onClick={() => handeOpenMailModal()}>
 							<MailIcon />
-						</Button>
+						</Button> */}
 					</div>
 					<Button className={s.aboutBtn} onClick={setDetail}>
 						Подробнее

@@ -19,16 +19,7 @@ export const Filters = () => {
 	const { filtersIsOpen } = useTypedSelector(store => store.filters);
 	const { activeMenu: mobileActiveMenu } = useTypedSelector(store => store.mobileMenu);
 	const {
-		mapInfo: {
-			pointsData,
-			totalViewPoints,
-			totalWashing,
-			totalTire,
-			totalViewWashing,
-			totalViewTire,
-			totalAzsPoints,
-			totalViewAzsPoints
-		},
+		mapInfo: { pointsData },
 		routeInfo: { changeRoute }
 	} = useTypedSelector(state => state.map);
 	const {
