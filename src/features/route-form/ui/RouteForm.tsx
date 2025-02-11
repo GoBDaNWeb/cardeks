@@ -44,7 +44,7 @@ export const RouteForm: React.FC = () => {
 
 	const {
 		searchInfo: { searchValue, buildSearch },
-		routeInfo: { selectedAddress, currentPointId, changeRoute }
+		routeInfo: { selectedAddress, currentPointId, changeRoute, isSelectAddress }
 	} = useTypedSelector(store => store.map);
 	const { activeMenu } = useTypedSelector(store => store.menu);
 	const { activeMenu: mobileActiveMenu } = useTypedSelector(store => store.mobileMenu);
@@ -247,7 +247,7 @@ export const RouteForm: React.FC = () => {
 							handleSelectPoint={() => handleSelectPoint(getPointId(index))}
 							handleFocus={() => handleFocus(index)}
 							handleBlur={handleBlur}
-							isSelect={false}
+							isSelect={currentPointId?.split('.')[1] == index && isSelectAddress}
 						/>
 						{data?.results && dropdownOpen ? (
 							<SearchDropdown
