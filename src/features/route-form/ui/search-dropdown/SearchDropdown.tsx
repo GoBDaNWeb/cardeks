@@ -1,18 +1,9 @@
 import clsx from 'clsx';
 
-import { IAddresses, ResultsType } from '@/shared/types';
+import { ResultsType } from '@/shared/types';
 import { Dropdown } from '@/shared/ui';
 
 import s from './search-dropdown.module.scss';
-
-interface IListItem {
-	title: {
-		text: string;
-	};
-	subtitle?: {
-		text: string;
-	};
-}
 
 interface ISearchDropdownProps {
 	list: {

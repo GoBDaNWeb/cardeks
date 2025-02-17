@@ -6,9 +6,9 @@ import clsx from 'clsx';
 import { setWithFilters } from '@/features/route-form';
 
 import { useTypedSelector } from '@/shared/lib';
-import { Accordion, ArrowDownIcon, Button, Checkbox, Chip, FilterIcon, Input } from '@/shared/ui';
+import { Accordion, ArrowDownIcon, Button, Checkbox, Chip, FilterIcon } from '@/shared/ui';
 
-import { settingInputs, settingTabs } from '../../config';
+import { settingTabs } from '../../config';
 import { setAddSettings, setFilterActive } from '../../model';
 
 import s from './route-settings.module.scss';
@@ -87,17 +87,6 @@ const AccordionContent = () => {
 					))}
 				</div>
 			</div>
-			{/* <div className={s.accordionContentBottom}>
-				<p>Расчет остановок для заправки</p>
-				<div className={s.inputList}>
-					{settingInputs.map(input => (
-						<div key={input.title} className={s.inputWrapper}>
-							<p>{input.title}</p>
-							<Input placeholder={input.placeholder} isStyled />
-						</div>
-					))}
-				</div>
-			</div> */}
 		</div>
 	);
 };

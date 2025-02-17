@@ -28,5 +28,4 @@ export const handleDownloadGPX = (gpxData: IGPX[]) => {
 	// Очищаем ссылку после скачивания
 	document.body.removeChild(link);
 	URL.revokeObjectURL(url);
-	return Buffer.from(gpxContent, 'utf-8').toString('base64');
 };

@@ -18,7 +18,6 @@ type ObjectItemType = {
 	viewOnMap?: () => void;
 	buildRoute?: () => void;
 	handleDeletePoint?: () => void;
-	aboutObject?: () => void;
 	isDisabled?: boolean;
 	fuels?: any;
 };
@@ -33,7 +32,6 @@ export const ObjectItem: FC<ObjectItemType> = ({
 	buildRoute,
 	handleDeletePoint,
 	isDisabled,
-	aboutObject,
 	fuels
 }) => {
 	const dispatch = useDispatch();

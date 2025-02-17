@@ -12,4 +12,3 @@ export const addChipsList = [
 		value: 'tire'
 	}
 ];
-export const catChipsList: string[] = ['А', 'B', 'C'];

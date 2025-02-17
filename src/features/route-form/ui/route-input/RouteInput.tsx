@@ -3,7 +3,7 @@ import { UseFormRegister } from 'react-hook-form';
 
 import clsx from 'clsx';
 
-import { Button, CloseIcon, Input, SearchIcon } from '@/shared/ui';
+import { Button, CloseIcon, Input, OnMapIcon } from '@/shared/ui';
 
 import s from './route-input.module.scss';
 
@@ -63,7 +63,7 @@ export const RouteInput: FC<IRouteInput> = ({
 					</Button>
 				)}
 				<Button onClick={handleSelectPoint} className={searchBtnClass}>
-					<SearchIcon />
+					<OnMapIcon />
 				</Button>
 			</div>
 		</div>

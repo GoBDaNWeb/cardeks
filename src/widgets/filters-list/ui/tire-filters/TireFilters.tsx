@@ -1,9 +1,8 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { setAddServices, setGateHeight } from '@/widgets/filters';
+import { setAddServices } from '@/widgets/filters';
 
-import { getQueryParams, useTypedSelector } from '@/shared/lib';
 import { Chip } from '@/shared/ui';
 
 import { addServicesTireList } from '../../config';
@@ -19,32 +18,8 @@ interface IFilters {
 	services?: string[];
 }
 
-export const TireFilters: FC<IFilters> = ({
-	withoutServices,
-	resetFilters,
-	selectedFilter,
-	handleAddServices,
-	services
-}) => {
-	// const { addServicesParam, selectedFilterParam } = getQueryParams();
-	// const [services, setServices] = useState<string[]>(addServicesParam ? addServicesParam : []);
-
+export const TireFilters: FC<IFilters> = ({ withoutServices, handleAddServices, services }) => {
 	const dispatch = useDispatch();
-	const { filtersIsOpen } = useTypedSelector(store => store.filters);
-
-	// const handleAddServices = (service: string) => {
-	// 	setServices(prevServices => {
-	// 		const isSet = prevServices.some(item => item === service);
-	// 		const newFuels = isSet
-	// 			? prevServices.filter(item => item !== service)
-	// 			: [...prevServices, service];
-	// 		return newFuels;
-	// 	});
-	// };
-
-	// useEffect(() => {
-	// 	setServices([]);
-	// }, [resetFilters]);
 
 	useEffect(() => {
 		if (services) {
@@ -56,35 +31,8 @@ export const TireFilters: FC<IFilters> = ({
 		}
 	}, [services, dispatch]);
 
-	// useEffect(() => {
-	// 	dispatch(setAddServices([]));
-	// 	dispatch(setGateHeight(null));
-
-	// 	setServices([]);
-	// }, [filtersIsOpen]);
-
 	return (
 		<div className={s.filtersContent}>
-			{/* <div className={s.filterRow}>
-				<p>Параметры </p>
-				<div className={s.inputList}>
-					<Chip onClick={() => {}}>Легковой</Chip>
-					<Chip onClick={() => {}}>Грузовой</Chip>
-					<Chip onClick={() => {}}>Спецтехника</Chip>
-				</div>
-			</div> */}
-			{/* <div className={s.filterRow}>
-				<p>Услуги</p>
-				<Chip onClick={() => {}}>Сезонное хранение шин</Chip>
-			</div>
-			<div className={s.filterRow}>
-				<p>Выделить категории</p>
-				<div className={s.inputList}>
-					<Chip onClick={() => {}}>А</Chip>
-					<Chip onClick={() => {}}>B</Chip>
-					<Chip onClick={() => {}}>C</Chip>
-				</div>
-			</div> */}
 			{withoutServices ? null : (
 				<>
 					<div className={s.filterRow}>

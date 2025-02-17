@@ -18,7 +18,7 @@ import {
 
 import { useGetAddressesQuery } from '@/shared/api';
 import { ruLetters } from '@/shared/config';
-import { getPointId, getQueryParams, useDebounce, useTypedSelector } from '@/shared/lib';
+import { getPointId, useDebounce, useTypedSelector } from '@/shared/lib';
 import { ArrowsIcon, Button, PlusIcon } from '@/shared/ui';
 
 import s from './route-form.module.scss';
@@ -99,14 +99,12 @@ export const RouteForm: React.FC = () => {
 			if (!isNaN(index)) {
 				const pointId = getPointId(index);
 				setValue(pointId, subtitle ? `${address} ${subtitle}` : address);
-				// dispatch(setBuildSearch(true));
 				dispatch(setSearchValue(getInputValue(index)));
 				dispatch(setCurrentPointId(getPointId(index)));
 
 				dispatch(setAddress(getInputValue(index)));
 
 				setTimeout(() => {
-					// dispatch(setBuildSearch(false));
 					setDropdownOpen(false);
 					setSearchData('');
 				}, 300);
@@ -164,18 +162,6 @@ export const RouteForm: React.FC = () => {
 			setValue(getPointId(1), searchValue);
 		}
 	}, [buildSearch]);
-
-	useEffect(() => {
-		const queryRoutes = getQueryParams(window.location.href).routes;
-		setTimeout(() => {
-			if (queryRoutes) {
-				const queryRoutesArray = queryRoutes.split(';');
-				queryRoutesArray.forEach((route: string, index: number) => {
-					setValue(getPointId(index), route);
-				});
-			}
-		}, 0);
-	}, []);
 
 	useEffect(() => {
 		if (activeMenu !== 'route' || mobileActiveMenu !== 'route') {

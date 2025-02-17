@@ -4,21 +4,19 @@ import { useDispatch } from 'react-redux';
 import clsx from 'clsx';
 
 import { setBrandTitles } from '@/features/route-form';
-import { clearFilters, setAzsTypes } from '@/features/route-form';
+import { setAzsTypes } from '@/features/route-form';
 
-import { useDebounce, useIndexedDB, useTypedSelector } from '@/shared/lib';
+import { useIndexedDB, useTypedSelector } from '@/shared/lib';
 import { IList } from '@/shared/types';
 import { Chip, Dropdown, Input } from '@/shared/ui';
 
-import { addChipsList, catChipsList } from '../../config';
+import { addChipsList } from '../../config';
 
 import s from './route-filters.module.scss';
 
 export const RouteFilters = () => {
 	const [inputBrandValue, setInputBrandValue] = useState('');
-	const [mainChipActive, setMainChipActive] = useState<boolean>(false);
 	const [azsType, setAzsType] = useState<IList[]>([]);
-	const [catChips, setCatChips] = useState<number[]>([]);
 	const [currentBrands, setCurrentBrands] = useState<string[]>([]);
 	const [filteredBrands, setFilteredBrands] = useState<string[]>([]);
 	const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
@@ -41,10 +39,6 @@ export const RouteFilters = () => {
 		handleGetBradns();
 	}, [filterActive]);
 
-	const handleChangeMainChipActive = () => {
-		setMainChipActive(prevChipActive => !prevChipActive);
-	};
-	const debounced = useDebounce(inputBrandValue);
 	const handleChangeInputValue = (e: FormEvent<HTMLInputElement>) => {
 		const value = (e.target as HTMLInputElement).value;
 		setInputBrandValue(value);
@@ -77,27 +71,6 @@ export const RouteFilters = () => {
 		setCurrentBrands((prevBrands: string[]) => [...prevBrands, brand]);
 	};
 
-	// const handleChangeChipActive = (index: number, type: 'add' | 'cat') => {
-	// 	if (type === 'add') {
-	// 		setAddChips(prevChips => {
-	// 			let newChips;
-	// 			if (prevChips.includes(index)) {
-	// 				newChips = prevChips.filter(chip => chip !== index);
-	// 			} else {
-	// 				newChips = [...prevChips, index];
-	// 			}
-	// 			dispatch(setAzsTypes(newChips));
-	// 			return newChips;
-	// 		});
-	// 	} else {
-	// 		if (catChips.includes(index)) {
-	// 			const filtered = catChips.filter(chip => chip !== index);
-	// 			setCatChips(filtered);
-	// 		} else {
-	// 			setCatChips(prevChips => [...prevChips, index]);
-	// 		}
-	// 	}
-	// };
 	const handleChangeChipActive = (type: IList) => {
 		setAzsType(prevTypes => {
 			const isSet = prevTypes.some(item => item.value === type.value);
@@ -140,27 +113,11 @@ export const RouteFilters = () => {
 		dispatch(setBrandTitles(selectedBrands));
 	}, [selectedBrands]);
 
-	useEffect(() => {
-		// setInputBrandValue('');
-		// setAddChips([]);
-		// dispatch(clearFilters());
-	}, [filterActive]);
-
 	const dropdownClass = clsx(s.dropdown, { [s.active]: dropdownActive });
 	const routeFiltersClass = clsx(s.routeFilters, { [s.active]: dropdownActive });
 
 	return (
 		<div className={routeFiltersClass}>
-			{/* <div className={s.filterRow}>
-				<p className={s.title}>Основное</p>
-				<Chip onClick={handleChangeMainChipActive} isActive={mainChipActive}>
-					Сбросить счетчик PIN-кода
-				</Chip>
-			</div> */}
-			{/* <div className={s.filterRow}>
-				<p className={s.title}>Карта</p>
-				<Input isStyled placeholder='Номер или название' />
-			</div> */}
 			<div className={s.filterRow}>
 				<p className={s.title}>Бренд</p>
 				<div className={s.brandWrapper}>
@@ -210,20 +167,6 @@ export const RouteFilters = () => {
 					))}
 				</div>
 			</div>
-			{/* <div className={s.filterRow}>
-				<p className={s.title}>Выделить категории</p>
-				<div className={s.content}>
-					{catChipsList.map((chip, index) => (
-						<Chip
-							key={chip}
-							onClick={() => handleChangeChipActive(index, 'cat')}
-							isActive={catChips.includes(index)}
-						>
-							{chip}
-						</Chip>
-					))}
-				</div>
-			</div> */}
 		</div>
 	);
 };

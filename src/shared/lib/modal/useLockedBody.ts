@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-export function useLockedBody(locked = false) {
+export const useLockedBody = (locked = false) => {
 	useEffect(() => {
 		if (!locked) {
 			return;
@@ -21,4 +21,4 @@ export function useLockedBody(locked = false) {
 			document.body.style.paddingRight = '0px';
 		};
 	}, [locked]);
-}
+};

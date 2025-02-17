@@ -46,7 +46,7 @@ export const useRoute = ({
 		filters: { brandTitles, azsTypes },
 		withFilters
 	} = useTypedSelector(state => state.routeForm);
-	const { routesParam } = getQueryParams(window.location.href);
+	const { routesParam } = getQueryParams();
 
 	const multiRouteRef = useRef<any>(null);
 
@@ -121,7 +121,6 @@ export const useRoute = ({
 						objectManagerState.removeAll();
 
 						const azsOnRoute = await getAzsOnRoute(features, lines, threshold, routesArr[0]);
-						console.log('azsOnRoute', azsOnRoute);
 						if (azsOnRoute) {
 							objectManagerState.add(azsOnRoute);
 							dispatch(setPointsOnRoute(azsOnRoute));
@@ -148,14 +147,12 @@ export const useRoute = ({
 					} else {
 						filtered();
 						const newFilteredPoints = await filtered();
-						console.log('filteredPoints', newFilteredPoints);
 						const azsOnRoute = await getAzsOnRoute(
 							withFilters ? newFilteredPoints : features,
 							lines,
 							threshold,
 							routeCoords[0]
 						);
-						console.log('azsOnRoute', azsOnRoute);
 						if (azsOnRoute && objectManagerState) {
 							objectManagerState.add(azsOnRoute);
 							dispatch(setPointsOnRoute(azsOnRoute));

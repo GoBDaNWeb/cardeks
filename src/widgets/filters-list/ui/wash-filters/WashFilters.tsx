@@ -18,12 +18,7 @@ interface IFilters {
 	handleAddServices?: (service: string) => void;
 	services?: string[];
 }
-export const WashFilters: FC<IFilters> = ({
-	withoutServices,
-	resetFilters,
-	handleAddServices,
-	services
-}) => {
+export const WashFilters: FC<IFilters> = ({ withoutServices, handleAddServices, services }) => {
 	const { clearFilters, filters } = useTypedSelector(store => store.filters);
 	const [gateHeights, setGateHeights] = useState<number | null>(filters.gateHeight);
 	const dispatch = useDispatch();
@@ -35,11 +30,6 @@ export const WashFilters: FC<IFilters> = ({
 			setGateHeights(height);
 		}
 	};
-
-	// useEffect(() => {
-	// 	// setServices([]);
-	// 	setGateHeights(null);
-	// }, [resetFilters]);
 
 	useEffect(() => {
 		if (services) {
@@ -58,7 +48,6 @@ export const WashFilters: FC<IFilters> = ({
 		if (clearFilters) {
 			dispatch(setAddServices([]));
 			dispatch(setGateHeight(null));
-			// setServices([]);
 		}
 	}, [clearFilters]);
 
@@ -78,24 +67,6 @@ export const WashFilters: FC<IFilters> = ({
 					))}
 				</div>
 			</div>
-			{/* <div className={s.filterRow}>
-				<p>Параметры мойки</p>
-				<div className={s.inputList}>
-					<Chip onClick={() => {}}>Химчистка</Chip>
-					<Chip onClick={() => {}}>Полировка</Chip>
-					<Chip onClick={() => {}}>Мойка двигателя</Chip>
-					<Chip onClick={() => {}}>Омыватель</Chip>
-				</div>
-			</div>
-
-			<div className={s.filterRow}>
-				<p>Выделить категории</p>
-				<div className={s.inputList}>
-					<Chip onClick={() => {}}>А</Chip>
-					<Chip onClick={() => {}}>B</Chip>
-					<Chip onClick={() => {}}>C</Chip>
-				</div>
-			</div> */}
 
 			{withoutServices ? null : (
 				<>

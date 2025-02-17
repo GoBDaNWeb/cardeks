@@ -1,22 +1,21 @@
 import Dexie, { Table } from 'dexie';
 
-// Тип данных
 export interface DataItem {
-	id: string; // Первый элемент массива
-	name: string; // Второй элемент массива
-	flags: number[]; // Остальные элементы, кроме координат
+	id: string;
+	name: string;
+	flags: number[];
 	latitude: number;
 	longitude: number;
 }
 
 // Определение базы данных
 class AppDatabase extends Dexie {
-	dataItems!: Table<DataItem, string>; // Таблица с id как ключом
+	dataItems!: Table<DataItem, string>;
 
 	constructor() {
 		super('AppDatabase');
 		this.version(1).stores({
-			dataItems: 'id' // Индексируем id
+			dataItems: 'id'
 		});
 	}
 }

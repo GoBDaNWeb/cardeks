@@ -43,33 +43,6 @@ export const DownloadFiles: FC<IDownloadFiles> = ({ title, text, btnText, downlo
 	const watchSelector = watch('selector');
 	const watchMail = watch('mail');
 
-	const generateCSVFile = (data: string[][]) => {
-		const csvContent = data.map(row => row.join(',')).join('\n');
-		return csvContent;
-	};
-
-	const generateGPXFile = (data: IGPX[]) => {
-		let gpxContent = `<?xml version="1.0" encoding="UTF-8"?>
-<gpx version="1.1" creator="YourApp">
-`;
-		data.forEach(point => {
-			gpxContent += `<wpt lat="${point.lat}" lon="${point.lon}">
-    <name>${point.name}</name>
-</wpt>
-`;
-		});
-		gpxContent += '</gpx>';
-		return gpxContent;
-	};
-
-	const generateExcelFile = async (tableRef: React.RefObject<HTMLTableElement>) => {
-		// Используйте библиотеку xlsx для генерации Excel файла
-		// Пример:
-		const XLSX = await import('xlsx');
-		const workbook = XLSX.utils.table_to_book(tableRef.current);
-		return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
-	};
-
 	const onSubmit: SubmitHandler<FieldValues> = async data => {
 		const { radio, selector, mail } = data;
 
@@ -82,37 +55,6 @@ export const DownloadFiles: FC<IDownloadFiles> = ({ title, text, btnText, downlo
 			}
 			if (radio === 'poi' && selector.value === 'GPX') {
 				handleDownloadGPX(gpxData);
-			}
-		} else {
-			// Отправка данных на сервер
-			const formData = new FormData();
-			formData.append('emails', mail);
-			formData.append('type', radio === 'excel' ? 'excel' : selector.value.toLowerCase());
-			formData.append(
-				'data',
-				JSON.stringify(
-					radio === 'excel'
-						? tableRef.current
-						: radio === 'poi' && selector.value === 'CSV'
-							? csvData
-							: gpxData
-				)
-			);
-
-			try {
-				const response = await fetch('https://dev5.paradigma-digital.ru/1.php', {
-					method: 'POST',
-					body: formData
-				});
-
-				if (response.ok) {
-					alert('Файл успешно отправлен на указанные email-адреса.');
-				} else {
-					alert('Произошла ошибка при отправке файла.');
-				}
-			} catch (error) {
-				console.error('Ошибка:', error);
-				alert('Произошла ошибка при отправке файла.');
 			}
 		}
 	};

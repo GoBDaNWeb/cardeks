@@ -11,7 +11,6 @@ import { handleOpenModal as openMailModal } from '@/features/mail-modal';
 
 import { setAddress, setCenter, setCurrentPointId } from '@/entities/map';
 import { setActiveMenu as setActiveMenuMob } from '@/entities/mobile-menu';
-import { setActiveObject } from '@/entities/object-info';
 import { ObjectItem } from '@/entities/object-item';
 import { handleOpenModal as openPrintModal } from '@/entities/print-modal';
 
@@ -35,7 +34,6 @@ export const ObjectsList = () => {
 	} = useTypedSelector(state => state.map);
 	const { activeMenu } = useTypedSelector(store => store.menu);
 	const { activeMenu: mobileActiveMenu } = useTypedSelector(store => store.mobileMenu);
-	// const { data, isLoading } = useGetTerminalsQuery();
 	const { objectId } = useTypedSelector(store => store.objectInfo);
 	const {
 		selectedFilter,
@@ -66,10 +64,6 @@ export const ObjectsList = () => {
 				dispatch(setActiveMenu('route'));
 			}
 		}
-	};
-
-	const handleAboutObject = (id: number) => {
-		dispatch(setActiveObject(id));
 	};
 
 	const handeOpenDownloadModal = () => {
@@ -151,7 +145,6 @@ export const ObjectsList = () => {
 							address={point.address}
 							viewOnMap={() => handleViewOnMap(point.geometry.coordinates)}
 							buildRoute={() => handleBuildRoute(point.address ?? '')}
-							aboutObject={() => handleAboutObject(point.id)}
 							fuels={point.fuels}
 						/>
 					</div>

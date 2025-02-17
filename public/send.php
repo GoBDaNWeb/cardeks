@@ -6,7 +6,7 @@ header("Access-Control-Allow-Headers: Content-Type, Authorization");
 $data = json_decode($_POST['data'], true);
 $emails = explode(',', $_POST['emails']);
 $type = $_POST['type'];
-
+print($data)
 // Генерация файла в зависимости от типа
 $filename = '';
 $fileContent = '';
@@ -36,7 +36,7 @@ if ($type === 'excel') {
 }
 
 // Отправка файла на email
-$subject = "Your file from YourApp";
+$subject = "File from Cardeks";
 $message = "Please find attached the file you requested.";
 $headers = "From: no-reply@yourapp.com";
 

@@ -13,7 +13,7 @@ import { useGetPointsQuery, useGetTerminalsQuery } from '@/shared/api';
 import { getQueryParams, useIndexedDB, useTypedSelector } from '@/shared/lib';
 import { Feature, IPlacemark } from '@/shared/types';
 
-import { createPoints, usePoint, useRoute } from '../lib';
+import { createPoints, getVisibleMarkers, mergeData, usePoint, useRoute } from '../lib';
 import {
 	handleWheel,
 	setCategoryTotals,
@@ -21,7 +21,6 @@ import {
 	setIsUrlBuid,
 	setMapLoading,
 	setPanoramaOpen,
-	setPoints,
 	setZoom
 } from '../model';
 
@@ -48,37 +47,6 @@ export const CustomMap = () => {
 
 	const { selectedFilter, filtersIsOpen, filters } = useTypedSelector(state => state.filters);
 
-	const getVisibleMarkers = useCallback(
-		async (map: any, objectManagerState: any) => {
-			if (!objectManagerState) return;
-			const bounds = map.getBounds();
-
-			const filteredMarkers: Feature[] = objectManagerState.objects.getAll();
-
-			// if (!filteredMarkers.length) return;
-
-			const visibleMarkers = filteredMarkers.filter(marker => {
-				const coordinates = marker.geometry.coordinates;
-				return (
-					bounds[0][0] <= coordinates[0] &&
-					coordinates[0] <= bounds[1][0] &&
-					bounds[0][1] <= coordinates[1] &&
-					coordinates[1] <= bounds[1][1]
-				);
-			});
-
-			const visibleWashingPoints = visibleMarkers.filter(marker => marker.types?.washing);
-			const visibleTirePoints = visibleMarkers.filter(marker => marker.types?.tire);
-
-			dispatch(setCategoryTotals({ category: 'azs', totalView: visibleMarkers.length }));
-			dispatch(setCategoryTotals({ category: 'points', totalView: visibleMarkers.length }));
-			dispatch(setCategoryTotals({ category: 'washing', totalView: visibleWashingPoints.length }));
-			dispatch(setCategoryTotals({ category: 'tire', totalView: visibleTirePoints.length }));
-			dispatch(setPoints(visibleMarkers));
-		},
-		[dispatch]
-	);
-
 	const init = () => {
 		const params = new URLSearchParams(window.location.search);
 		const centerParam = params.get('center');
@@ -88,6 +56,7 @@ export const CustomMap = () => {
 			center: centerArray ? centerArray : [55.686736, 37.440496],
 			zoom
 		});
+
 		const objectManager = new ymaps.ObjectManager({
 			clusterize: true,
 			geoObjectOpenBalloonOnClick: true,
@@ -174,6 +143,7 @@ export const CustomMap = () => {
 				});
 		});
 	};
+
 	const filter = useCallback(async () => {
 		if (objectManagerState && map) {
 			objectManagerState.removeAll();
@@ -200,11 +170,11 @@ export const CustomMap = () => {
 				);
 				objectManagerState.removeAll();
 				objectManagerState.add(filteredData);
-				getVisibleMarkers(map, objectManagerState);
+				getVisibleMarkers(map, objectManagerState, dispatch);
 			} else {
 				objectManagerState.removeAll();
 				objectManagerState.add(filteredDataType);
-				getVisibleMarkers(map, objectManagerState);
+				getVisibleMarkers(map, objectManagerState, dispatch);
 			}
 		}
 	}, [
@@ -281,8 +251,8 @@ export const CustomMap = () => {
 					total: features.length
 				})
 			);
-			map.events.add('boundschange', () => getVisibleMarkers(map, objectManagerState));
-			getVisibleMarkers(map, objectManagerState);
+			map.events.add('boundschange', () => getVisibleMarkers(map, objectManagerState, dispatch));
+			getVisibleMarkers(map, objectManagerState, dispatch);
 			dispatch(setMapLoading(false));
 
 			if (selectedFilterParam !== null) {
@@ -306,16 +276,6 @@ export const CustomMap = () => {
 			applyFilters();
 		}
 	}, [filter, map, selectedFilter]);
-
-	const mergeData = (data1: any[][], data2: any[][]) => {
-		const data2Map = new Map(data2.map(item => [item[0], { address: item[1], list: item[2] }]));
-
-		return data1.map(item => {
-			const id = item[0];
-			const extraData = data2Map.get(id) || { address: '', list: [] };
-			return [...item, extraData.address, extraData.list];
-		});
-	};
 
 	useEffect(() => {
 		const fetch = async () => {
@@ -348,7 +308,6 @@ export const CustomMap = () => {
 		features,
 		selectedFilter,
 		filters.card
-		// filtersIsOpen
 	]);
 
 	usePoint({ ymaps, map, pointCollection, setPointCollection });

@@ -35,7 +35,7 @@ const filters = [
 ];
 
 export const FiltersList = () => {
-	const { addServicesParam, selectedFilterParam } = getQueryParams();
+	const { addServicesParam } = getQueryParams();
 
 	const {
 		selectedFilter,
@@ -44,7 +44,6 @@ export const FiltersList = () => {
 		filters: { brandTitles, terminal, card }
 	} = useTypedSelector(store => store.filters);
 
-	const [resetFilters, setResetFilters] = useState(false);
 	const [inputTerminalValue, setInputTerminalValue] = useState(terminal);
 	const [dropdownActive, setDropdownActive] = useState(false);
 	const [dropdownCardActive, setDropdownCardActive] = useState(false);
@@ -307,7 +306,7 @@ export const FiltersList = () => {
 							{cardState.currentCards.length > 0
 								? cardState.currentCards.map((card: string, index: number) => (
 										<div
-											onMouseEnter={() => updateBrandState({ activeBrand: index })}
+											onMouseEnter={() => updateCardState({ activeCard: index })}
 											className={`${s.brand} ${index === cardState.activeCard ? s.active : ''}`}
 											key={index}
 											onClick={() => handleSearchCards(card)}
@@ -357,7 +356,6 @@ export const FiltersList = () => {
 				{selectedFilter !== null &&
 					filters[selectedFilter].content &&
 					React.cloneElement(filters[selectedFilter].content, {
-						resetFilters,
 						handleAddServices,
 						services
 					})}

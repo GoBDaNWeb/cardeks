@@ -1,21 +1,12 @@
-import { FC, FormEvent, useCallback, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
-import clsx from 'clsx';
-
-import {
-	setAddServices,
-	setBrandTitles,
-	setFeatures,
-	setFuelFilters,
-	setGateHeight,
-	setSelectedFilter
-} from '@/widgets/filters';
+import { setAddServices, setFeatures, setFuelFilters } from '@/widgets/filters';
 
 import { azsMainFilters, fuelList } from '@/shared/config';
-import { getQueryParams, useIndexedDB, useTypedSelector } from '@/shared/lib';
+import { useTypedSelector } from '@/shared/lib';
 import { IList } from '@/shared/types';
-import { Chip, Dropdown, Input } from '@/shared/ui';
+import { Chip } from '@/shared/ui';
 
 import { addServicesAzsList } from '../../config';
 import s from '../filters-list.module.scss';
@@ -30,26 +21,11 @@ interface IFilters {
 	services?: string[];
 }
 
-export const AZSFilters: FC<IFilters> = ({
-	withoutServices,
-	resetFilters,
-	selectedFilter,
-	handleAddServices,
-	services
-}) => {
-	const { filters, filtersIsOpen, clearFilters } = useTypedSelector(store => store.filters);
-
-	// const { addServicesParam, selectedFilterParam } = getQueryParams();
-	// const [inputBrandValue, setInputBrandValue] = useState('');
+export const AZSFilters: FC<IFilters> = ({ withoutServices, handleAddServices, services }) => {
+	const { filters, clearFilters } = useTypedSelector(store => store.filters);
 	const [fuels, setFuels] = useState<IList[]>(filters.fuelFilters);
 	const [features, setMainFeatures] = useState<IList[]>(filters.features);
-	// const [services, setServices] = useState<string[]>(addServicesParam ? addServicesParam : []);
-	// const [currentBrands, setCurrentBrands] = useState<string[]>([]);
-	const [dataBrands, setDataBrands] = useState<string[]>([]);
-	// const [filteredBrands, setFilteredBrands] = useState<string[]>([]);
-	// const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
-	// const [activeBrand, setActiveBrand] = useState(0);
-	const [dropdownActive, setDropdownActive] = useState(false);
+
 	const dispatch = useDispatch();
 
 	// Обработчик выбора топлива
@@ -74,28 +50,9 @@ export const AZSFilters: FC<IFilters> = ({
 		});
 	};
 
-	// Обработчик добавления/удаления услуги
-	// const handleAddServices = (service: string) => {
-	// 	setServices(prevServices => {
-	// 		const isSet = prevServices.some(item => item === service);
-	// 		const newFuels = isSet
-	// 			? prevServices.filter(item => item !== service)
-	// 			: [...prevServices, service];
-	// 		return newFuels;
-	// 	});
-	// };
-
 	useEffect(() => {
 		if (clearFilters) {
-			// setInputBrandValue('');
 			setFuels([]);
-			setMainFeatures([]);
-			// setServices([]);
-			// setCurrentBrands([]);
-			// setFilteredBrands([]);
-			// // setSelectedBrands([]);
-			// setActiveBrand(0);
-			setDropdownActive(false);
 		}
 	}, [clearFilters]);
 
@@ -117,27 +74,6 @@ export const AZSFilters: FC<IFilters> = ({
 		}
 	}, [services, dispatch]);
 
-	// useEffect(() => {
-	// 	dispatch(setBrandTitles(selectedBrands));
-	// }, [selectedBrands]);
-
-	// useEffect(() => {
-	// 	if (filtersIsOpen) {
-	// 		dispatch(setAddServices([]));
-	// 		setServices([]);
-	// 	}
-	// }, [selectedFilter, filtersIsOpen]);
-
-	// useEffect(() => {
-	// 	setInputBrandValue('');
-	// 	if (dataBrands) {
-	// 		setFilteredBrands(dataBrands);
-	// 		setCurrentBrands(dataBrands);
-	// 	}
-	// }, [filtersIsOpen]);
-
-	const dropdownClass = clsx(s.dropdown, { [s.active]: dropdownActive });
-
 	return (
 		<div className={s.filtersContent}>
 			<div className={s.filterRow}>
@@ -154,21 +90,6 @@ export const AZSFilters: FC<IFilters> = ({
 					))}
 				</div>
 			</div>
-			{/* <div className={s.filterRow}>
-				<p>Карта</p>
-				<Input isStyled placeholder='Номер или название' />
-			</div> */}
-
-			{/* <div className={s.filterRow}>
-				<p>Выделить категории</p>
-				<div className={s.inputList}>
-					{['А', 'B', 'C'].map(category => (
-						<Chip key={category} onClick={() => {}}>
-							{category}
-						</Chip>
-					))}
-				</div>
-			</div> */}
 			<div className={s.filterRow}>
 				<p>Топливо</p>
 				<div className={s.inputList}>
@@ -183,13 +104,6 @@ export const AZSFilters: FC<IFilters> = ({
 					))}
 				</div>
 			</div>
-			{/* <div className={s.filterRow}>
-				<p>Цена топлива, ₽</p>
-				<div className={s.inputGrid}>
-					<Input isStyled placeholder='От' />
-					<Input isStyled placeholder='До' />
-				</div>
-			</div> */}
 			{withoutServices ? null : (
 				<>
 					<div className={s.filterRow}>

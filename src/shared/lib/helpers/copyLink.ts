@@ -1,6 +1,5 @@
 import { toast } from 'react-toastify';
 
-import { getQueryParams } from '@/shared/lib';
 import { IList } from '@/shared/types';
 
 const notify = () =>
@@ -27,26 +26,23 @@ export const handleCopyLink = (params: ICopyLink) => {
 	const currentHref = `${window.location.origin}?`;
 	const urlParams = new URLSearchParams();
 	const separator = '|';
-	// Функция для добавления параметров в URL
+
 	const addParam = (key: string, value: string | number) => {
 		if (value !== undefined && value !== null) {
 			urlParams.set(key, String(value));
 		}
 	};
 
-	// Обрабатываем routeCoords (список координат)
 	if (params.routeCoords?.length) {
 		const routeResult = params.routeCoords.map(pair => pair.join('-')).join(';');
 		addParam('routes', routeResult);
 	}
 
-	// Обрабатываем fixedCenter (одна пара координат)
 	if (params.fixedCenter?.length === 2) {
 		const centerResult = params.fixedCenter.join('-');
 		addParam('center', centerResult);
 	}
 
-	// Добавляем дополнительные параметры (например, зум и слой)
 	if (params.zoom) {
 		addParam('zoom', params.zoom);
 	}
@@ -97,17 +93,4 @@ export const handleCopyLink = (params: ICopyLink) => {
 	navigator.clipboard.writeText(resultLink);
 
 	notify();
-};
-
-export const getFuelsFromUrl = (): IList[] => {
-	const params = new URLSearchParams(window.location.search);
-	const fuelsParam = params.get('fuels');
-	const separator = '|'; // Тот же разделитель
-
-	if (!fuelsParam) return [];
-
-	return fuelsParam.split(';').map(entry => {
-		const [title, value] = entry.split(separator).map(decodeURIComponent);
-		return { title, value };
-	});
 };
