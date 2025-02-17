@@ -76,7 +76,6 @@ export const ObjectInfo = () => {
 		[s.active]: objectId && !objectId.includes('__cluster__'),
 		[s.top]: objectId && !objectId.includes('__cluster__') && routeIsBuilded
 	});
-
 	return (
 		<div className={objectInfoClass}>
 			<div className={s.objectInfoTop}>
@@ -137,10 +136,12 @@ export const ObjectInfo = () => {
 							: 'Кардекс'}
 					</p>
 				</div>
-				<div className={s.infoItem}>
-					<h6>Терминалы</h6>
-					<p>{terminal && terminal[2].join(' -')}</p>
-				</div>
+				{terminal && terminal[2].length ? (
+					<div className={s.infoItem}>
+						<h6>Терминалы</h6>
+						<p>{terminal[2].join(' -')}</p>
+					</div>
+				) : null}
 			</div>
 		</div>
 	);
