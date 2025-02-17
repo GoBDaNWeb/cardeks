@@ -28,6 +28,12 @@
 		background-repeat: no-repeat !important;
 	}
 	.ymaps-2-1-79-controls__bottom {
+		@media (max-width: $tab-sm) {
+			min-width: 36px !important;
+			min-height: 36px !important;
+			max-width: 36px !important;
+			max-height: 36px !important;
+		}
 		.ymaps-2-1-79-controls__control {
 			@media (max-width: $desktop-sm) {
 				inset: auto auto 110px 16px !important;
