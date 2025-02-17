@@ -74,7 +74,7 @@ export const useFiltersLogic = (withoutServices: boolean, type: string) => {
 			setGateHeights(null);
 			setInputBrandValue('');
 			setFuels([]);
-			dispatch(setBrandTitles(''));
+			// dispatch(setBrandTitles(''));
 			dispatch(setFuelFilters([]));
 			dispatch(setAddServices([]));
 		}

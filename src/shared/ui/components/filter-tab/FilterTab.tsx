@@ -13,6 +13,7 @@ interface IFilterTab {
 	totalCount: string;
 	icon: ReactElement;
 	isActive?: boolean;
+	isSelected?: boolean;
 }
 
 export const FilterTab: FC<IFilterTab> = ({
@@ -21,9 +22,10 @@ export const FilterTab: FC<IFilterTab> = ({
 	viewCount,
 	totalCount,
 	icon,
-	isActive
+	isActive,
+	isSelected
 }) => {
-	const filterTabClass = clsx(s.filterTab, { [s.active]: isActive });
+	const filterTabClass = clsx(s.filterTab, { [s.active]: isActive, [s.selected]: isSelected });
 
 	return (
 		<Button onClick={onClick} className={filterTabClass}>

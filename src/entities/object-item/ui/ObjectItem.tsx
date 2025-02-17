@@ -1,12 +1,16 @@
 import { FC } from 'react';
+import { useDispatch } from 'react-redux';
 
 import clsx from 'clsx';
 
-import { Button, CloseIcon, MapIcon, PlusIcon, RouteIcon } from '@/shared/ui';
+import { setActiveObject } from '@/entities/object-info';
+
+import { Badge, Button, CloseIcon, MapIcon, PlusIcon, RouteIcon } from '@/shared/ui';
 
 import s from './object-item.module.scss';
 
 type ObjectItemType = {
+	id?: string | number;
 	title: string;
 	length?: number;
 	isDeleteBtn?: boolean;
@@ -16,9 +20,11 @@ type ObjectItemType = {
 	handleDeletePoint?: () => void;
 	aboutObject?: () => void;
 	isDisabled?: boolean;
+	fuels?: any;
 };
 
 export const ObjectItem: FC<ObjectItemType> = ({
+	id,
 	title,
 	address,
 	length,
@@ -27,8 +33,16 @@ export const ObjectItem: FC<ObjectItemType> = ({
 	buildRoute,
 	handleDeletePoint,
 	isDisabled,
-	aboutObject
+	aboutObject,
+	fuels
 }) => {
+	const dispatch = useDispatch();
+
+	const handleAboutObject = (id: number) => {
+		if (id) {
+			dispatch(setActiveObject(id));
+		}
+	};
 	const objectItemClass = clsx(s.objectItem, { [s.disabled]: isDisabled });
 
 	return (
@@ -41,18 +55,14 @@ export const ObjectItem: FC<ObjectItemType> = ({
 				{address ? <span>{address}</span> : null}
 			</div>
 			<div className={s.objectItemBadges}>
-				{/* {badges.map((badge, index) => (
-					<Badge
-						className={s.badge}
-						key={
-							// при получении апи заменить index
-							index
-						}
-					>
-						<p>{badge.title}</p>
-						<span>{badge.value}</span>
-					</Badge>
-				))} */}
+				{fuels &&
+					Object.entries(fuels)
+						.filter(([_, value]) => value)
+						.map(([key]) => (
+							<Badge key={key} className={s.badge}>
+								<p>{key}</p>
+							</Badge>
+						))}
 			</div>
 			<div className={s.objectItemBottom}>
 				<div className={s.features}>
@@ -78,7 +88,7 @@ export const ObjectItem: FC<ObjectItemType> = ({
 						</Button>
 					)}
 				</div>
-				<Button onClick={aboutObject} className={s.aboutBtn}>
+				<Button onClick={() => handleAboutObject(id as number)} className={s.aboutBtn}>
 					Подробнее о ТО
 				</Button>
 			</div>

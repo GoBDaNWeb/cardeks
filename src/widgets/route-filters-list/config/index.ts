@@ -1,14 +1,14 @@
 export const addChipsList = [
 	{
 		title: 'АЗС / АГЗС',
-		value: 'АЗС / АГЗС'
+		value: 'azs'
 	},
 	{
 		title: 'Мойки',
 		value: 'washing'
 	},
 	{
-		title: 'Жиномонтаж',
+		title: 'Шиномонтаж',
 		value: 'tire'
 	}
 ];

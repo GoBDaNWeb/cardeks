@@ -30,6 +30,11 @@ export const RouteInfo = () => {
 		dispatch(setChangeRoute(false));
 		dispatch(clearActiveMenu());
 	};
+
+	const handleDetail = (status: boolean) => {
+		setDetail(status);
+	};
+
 	useEffect(() => {
 		if (routeIsBuilded) {
 			setDetail(false);
@@ -45,9 +50,9 @@ export const RouteInfo = () => {
 	return (
 		<div className={routeInfoClass}>
 			{isDetail ? (
-				<RouteInfoDetail handleClose={() => handleClose()} />
+				<RouteInfoDetail setDetail={() => handleDetail(false)} />
 			) : (
-				<RouteInfoShort handleClose={() => handleClose()} setDetail={() => setDetail(true)} />
+				<RouteInfoShort handleClose={() => handleClose()} setDetail={() => handleDetail(true)} />
 			)}
 		</div>
 	);

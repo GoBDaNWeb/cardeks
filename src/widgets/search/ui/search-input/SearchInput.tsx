@@ -1,6 +1,6 @@
 import { FC, FormEvent } from 'react';
 
-import { Button, EnterIcon, Input, SearchIcon } from '@/shared/ui';
+import { Button, CloseIcon, EnterIcon, Input, SearchIcon } from '@/shared/ui';
 
 import s from './search-input.module.scss';
 
@@ -9,6 +9,7 @@ interface ISearchInput {
 	value: string;
 	handleSearchAddress: () => void;
 	handleBuildRoute: () => void;
+	handleClearValue: () => void;
 	handleFocus: () => void;
 	handleBlur: () => void;
 }
@@ -17,6 +18,7 @@ export const SearchInput: FC<ISearchInput> = ({
 	onChange,
 	value,
 	handleSearchAddress,
+	handleClearValue,
 	handleBuildRoute,
 	handleFocus,
 	handleBlur
@@ -31,6 +33,12 @@ export const SearchInput: FC<ISearchInput> = ({
 				onBlur={() => handleBlur()}
 			/>
 			<div className={s.icons}>
+				{value.length > 0 ? (
+					<Button onClick={handleClearValue}>
+						<CloseIcon />
+					</Button>
+				) : null}
+
 				<Button onClick={handleSearchAddress}>
 					<SearchIcon />
 				</Button>

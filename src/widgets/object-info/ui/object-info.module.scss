@@ -21,13 +21,16 @@
 		opacity var(--trs-300);
 	padding: 20px 0 24px 20px;
 	bottom: 24px;
-	z-index: 3;
+	z-index: 4;
 	scrollbar-width: thin;
 	scrollbar-color: var(--accent-color) #ffffff;
 	&::-webkit-scrollbar {
 		width: 5px;
 	}
 	opacity: 0;
+	&.top {
+		top: 80px;
+	}
 	@media (max-width: $desktop-sm) {
 		right: 16px;
 		width: 550px;
@@ -147,6 +150,15 @@
 			display: flex;
 			flex-direction: column;
 			gap: 4px;
+			.list {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 4px;
+			}
+			.fuelBadge {
+				display: flex;
+				align-items: center;
+			}
 			h6 {
 				@include text-m;
 			}

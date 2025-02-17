@@ -4,9 +4,9 @@ import { useDispatch } from 'react-redux';
 import clsx from 'clsx';
 
 import { useTypedSelector } from '@/shared/lib';
-import { AZSIcon, FilterIcon, FilterTab, TireIcon, WashIcon } from '@/shared/ui';
+import { AZSIcon, Button, FilterIcon, FilterTab, TireIcon, WashIcon } from '@/shared/ui';
 
-import { setOpenFilters, setSelectedFilter } from '../model';
+import { setOpenFilters, setSelectedFilter, setСlearFilters } from '../model';
 
 import s from './filters.module.scss';
 
@@ -16,7 +16,7 @@ export const Filters = () => {
 	const dispatch = useDispatch();
 	const { activeMenu } = useTypedSelector(state => state.menu);
 	const { filterActive } = useTypedSelector(store => store.routeForm);
-	const { filtersIsOpen } = useTypedSelector(store => store.filters);
+	const { filtersIsOpen, selectedFilter, filters } = useTypedSelector(store => store.filters);
 	const { activeMenu: mobileActiveMenu } = useTypedSelector(store => store.mobileMenu);
 	const {
 		mapInfo: { pointsData },
@@ -40,6 +40,15 @@ export const Filters = () => {
 		}
 	};
 
+	const handleClearFilters = () => {
+		dispatch(setСlearFilters(true));
+		dispatch(setOpenFilters(false));
+		dispatch(setSelectedFilter(null));
+		setTimeout(() => {
+			dispatch(setСlearFilters(false));
+		}, 300);
+	};
+
 	useEffect(() => {
 		if (!filtersIsOpen) {
 			setActiveTab(null);
@@ -51,6 +60,15 @@ export const Filters = () => {
 			dispatch(setOpenFilters(false));
 		}
 	}, [mobileActiveMenu]);
+
+	const condition =
+		selectedFilter !== null ||
+		filters.fuelFilters.length > 0 ||
+		filters.brandTitles.length > 0 ||
+		filters.addServices.length > 0 ||
+		filters.features.length > 0 ||
+		filters.gateHeight !== null ||
+		filters.terminal.length > 0;
 
 	const filtersClass = clsx(s.filters, {
 		[s.left]: activeMenu === 'route',
@@ -87,7 +105,15 @@ export const Filters = () => {
 					</div>
 					<p>Фильтры</p>
 				</div>
-				<p className={s.total}>На карте: {pointsData.points.totalView}</p>
+				<div className={s.rightBlock}>
+					{condition ? (
+						<Button onClick={() => handleClearFilters()} className={s.clearBtn}>
+							<p>Сбросить фильтры</p>
+						</Button>
+					) : null}
+
+					<p className={s.total}>На карте: {pointsData.points.totalView}</p>
+				</div>
 			</div>
 			<div className={s.filtersTabs}>
 				{filterTabs.map((tab, index) => (
@@ -97,6 +123,7 @@ export const Filters = () => {
 						title={tab.title}
 						icon={tab.icon}
 						isActive={index === activeTab}
+						isSelected={index === selectedFilter}
 						viewCount={tab.viewCount}
 						totalCount={tab.totalCount}
 					/>

@@ -1,6 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 import { DBSchema, IDBPDatabase, openDB } from 'idb';
+
+import { setCategoryTotals, setPoints } from '@/entities/map';
 
 import { Feature, IList } from '@/shared/types';
 
@@ -17,7 +20,10 @@ interface AppDB extends DBSchema {
 
 export const useIndexedDB = () => {
 	const [db, setDb] = useState<IDBPDatabase<AppDB> | null>(null);
+	const [isDbReady, setIsDbReady] = useState(false);
+	const dispatch = useDispatch();
 	const worker = new FilterWorker();
+
 	// Инициализация базы данных
 	useEffect(() => {
 		const initDB = async () => {
@@ -29,6 +35,7 @@ export const useIndexedDB = () => {
 				}
 			});
 			setDb(database);
+			setIsDbReady(true);
 		};
 
 		initDB();
@@ -64,95 +71,75 @@ export const useIndexedDB = () => {
 		azsTypes: IList[] = [],
 		addServices: string[] = [],
 		gateHeight?: number,
-		terminal: string = ''
+		terminal: string = '',
+		filteredData?: Feature[],
+		card?: string
 	): Promise<Feature[]> => {
-		if (!db) return [];
-
-		const tx = db.transaction('points', 'readonly');
-		const store = tx.objectStore('points');
-		const result: Feature[] = [];
-
-		let cursor = await store.openCursor();
-		while (cursor) {
-			const feature = cursor.value;
+		const data = filteredData || (await getAllData()); // Берем либо уже отфильтрованные, либо все данные
+		return data.filter(feature => {
 			const { options, types, features, title, fuels: featureFuels, filters, terminals } = feature;
-			// Проверка топлива
 
-			// Проверка соответствия топлива
 			const fuelsMatch = fuels.length === 0 || fuels.every(fuel => featureFuels[fuel.value]);
-
-			const featuresMatch =
-				featuresList.length === 0 || featuresList.every(feature => features[feature.value]);
-
-			// Проверка соответствия заголовка
+			const featuresMatch = featuresList.length === 0 || featuresList.every(f => features[f.value]);
+			const azsOptionsMatch = azsTypes.length === 0 || azsTypes.some(type => types[type.value]);
+			const matchingServices = addServices.length === 0 || filterObj(types, addServices);
+			//@ts-ignore
+			const matchingGate = !gateHeight || filters.gateHeight > gateHeight;
+			const terminalMatch =
+				terminal.trim().length === 0 || terminals?.some(t => t.trim() === terminal.trim());
 			const titleMatch =
+				!titleFilter ||
 				titleFilter.length === 0 ||
 				titleFilter.some((brand: string) => title.toLowerCase().includes(brand.toLowerCase()));
 
-			// Проверка соответствия AZS типов
-			const azsOptionsMatch = azsTypes.length === 0 || azsTypes.some(type => types[type.value]);
+			const cardMatch =
+				!card ||
+				card.length === 0 ||
+				(card === 'Лукойл'
+					? ['Лукойл', 'Тебойл'].includes(title)
+					: card === 'Кардекс'
+						? !['Лукойл', 'Тебойл'].includes(title)
+						: true);
 
-			// Проверка соответствия дополнительных сервисов
-			const matchingServices = addServices.length === 0 || filterObj(types, addServices);
-
-			//@ts-ignore
-			const matchingGate = !gateHeight || filters.gateHeight > gateHeight;
-
-			const terminalMatch =
-				terminal.trim().length === 0 || terminals?.some(t => t.trim() === terminal.trim());
-
-			if (
+			return (
 				fuelsMatch &&
 				featuresMatch &&
 				titleMatch &&
 				azsOptionsMatch &&
 				matchingServices &&
 				matchingGate &&
-				terminalMatch
-			) {
-				result.push(feature);
-			}
-
-			cursor = await cursor.continue();
-		}
-
-		return result;
+				terminalMatch &&
+				cardMatch
+			);
+		});
 	};
 
 	// Фильтрация данных по типу через IndexedDB
-	const filterDataByType = async (
-		selectedFilter: number,
-		filtersIsOpen: boolean
-	): Promise<Feature[]> => {
+	const filterDataByType = async (selectedFilter: number): Promise<Feature[]> => {
 		if (!db) return [];
 		const tx = db.transaction('points', 'readonly');
 		const store = tx.objectStore('points');
 		const data = await store.getAll();
 
 		return new Promise(resolve => {
-			worker.postMessage({ data, selectedFilter, filtersIsOpen });
+			worker.postMessage({ data, selectedFilter });
 			worker.onmessage = event => resolve(event.data);
 		});
 	};
 
 	const getBrands = async (): Promise<string[]> => {
-		if (!db) return [];
+		if (!isDbReady || !db) return [];
 
 		const tx = db.transaction('points', 'readonly');
 		const store = tx.objectStore('points');
 		const data = await store.getAll();
 
-		// Создаем Set для уникальных значений
 		const uniqueTitles = new Set<string>();
-
 		data.forEach(item => {
-			const title = item.title?.trim(); // Убираем пробелы
-			if (title) {
-				uniqueTitles.add(title); // Добавляем только если не пустой
-			}
+			const title = item.title?.trim();
+			if (title) uniqueTitles.add(title);
 		});
 
-		// Преобразуем Set в массив и сортируем в алфавитном порядке
 		return Array.from(uniqueTitles).sort((a, b) => a.localeCompare(b));
 	};
 
@@ -169,6 +156,7 @@ export const useIndexedDB = () => {
 		filterDataByOptions,
 		filterDataByType,
 		getBrands,
-		getDataById
+		getDataById,
+		isDbReady
 	};
 };

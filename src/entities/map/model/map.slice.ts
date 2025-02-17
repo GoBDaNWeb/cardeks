@@ -3,7 +3,7 @@ import { Feature, MapTypes } from '@/shared/types';
 
 import { createSlice } from '@reduxjs/toolkit';
 
-const queryRoutes = getQueryParams(window.location.href).routes;
+const { zoomParam, routesParam } = getQueryParams();
 
 interface ISearchInfo {
 	search: boolean;
@@ -61,7 +61,7 @@ const initialState: IRootState = {
 		buildSearch: false
 	},
 	mapInfo: {
-		zoom: 8,
+		zoom: zoomParam ? +zoomParam : 8,
 		isWheel: false,
 		mapType: 'yandex#map',
 		panorama: false,
@@ -85,7 +85,7 @@ const initialState: IRootState = {
 		fieldsCount: 2,
 		swapPoints: [],
 		deletePointId: null,
-		buildRoute: queryRoutes ? true : false,
+		buildRoute: routesParam ? true : false,
 		changeRoute: false,
 		routeIsChanged: false,
 		routeIsBuilded: false,

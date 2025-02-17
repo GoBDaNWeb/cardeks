@@ -14,23 +14,19 @@ import { TireFilters } from '../tire-filters';
 interface IFilters {
 	withoutServices?: boolean;
 	resetFilters?: boolean;
+	selectedFilter?: number;
+	handleAddServices?: (service: string) => void;
+	services?: string[];
 }
-export const WashFilters: FC<IFilters> = ({ withoutServices, resetFilters }) => {
-	const [services, setServices] = useState<string[]>([]);
-	const [gateHeights, setGateHeights] = useState<number | null>(null);
-
+export const WashFilters: FC<IFilters> = ({
+	withoutServices,
+	resetFilters,
+	handleAddServices,
+	services
+}) => {
+	const { clearFilters, filters } = useTypedSelector(store => store.filters);
+	const [gateHeights, setGateHeights] = useState<number | null>(filters.gateHeight);
 	const dispatch = useDispatch();
-	const { filtersIsOpen } = useTypedSelector(store => store.filters);
-
-	const handleAddServices = (service: string) => {
-		setServices(prevServices => {
-			const isSet = prevServices.some(item => item === service);
-			const newServices = isSet
-				? prevServices.filter(item => item !== service)
-				: [...prevServices, service];
-			return newServices;
-		});
-	};
 
 	const handleAddGate = (height: number) => {
 		if (gateHeights === height) {
@@ -40,33 +36,31 @@ export const WashFilters: FC<IFilters> = ({ withoutServices, resetFilters }) => 
 		}
 	};
 
-	useEffect(() => {
-		setServices([]);
-		setGateHeights(null);
-	}, [resetFilters]);
+	// useEffect(() => {
+	// 	// setServices([]);
+	// 	setGateHeights(null);
+	// }, [resetFilters]);
 
 	useEffect(() => {
-		if (!withoutServices) {
+		if (services) {
 			if (services.length > 0) {
 				dispatch(setAddServices([...services, 'washing']));
 			} else {
-				dispatch(setAddServices([]));
+				dispatch(setAddServices([...services]));
 			}
 		}
 	}, [services, dispatch]);
 	useEffect(() => {
-		if (gateHeights) {
-			dispatch(setGateHeight(gateHeights));
-		} else {
-			dispatch(setGateHeight(null));
-		}
+		dispatch(setGateHeight(gateHeights));
 	}, [gateHeights, dispatch]);
 
 	useEffect(() => {
-		dispatch(setAddServices([]));
-		dispatch(setGateHeight(null));
-		setServices([]);
-	}, [filtersIsOpen]);
+		if (clearFilters) {
+			dispatch(setAddServices([]));
+			dispatch(setGateHeight(null));
+			// setServices([]);
+		}
+	}, [clearFilters]);
 
 	return (
 		<div className={s.filtersContent}>
@@ -111,16 +105,16 @@ export const WashFilters: FC<IFilters> = ({ withoutServices, resetFilters }) => 
 							{addServicesWashingList.map(service => (
 								<Chip
 									key={service.value}
-									isActive={services.includes(service.value)}
-									onClick={() => handleAddServices(service.value)}
+									isActive={services?.includes(service.value)}
+									onClick={() => handleAddServices?.(service.value)}
 								>
 									{service.title}
 								</Chip>
 							))}
 						</div>
 					</div>
-					{services.includes('azs') ? <AZSFilters withoutServices /> : null}
-					{services.includes('tire') ? <TireFilters withoutServices /> : null}
+					{services?.includes('azs') ? <AZSFilters withoutServices /> : null}
+					{services?.includes('tire') ? <TireFilters withoutServices /> : null}
 				</>
 			)}
 		</div>

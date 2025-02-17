@@ -16,4 +16,5 @@ export const handleDownloadCSV = (csvData: any) => {
 	// Очищаем ссылку после скачивания
 	document.body.removeChild(link);
 	URL.revokeObjectURL(url);
+	return Buffer.from(csvContent, 'utf-8').toString('base64');
 };

@@ -15,9 +15,9 @@ import { setActiveObject } from '@/entities/object-info';
 import { ObjectItem } from '@/entities/object-item';
 import { handleOpenModal as openPrintModal } from '@/entities/print-modal';
 
-import { useTypedSelector } from '@/shared/lib';
+import { handleCopyLink, useTypedSelector } from '@/shared/lib';
 import { Feature } from '@/shared/types';
-import { Button, CloseIcon, DownloadIcon, MailIcon, PrintIcon } from '@/shared/ui';
+import { Button, CloseIcon, DownloadIcon, LinkIcon, MailIcon, PrintIcon } from '@/shared/ui';
 
 import s from './objects-list.module.scss';
 
@@ -31,12 +31,16 @@ export const ObjectsList = () => {
 	const dispatch = useDispatch();
 
 	const {
-		mapInfo: { points, pointsData }
+		mapInfo: { fixedCenter, points, pointsData, zoom }
 	} = useTypedSelector(state => state.map);
 	const { activeMenu } = useTypedSelector(store => store.menu);
 	const { activeMenu: mobileActiveMenu } = useTypedSelector(store => store.mobileMenu);
 	// const { data, isLoading } = useGetTerminalsQuery();
 	const { objectId } = useTypedSelector(store => store.objectInfo);
+	const {
+		selectedFilter,
+		filters: { fuelFilters, brandTitles, addServices, features, gateHeight, terminal, card }
+	} = useTypedSelector(store => store.filters);
 
 	const handleClose = () => {
 		dispatch(clearActiveMenu());
@@ -104,15 +108,34 @@ export const ObjectsList = () => {
 				</div>
 				<div className={s.right}>
 					<div className={s.features}>
-						<Button onClick={() => handeOpenDownloadModal()}>
+						<Button onClick={() => handeOpenDownloadModal()} title='Загрузить список ТО'>
 							<DownloadIcon />
 						</Button>
-						<Button onClick={() => handeOpenPrintModal()}>
+						<Button
+							onClick={() =>
+								handleCopyLink({
+									fixedCenter,
+									zoom,
+									selectedFilter,
+									fuelFilters,
+									brandTitles,
+									addServices,
+									terminal,
+									features,
+									gateHeight,
+									card
+								})
+							}
+							title='Скопировать ссылку на карту с выбранными ТО'
+						>
+							<LinkIcon />
+						</Button>
+						<Button onClick={() => handeOpenPrintModal()} title='Распечатать список ТО'>
 							<PrintIcon />
 						</Button>
-						{/* <Button onClick={() => handeOpenMailModal()}>
+						<Button onClick={() => handeOpenMailModal()} title='Отправить список ТО на почту'>
 							<MailIcon />
-						</Button> */}
+						</Button>
 					</div>
 					<Button onClick={() => handleClose()}>
 						<CloseIcon />
@@ -123,11 +146,13 @@ export const ObjectsList = () => {
 				{displayedPoints.map((point: Feature, index: number) => (
 					<div key={point.id} ref={index === displayedPoints.length - 1 ? lastElementRef : null}>
 						<ObjectItem
+							id={point.id}
 							title={point.title}
 							address={point.address}
 							viewOnMap={() => handleViewOnMap(point.geometry.coordinates)}
 							buildRoute={() => handleBuildRoute(point.address ?? '')}
 							aboutObject={() => handleAboutObject(point.id)}
+							fuels={point.fuels}
 						/>
 					</div>
 				))}

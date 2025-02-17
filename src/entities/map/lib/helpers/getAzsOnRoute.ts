@@ -25,13 +25,13 @@ export const getAzsOnRoute = async (
 					firstRouteCoord,
 					item.geometry.coordinates
 				);
-				const address = await ymaps.geocode(item.geometry.coordinates).then((res: any) => {
-					const firstGeoObject = res.geoObjects.get(0);
-					const address = firstGeoObject.getAddressLine();
-					return address;
-				});
+				// const address = await ymaps.geocode(item.geometry.coordinates).then((res: any) => {
+				// 	const firstGeoObject = res.geoObjects.get(0);
+				// 	const address = firstGeoObject.getAddressLine();
+				// 	return address;
+				// });
 
-				return { ...item, distance, address };
+				return { ...item, distance };
 			})
 		);
 		return mappedFiltered;

@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import s from './badge.module.scss';
 
 interface IBadge {
-	className: string;
+	className?: string;
 }
 
 export const Badge: FC<PropsWithChildren<IBadge>> = ({ children, className }) => {

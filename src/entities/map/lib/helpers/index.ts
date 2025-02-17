@@ -5,7 +5,5 @@ export { getImage } from './getImage';
 export { getPointInfo } from './getPointInfo';
 export { changePointImage } from './changePointImage';
 export { createPoints } from './createPoints';
-export { filterFeatures } from './filterFeatures';
 export { getAzsOnRoute } from './getAzsOnRoute';
 export { routeToLineString } from './routeToLineString';
-export { filterAzs } from './filterAzs';

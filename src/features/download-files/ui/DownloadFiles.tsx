@@ -41,17 +41,52 @@ export const DownloadFiles: FC<IDownloadFiles> = ({ title, text, btnText, downlo
 
 	const watchRaio = watch('radio');
 	const watchSelector = watch('selector');
+	const watchMail = watch('mail');
 
-	const onSubmit: SubmitHandler<FieldValues> = data => {
-		const { radio, selector } = data;
-		if (radio === 'excel' && tableRef.current) {
-			createAndDownloadExcel(tableRef.current);
-		}
-		if (radio === 'poi' && selector.value === 'CSV') {
-			handleDownloadCSV(csvData);
-		}
-		if (radio === 'poi' && selector.value === 'GPX') {
-			handleDownloadGPX(gpxData);
+	const onSubmit: SubmitHandler<FieldValues> = async data => {
+		const { radio, selector, mail } = data;
+
+		if (download) {
+			if (radio === 'excel' && tableRef.current) {
+				createAndDownloadExcel(tableRef.current);
+			}
+			if (radio === 'poi' && selector.value === 'CSV') {
+				handleDownloadCSV(csvData);
+			}
+			if (radio === 'poi' && selector.value === 'GPX') {
+				handleDownloadGPX(gpxData);
+			}
+		} else {
+			// Отправка данных на сервер
+			const formData = new FormData();
+			formData.append('emails', mail);
+			formData.append('type', radio === 'excel' ? 'excel' : selector.value.toLowerCase());
+			formData.append(
+				'data',
+				JSON.stringify(
+					radio === 'excel'
+						? tableRef.current
+						: radio === 'poi' && selector.value === 'CSV'
+							? csvData
+							: gpxData
+				)
+			);
+
+			try {
+				const response = await fetch('http://cardeks.wuaze.com/send.php', {
+					method: 'POST',
+					body: formData
+				});
+
+				if (response.ok) {
+					alert('Файл успешно отправлен на указанные email-адреса.');
+				} else {
+					alert('Произошла ошибка при отправке файла.');
+				}
+			} catch (error) {
+				console.error('Ошибка:', error);
+				alert('Произошла ошибка при отправке файла.');
+			}
 		}
 	};
 
@@ -91,13 +126,27 @@ export const DownloadFiles: FC<IDownloadFiles> = ({ title, text, btnText, downlo
 	}, [isOpen]);
 
 	useEffect(() => {
-		if (getValues('radio') === 'excel' || (getValues('radio') === 'poi' && getValues('selector'))) {
-			setButtonDisabled(false);
+		if (download) {
+			if (
+				getValues('radio') === 'excel' ||
+				(getValues('radio') === 'poi' && getValues('selector'))
+			) {
+				setButtonDisabled(false);
+			} else {
+				setButtonDisabled(true);
+			}
 		} else {
-			setButtonDisabled(true);
+			if (
+				getValues('radio') === 'excel' ||
+				(getValues('radio') === 'poi' && getValues('selector') && getValues('mail').length)
+			) {
+				setButtonDisabled(false);
+			} else {
+				setButtonDisabled(true);
+			}
 		}
 		getValues('radio') === 'poi' ? setSeletDisabled(false) : setSeletDisabled(true);
-	}, [watchRaio, watchSelector]);
+	}, [watchRaio, watchSelector, watchMail]);
 	return (
 		<>
 			<form onSubmit={handleSubmit(onSubmit)} className={s.downloadFiles}>
@@ -145,7 +194,11 @@ export const DownloadFiles: FC<IDownloadFiles> = ({ title, text, btnText, downlo
 							control={control}
 							name='mail'
 							render={({ field: { onChange } }) => (
-								<Input isStyled placeholder='E-mail (несколько - через запятую)' />
+								<Input
+									isStyled
+									placeholder='E-mail (несколько - через запятую)'
+									onChange={onChange}
+								/>
 							)}
 						/>
 					) : null}

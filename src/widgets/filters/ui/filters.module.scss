@@ -106,6 +106,29 @@
 				}
 			}
 		}
+		.rightBlock {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			.clearBtn,
+			.clearBtn {
+				&:hover {
+					p {
+						color: var(--accent-hover-color);
+					}
+				}
+			}
+			.clearBtn {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				p {
+					@include text-sm;
+					color: var(--secondary-color);
+					transition: var(--trs-300);
+				}
+			}
+		}
 		.total {
 			@include text-xs;
 		}

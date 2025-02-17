@@ -53,6 +53,9 @@
 	padding: 9px 16px 12px;
 	justify-content: space-between;
 	background: var(--white-color);
+	&.selected {
+		border-color: var(--accent-hover-color);
+	}
 	transition:
 		background var(--trs-300),
 		border-color var(--trs-300);

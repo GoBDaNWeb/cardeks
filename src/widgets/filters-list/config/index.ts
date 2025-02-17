@@ -42,3 +42,5 @@ export const gateHeightList = [
 		value: 4
 	}
 ];
+
+export const cardsList = ['Кардекс', 'Лукойл'];

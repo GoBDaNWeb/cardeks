@@ -16,12 +16,12 @@ import { Button, CloseIcon, DownloadIcon, LinkIcon, MailIcon, PrintIcon } from '
 import s from './route-info-detail.module.scss';
 
 interface IRouteInfoDetail {
-	handleClose: () => void;
+	setDetail: () => void;
 }
 
-export const RouteInfoDetail: FC<IRouteInfoDetail> = ({ handleClose }) => {
+export const RouteInfoDetail: FC<IRouteInfoDetail> = ({ setDetail }) => {
 	const {
-		routeInfo: { routeAddresses, pointsOnRoute }
+		routeInfo: { routeAddresses, pointsOnRoute, routeCoords }
 	} = useTypedSelector(state => state.map);
 
 	const [pointsList] = useState<Feature[]>(pointsOnRoute);
@@ -69,27 +69,29 @@ export const RouteInfoDetail: FC<IRouteInfoDetail> = ({ handleClose }) => {
 			dispatch(setPointsOnRoute(filteredPoints));
 		}
 	};
-
 	return (
 		<div className={s.routeInfoDetail}>
 			<div className={s.routeInfoTop}>
 				<p className={s.title}>Основной маршрут</p>
 				<div className={s.btnsWrapper}>
 					<div className={s.features}>
-						<Button onClick={() => handeOpenDownloadModal()}>
+						<Button onClick={() => handeOpenDownloadModal()} title='Загрузить список ТО'>
 							<DownloadIcon />
 						</Button>
-						<Button onClick={() => handleCopyLink(routeAddresses)}>
+						<Button
+							onClick={() => handleCopyLink({ routeCoords })}
+							title='Скопировать ссылку на карту с выбранными ТО'
+						>
 							<LinkIcon />
 						</Button>
-						<Button onClick={() => handeOpenPrintModal()}>
+						<Button onClick={() => handeOpenPrintModal()} title='Распечатать список ТО'>
 							<PrintIcon />
 						</Button>
-						{/* <Button onClick={() => handeOpenMailModal()}>
+						<Button onClick={() => handeOpenMailModal()} title='Отправить список ТО на почту'>
 							<MailIcon />
-						</Button> */}
+						</Button>
 					</div>
-					<Button className={s.closeBtn} onClick={handleClose}>
+					<Button className={s.closeBtn} onClick={setDetail}>
 						<CloseIcon />
 					</Button>
 				</div>
@@ -116,10 +118,12 @@ export const RouteInfoDetail: FC<IRouteInfoDetail> = ({ handleClose }) => {
 						.map((point: Feature) => (
 							<ObjectItem
 								handleDeletePoint={() => handleDeletePoint(point.id)}
+								id={point.id}
 								key={point.id}
 								title={point.title}
 								address={point.address}
 								length={point.distance}
+								fuels={point.fuels}
 								isDeleteBtn
 								isDisabled={deletedPoints.some(p => p.id === point.id)}
 								viewOnMap={() => handleViewOnMap(point.geometry.coordinates)}

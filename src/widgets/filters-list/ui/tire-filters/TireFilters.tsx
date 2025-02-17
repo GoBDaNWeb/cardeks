@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 
 import { setAddServices, setGateHeight } from '@/widgets/filters';
 
-import { useTypedSelector } from '@/shared/lib';
+import { getQueryParams, useTypedSelector } from '@/shared/lib';
 import { Chip } from '@/shared/ui';
 
 import { addServicesTireList } from '../../config';
@@ -14,44 +14,54 @@ import { WashFilters } from '../wash-filters';
 interface IFilters {
 	withoutServices?: boolean;
 	resetFilters?: boolean;
+	selectedFilter?: number;
+	handleAddServices?: (service: string) => void;
+	services?: string[];
 }
 
-export const TireFilters: FC<IFilters> = ({ withoutServices, resetFilters }) => {
-	const [services, setServices] = useState<string[]>([]);
+export const TireFilters: FC<IFilters> = ({
+	withoutServices,
+	resetFilters,
+	selectedFilter,
+	handleAddServices,
+	services
+}) => {
+	// const { addServicesParam, selectedFilterParam } = getQueryParams();
+	// const [services, setServices] = useState<string[]>(addServicesParam ? addServicesParam : []);
 
 	const dispatch = useDispatch();
 	const { filtersIsOpen } = useTypedSelector(store => store.filters);
 
-	const handleAddServices = (service: string) => {
-		setServices(prevServices => {
-			const isSet = prevServices.some(item => item === service);
-			const newFuels = isSet
-				? prevServices.filter(item => item !== service)
-				: [...prevServices, service];
-			return newFuels;
-		});
-	};
+	// const handleAddServices = (service: string) => {
+	// 	setServices(prevServices => {
+	// 		const isSet = prevServices.some(item => item === service);
+	// 		const newFuels = isSet
+	// 			? prevServices.filter(item => item !== service)
+	// 			: [...prevServices, service];
+	// 		return newFuels;
+	// 	});
+	// };
+
+	// useEffect(() => {
+	// 	setServices([]);
+	// }, [resetFilters]);
 
 	useEffect(() => {
-		setServices([]);
-	}, [resetFilters]);
-
-	useEffect(() => {
-		if (!withoutServices) {
+		if (services) {
 			if (services.length > 0) {
 				dispatch(setAddServices([...services, 'tire']));
 			} else {
-				dispatch(setAddServices([]));
+				dispatch(setAddServices([...services]));
 			}
 		}
 	}, [services, dispatch]);
 
-	useEffect(() => {
-		dispatch(setAddServices([]));
-		dispatch(setGateHeight(null));
+	// useEffect(() => {
+	// 	dispatch(setAddServices([]));
+	// 	dispatch(setGateHeight(null));
 
-		setServices([]);
-	}, [filtersIsOpen]);
+	// 	setServices([]);
+	// }, [filtersIsOpen]);
 
 	return (
 		<div className={s.filtersContent}>
@@ -83,16 +93,16 @@ export const TireFilters: FC<IFilters> = ({ withoutServices, resetFilters }) => 
 							{addServicesTireList.map(service => (
 								<Chip
 									key={service.value}
-									isActive={services.includes(service.value)}
-									onClick={() => handleAddServices(service.value)}
+									isActive={services?.includes(service.value)}
+									onClick={() => handleAddServices?.(service.value)}
 								>
 									{service.title}
 								</Chip>
 							))}
 						</div>
 					</div>
-					{services.includes('azs') ? <AZSFilters withoutServices /> : null}
-					{services.includes('washing') ? <WashFilters withoutServices /> : null}
+					{services?.includes('azs') ? <AZSFilters withoutServices /> : null}
+					{services?.includes('washing') ? <WashFilters withoutServices /> : null}
 				</>
 			)}
 		</div>

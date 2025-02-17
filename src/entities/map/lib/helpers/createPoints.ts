@@ -25,7 +25,7 @@ export const createPoints = (arr: any) => {
 				return '/images/pins/4.png';
 			} else if (item[1].toLowerCase().includes('русснефть')) {
 				return '/images/pins/6.png';
-			} else if (item[1].toLowerCase().includes('Нефтьмагистраль')) {
+			} else if (item[1].toLowerCase().includes('нефтьмагистраль')) {
 				return '/images/pins/7.png';
 			} else if (item[1].toLowerCase().includes('крайснефть')) {
 				return '/images/pins/10.png';
@@ -39,10 +39,16 @@ export const createPoints = (arr: any) => {
 				return '/images/pins/19.png';
 			} else if (item[1].toLowerCase().includes('птк')) {
 				return '/images/pins/17.png';
+			} else if (item[1].toLowerCase().includes('тебойл')) {
+				return '/images/pins/21.png';
 			} else if (azs.length > 0) {
 				return '/images/pins/2.png';
 			} else if (item[13] === 1) {
 				return '/images/pins/19.png';
+			} else if (item[14] === 1) {
+				return '/images/pins/20.png';
+			} else {
+				return '/images/pins/2.png';
 			}
 		};
 		const newObj = {
@@ -65,7 +71,7 @@ export const createPoints = (arr: any) => {
 			options: {
 				iconLayout: 'default#image',
 				iconImageHref: pin(),
-				iconImageSize: [25, 34],
+				iconImageSize: [35, 48],
 				iconImageOffset: [-16, -38]
 			},
 			fuels: {

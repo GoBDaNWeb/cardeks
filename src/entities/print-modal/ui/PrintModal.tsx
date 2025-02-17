@@ -24,8 +24,8 @@ export const PrintModal = () => {
 	const { filters } = useTypedSelector(store => store.routeForm);
 
 	const {
-		mapInfo: { mapType, fixedCenter, zoom },
-		routeInfo: { pointsOnRoute, routeCoords }
+		mapInfo: { mapType, fixedCenter, zoom, points },
+		routeInfo: { pointsOnRoute, routeCoords, routeIsBuilded }
 	} = useTypedSelector(store => store.map);
 	const contentRef = useRef<HTMLDivElement>(null);
 	const reactToPrintFn = useReactToPrint({ contentRef });
@@ -50,16 +50,23 @@ export const PrintModal = () => {
 		const objectManager = new ymaps.ObjectManager({
 			clusterize: true,
 			geoObjectOpenBalloonOnClick: true,
-			gridSize: 128,
-			clusterOpenBalloonOnClick: true
+			gridSize: 64,
+			clusterOpenBalloonOnClick: true,
+			clusterIcons: [
+				{
+					href: '/images/cluster.svg',
+					size: [20, 20],
+					offset: [-20, -20]
+				}
+			],
+			clusterIconContentLayout: '',
+			clusterIconColor: '#2d9bef'
 		});
-
 		let map = new ymaps.Map('print_map', {
 			center: fixedCenter,
 			zoom: zoom
 		});
 		setMap(map);
-
 		map.controls.remove('searchControl');
 		map.controls.remove('trafficControl');
 		map.controls.remove('typeSelector');
@@ -115,10 +122,23 @@ export const PrintModal = () => {
 						style={{ width: '100%', height: '250px' }}
 					></div>
 					<div className={s.azsList}>
-						{pointsOnRoute.map((point: Feature) => {
-							const filteredFuelList = fuelList.filter(item => point.fuels[item.value] === true);
-							return <PrintItem point={point} filteredFuelList={filteredFuelList} key={point.id} />;
-						})}
+						{routeIsBuilded
+							? pointsOnRoute.map((point: Feature) => {
+									const filteredFuelList = fuelList.filter(
+										item => point.fuels[item.value] === true
+									);
+									return (
+										<PrintItem point={point} filteredFuelList={filteredFuelList} key={point.id} />
+									);
+								})
+							: points.map((point: Feature) => {
+									const filteredFuelList = fuelList.filter(
+										item => point.fuels[item.value] === true
+									);
+									return (
+										<PrintItem point={point} filteredFuelList={filteredFuelList} key={point.id} />
+									);
+								})}
 					</div>
 				</div>
 				<div className={s.printModalBottom}>

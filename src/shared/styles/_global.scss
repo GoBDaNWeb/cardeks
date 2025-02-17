@@ -19,7 +19,7 @@
 	.ymaps-2-1-79-gotoymaps,
 	// .ymaps-2-1-79-copyright,
 	// .ymaps-2-1-79-float-button,
-	.ymaps-2-1-79-controls__control_toolbar,
+	// .ymaps-2-1-79-controls__control_toolbar,
 	.ymaps-2-1-79-gototaxi,
 	.ymaps-2-1-79-gototech {
 		display: none !important;
@@ -56,13 +56,31 @@
 			margin-top: 4px;
 		}
 	}
-	.ymaps-2-1-79-float-button-icon {
+	.ymaps-2-1-79-float-button-icon_icon_ruler {
 		background-image: url('/images/icons/line.svg') !important;
 		width: 100% !important;
 		height: 100% !important;
 		border: none !important;
 		@media (max-width: $tab) {
 			background-image: url('/images/icons/line-mob.svg') !important;
+		}
+	}
+	.custom-geolocation-button {
+		background-image: url('/images/icons/geo.svg') !important;
+		background-repeat: no-repeat;
+		background-position: center;
+		border-radius: var(--radius-s) !important;
+		background-color: var(--white-color) !important;
+		box-shadow: var(--shadow) !important;
+
+		cursor: pointer;
+		min-width: 46px !important;
+		min-height: 46px !important;
+		max-width: 46px !important;
+		max-height: 46px !important;
+		border: none !important;
+		@media (max-width: $tab) {
+			background-image: url('/images/icons/geo-mob.svg') !important;
 		}
 	}
 	.ymaps3x0--controls {
@@ -80,7 +98,7 @@
 	.ymaps-2-1-79-gotoymaps,
 	// .ymaps-2-1-79-copyright,
 	// .ymaps-2-1-79-float-button,
-	.ymaps-2-1-79-controls__control_toolbar,
+	// .ymaps-2-1-79-controls__control_toolbar,
 	.ymaps-2-1-79-gototaxi,
 	.ymaps-2-1-79-gototech {
 		display: none !important;
@@ -115,13 +133,28 @@
 			margin-top: 4px;
 		}
 	}
-	.ymaps-2-1-79-float-button-icon {
+	.ymaps-2-1-79-float-button-icon_icon_ruler {
 		background-image: url('/images/icons/line.svg') !important;
 		width: 100% !important;
 		height: 100% !important;
 		border: none !important;
 		@media (max-width: $tab) {
 			background-image: url('/images/icons/line-mob.svg') !important;
+		}
+	}
+	.custom-geolocation-button {
+		background-image: url('/images/icons/geo.svg') !important;
+		background-repeat: no-repeat;
+		border-radius: var(--radius-s) !important;
+		background-color: var(--white-color) !important;
+		box-shadow: var(--shadow) !important;
+		min-width: 46px !important;
+		min-height: 46px !important;
+		max-width: 46px !important;
+		max-height: 46px !important;
+		border: none !important;
+		@media (max-width: $tab) {
+			background-image: url('/images/icons/geo-mob.svg') !important;
 		}
 	}
 	.ymaps3x0--controls {

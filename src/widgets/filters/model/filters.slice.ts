@@ -1,6 +1,17 @@
+import { getQueryParams } from '@/shared/lib';
 import { IList } from '@/shared/types';
 
 import { createSlice } from '@reduxjs/toolkit';
+
+const {
+	fuelsParam,
+	brandsParam,
+	addServicesParam,
+	terminalParam,
+	featuresParam,
+	gateHeightParam,
+	cardParam
+} = getQueryParams();
 
 type FiltersType = {
 	fuelFilters: IList[];
@@ -9,23 +20,27 @@ type FiltersType = {
 	addServices: string[];
 	gateHeight: number | null;
 	terminal: string;
+	card: string;
 };
 
 interface IFilters {
-	selectedFilter: number;
+	selectedFilter: number | null;
 	filtersIsOpen: boolean;
+	clearFilters: boolean;
 	filters: FiltersType;
 }
 const initialState: IFilters = {
-	selectedFilter: 0,
+	selectedFilter: null,
 	filtersIsOpen: false,
+	clearFilters: false,
 	filters: {
-		fuelFilters: [],
-		brandTitles: [],
-		addServices: [],
-		features: [],
-		gateHeight: null,
-		terminal: ''
+		card: cardParam ? cardParam : '',
+		fuelFilters: fuelsParam && fuelsParam.length > 0 ? fuelsParam : [],
+		brandTitles: brandsParam && brandsParam.length > 0 ? brandsParam : [],
+		addServices: addServicesParam && addServicesParam.length > 0 ? addServicesParam : [],
+		features: featuresParam && featuresParam.length > 0 ? featuresParam : [],
+		gateHeight: gateHeightParam ? +gateHeightParam : null,
+		terminal: terminalParam && terminalParam ? terminalParam : ''
 	}
 };
 
@@ -38,6 +53,9 @@ const filters = createSlice({
 		},
 		setOpenFilters(state, action) {
 			state.filtersIsOpen = action.payload;
+		},
+		setСlearFilters(state, action) {
+			state.clearFilters = action.payload;
 		},
 		setFuelFilters(state, action) {
 			state.filters.fuelFilters = action.payload;
@@ -56,6 +74,9 @@ const filters = createSlice({
 		},
 		setTerminal(state, action) {
 			state.filters.terminal = action.payload;
+		},
+		setCard(state, action) {
+			state.filters.card = action.payload;
 		}
 	}
 });
@@ -63,11 +84,13 @@ const filters = createSlice({
 export const {
 	setSelectedFilter,
 	setOpenFilters,
+	setСlearFilters,
 	setFuelFilters,
 	setAddServices,
 	setGateHeight,
 	setBrandTitles,
 	setFeatures,
-	setTerminal
+	setTerminal,
+	setCard
 } = filters.actions;
 export default filters.reducer;

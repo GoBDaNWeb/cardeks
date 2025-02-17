@@ -15,7 +15,6 @@ export const PrintItem: FC<IPrintItem> = ({ point, filteredFuelList }) => {
 					<tr>
 						<th>АЗС</th>
 						<th>Топливо</th>
-						<th>Цены</th>
 						<th>Карты</th>
 					</tr>
 				</thead>
@@ -33,15 +32,12 @@ export const PrintItem: FC<IPrintItem> = ({ point, filteredFuelList }) => {
 					</tr>
 
 					<tr>
-						<td>62,75 руб.</td>
-						<td>62,75 руб.</td>
-						<td>62,75 руб.</td>
-						<td>62,75 руб.</td>
-						<td>62,75 руб.</td>
-						<td>62,75 руб.</td>
-					</tr>
-					<tr>
-						<td>Кардекс</td>
+						<td>
+							{point.title.toLowerCase().includes('лукойл') ||
+							point.title.toLowerCase().includes('тебоил')
+								? 'Лукойл'
+								: 'Кардекс'}
+						</td>
 					</tr>
 				</tbody>
 			</table>

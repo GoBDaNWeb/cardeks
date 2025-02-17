@@ -75,6 +75,12 @@ export const Search = () => {
 			}, 300);
 		}
 	};
+	const handleClearValue = () => {
+		setInputValue('');
+		setSearchData('');
+		setSelectedAddress('');
+		dispatch(setAddress(''));
+	};
 
 	useEffect(() => {
 		setInputValue(selectedAddress);
@@ -91,6 +97,7 @@ export const Search = () => {
 			<SearchInput
 				onChange={handleChangeInputValue}
 				value={inputValue}
+				handleClearValue={() => handleClearValue()}
 				handleSearchAddress={() => handleSearchAddress()}
 				handleBuildRoute={() => handleBuildRouteWithSearch()}
 				handleFocus={handleFocus}

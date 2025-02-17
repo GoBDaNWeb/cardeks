@@ -3,13 +3,12 @@ import { useDispatch } from 'react-redux';
 
 import { setActiveMenu } from '@/widgets/menu-list';
 
-import { getQueryParams, useTypedSelector } from '@/shared/lib';
+import { getQueryParams, useIndexedDB, useTypedSelector } from '@/shared/lib';
 import { Feature } from '@/shared/types';
 
 import {
 	clearRouteAddresses,
 	setCoords,
-	setIsUrlBuid,
 	setMapLoading,
 	setPointsOnRoute,
 	setRouteAddresses,
@@ -18,7 +17,7 @@ import {
 	setRouteLength,
 	setRouteTime
 } from '../../model';
-import { createPlacemark, filterFeatures, getAzsOnRoute, routeToLineString } from '../helpers';
+import { createPlacemark, getAzsOnRoute, routeToLineString } from '../helpers';
 
 interface IUseRouteProps {
 	ymaps: any;
@@ -37,8 +36,8 @@ export const useRoute = ({
 }: IUseRouteProps) => {
 	const [addressesCollection, setAddressesCollection] = useState<string[]>([]);
 	const [routeCoordsState, setRouteCoordsState] = useState<number[][]>([]);
-
 	const dispatch = useDispatch();
+	const { filterDataByOptions } = useIndexedDB();
 	const {
 		routeInfo: { routeCoords, buildRoute, routeIsChanged, pointsOnRoute, isUrlBuild }
 	} = useTypedSelector(state => state.map);
@@ -47,11 +46,17 @@ export const useRoute = ({
 		filters: { brandTitles, azsTypes },
 		withFilters
 	} = useTypedSelector(state => state.routeForm);
+	const { routesParam } = getQueryParams(window.location.href);
 
 	const multiRouteRef = useRef<any>(null);
 
+	const filtered = async () => {
+		const filteredData = await filterDataByOptions([], [], brandTitles, azsTypes);
+		return filteredData;
+	};
+
 	// функция построения маршрута
-	const handleBuildRoute = (condition: boolean, urlBuild: boolean, routesArr: number[][]) => {
+	const handleBuildRoute = async (condition: boolean, urlBuild: boolean, routesArr: number[][]) => {
 		// дальность точки от маршрута в мметрах
 		const threshold = addSettings.includes(2) ? 200 : 500;
 		if (map) {
@@ -73,7 +78,7 @@ export const useRoute = ({
 						routeActiveStrokeWidth: 6,
 						wayPointVisible: false,
 						routeActiveStrokeShowLabels: false,
-						routeActiveStrokeColor: '5DAFEE'
+						routeActiveStrokeColor: '444444'
 					}
 				);
 				map.geoObjects.add(multiRoute);
@@ -116,11 +121,10 @@ export const useRoute = ({
 						objectManagerState.removeAll();
 
 						const azsOnRoute = await getAzsOnRoute(features, lines, threshold, routesArr[0]);
+						console.log('azsOnRoute', azsOnRoute);
 						if (azsOnRoute) {
 							objectManagerState.add(azsOnRoute);
 							dispatch(setPointsOnRoute(azsOnRoute));
-							// dispatch(setMapLoading(false));
-							// dispatch(setIsUrlBuid(false));
 						}
 						setRouteCoordsState([...routesArr]);
 
@@ -133,49 +137,25 @@ export const useRoute = ({
 						});
 
 						Promise.all(geocodePromises).then(addresses => {
-							// setAddressesCollection(addresses);
 							dispatch(setRouteAddresses(addresses));
 							dispatch(setMapLoading(false));
-							dispatch(setIsUrlBuid(false));
 						});
 						routesArr.forEach((coords, index) => {
 							const myPlacemark = createPlacemark({ ymaps, coords, index });
 							map.geoObjects.add(myPlacemark);
 							setPointCollection(prevCollection => [...prevCollection, myPlacemark]);
-
-							// ymaps
-							// 	.geocode(address, { results: 1 })
-							// 	.then((res: any) => {
-							// 		let firstGeoObject = res.geoObjects.get(0);
-							// 		let coords = firstGeoObject.geometry.getCoordinates();
-							// 		const myPlacemark = createPlacemark({ ymaps, coords, index });
-							// 		setRouteCoordsState(prevCoords => [...prevCoords, coords]);
-							// 		map.geoObjects.add(myPlacemark);
-							// 		setPointCollection(prevCollection => [...prevCollection, myPlacemark]);
-							// 		coordsList.push(coords);
-							// 		return coordsList;
-							// 	})
-							// 	.then(async (res: number[][]) => {
-							// 		const azsOnRoute = await getAzsOnRoute(features, lines, threshold, res[0]);
-							// 		if (azsOnRoute) {
-							// 			objectManagerState.add(azsOnRoute);
-							// 			dispatch(setPointsOnRoute(azsOnRoute));
-							// 			dispatch(setMapLoading(false));
-							// 			dispatch(setIsUrlBuid(false));
-							// 		}
-							// 	})
-							// 	.catch((error: any) => {
-							// 		console.error('Ошибка геокодирования:', error);
-							// 	});
 						});
 					} else {
-						const filteredPoints = filterFeatures(features, [], brandTitles, azsTypes);
+						filtered();
+						const newFilteredPoints = await filtered();
+						console.log('filteredPoints', newFilteredPoints);
 						const azsOnRoute = await getAzsOnRoute(
-							withFilters ? filteredPoints : features,
+							withFilters ? newFilteredPoints : features,
 							lines,
 							threshold,
 							routeCoords[0]
 						);
+						console.log('azsOnRoute', azsOnRoute);
 						if (azsOnRoute && objectManagerState) {
 							objectManagerState.add(azsOnRoute);
 							dispatch(setPointsOnRoute(azsOnRoute));
@@ -215,17 +195,11 @@ export const useRoute = ({
 
 	// построение маршрута по данным из url
 	useEffect(() => {
-		const queryRoutes = getQueryParams(window.location.href).routes;
-		if (queryRoutes && objectManagerState && isUrlBuild) {
-			const condition = queryRoutes && buildRoute;
-			const queryRoutesArray = queryRoutes.split(';');
-			const queryCoordsArray = queryRoutesArray.map((str: any) => {
-				// Разделяем строку по символу "-" и преобразуем каждую часть в число
-				return str.split('-').map(Number);
-			});
-			handleBuildRoute(condition, true, queryCoordsArray);
+		if (routesParam && objectManagerState && isUrlBuild && features.length) {
+			const condition = routesParam && buildRoute;
+			handleBuildRoute(condition, true, routesParam);
 		}
-	}, [map, buildRoute, objectManagerState]);
+	}, [map, buildRoute, objectManagerState, isUrlBuild, features]);
 
 	// получение адресов по координатам
 	useEffect(() => {

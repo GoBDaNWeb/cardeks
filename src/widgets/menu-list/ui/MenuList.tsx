@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { setFilterActive } from '@/features/route-form';
@@ -5,7 +6,8 @@ import { setFilterActive } from '@/features/route-form';
 import { setBuildRoute, setChangeRoute, setRouteBuilded } from '@/entities/map';
 import { setActiveObject } from '@/entities/object-info';
 
-import { useTypedSelector } from '@/shared/lib';
+import { useGetPointsQuery } from '@/shared/api';
+import { useIndexedDB, useTypedSelector } from '@/shared/lib';
 import { ListIcon, MenuButton, RouteIcon } from '@/shared/ui';
 
 import { clearActiveMenu, setActiveMenu } from '../model';
@@ -13,11 +15,23 @@ import { clearActiveMenu, setActiveMenu } from '../model';
 import s from './menu-list.module.scss';
 
 export const MenuList = () => {
+	const [totalAzs, setTotalAzs] = useState(0);
 	const dispatch = useDispatch();
 	const { activeMenu } = useTypedSelector(store => store.menu);
-	const {
-		mapInfo: { totalPoints }
-	} = useTypedSelector(state => state.map);
+	const { isLoading } = useGetPointsQuery();
+
+	const { getAllData } = useIndexedDB();
+	const fetch = async () => {
+		const data = await getAllData();
+		setTotalAzs(data.length);
+	};
+
+	useEffect(() => {
+		if (!isLoading) {
+			fetch();
+		}
+	}, [isLoading]);
+
 	const handleSelectMenu = (menu: 'objects-list' | 'route') => {
 		dispatch(setBuildRoute(false));
 		dispatch(setRouteBuilded(false));
@@ -40,7 +54,7 @@ export const MenuList = () => {
 				icon={<ListIcon />}
 				isActive={activeMenu === 'objects-list'}
 				text='Список ТО'
-				count={totalPoints}
+				count={totalAzs}
 			/>
 			<MenuButton
 				onClick={() => handleSelectMenu('route')}

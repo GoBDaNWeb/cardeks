@@ -68,16 +68,19 @@ export const RouteInfoShort: FC<IRouteInfoShort> = ({ setDetail, handleClose }) 
 				</div>
 				<div className={s.routeInfoFeatures}>
 					<div className={s.btns}>
-						<Button onClick={() => handeOpenDownloadModal()}>
+						<Button onClick={() => handeOpenDownloadModal()} title='Загрузить список ТО'>
 							<DownloadIcon />
 						</Button>
-						<Button onClick={() => handleCopyLink(routeCoords)}>
+						<Button
+							onClick={() => handleCopyLink({ routeCoords })}
+							title='Скопировать ссылку на карту с выбранными ТО'
+						>
 							<LinkIcon />
 						</Button>
-						<Button onClick={() => handeOpenPrintModal()}>
+						<Button onClick={() => handeOpenPrintModal()} title='Распечатать список ТО'>
 							<PrintIcon />
 						</Button>
-						{/* <Button onClick={() => handeOpenMailModal()}>
+						{/* <Button onClick={() => handeOpenMailModal()} title='Отправить список ТО на почту'>
 							<MailIcon />
 						</Button> */}
 					</div>

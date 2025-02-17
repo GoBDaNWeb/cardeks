@@ -10,6 +10,7 @@ interface IButton {
 	onClick?: () => void;
 	type?: 'button' | 'submit';
 	isDisabled?: boolean;
+	title?: string;
 }
 
 export const Button: FC<PropsWithChildren<IButton>> = ({
@@ -18,12 +19,13 @@ export const Button: FC<PropsWithChildren<IButton>> = ({
 	variant,
 	onClick,
 	type = 'button',
-	isDisabled
+	isDisabled,
+	title
 }) => {
 	const btnClass = clsx(s.button, s[variant!], className);
 
 	return (
-		<button className={btnClass} onClick={onClick} type={type} disabled={isDisabled}>
+		<button className={btnClass} onClick={onClick} type={type} disabled={isDisabled} title={title}>
 			{children}
 		</button>
 	);

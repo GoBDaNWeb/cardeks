@@ -10,7 +10,7 @@ interface IMenuButton {
 	onClick: () => void;
 	icon: ReactElement;
 	text: string;
-	count?: string;
+	count?: string | number;
 	isActive?: boolean;
 }
 

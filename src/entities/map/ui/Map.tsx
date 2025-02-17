@@ -5,17 +5,18 @@ import { useDispatch } from 'react-redux';
 import clsx from 'clsx';
 import { Map as MapType, ObjectManager } from 'yandex-maps';
 
+import { setSelectedFilter } from '@/widgets/filters';
+
 import { setActiveObject } from '@/entities/object-info';
 
 import { useGetPointsQuery, useGetTerminalsQuery } from '@/shared/api';
-import { useIndexedDB, useTypedSelector } from '@/shared/lib';
+import { getQueryParams, useIndexedDB, useTypedSelector } from '@/shared/lib';
 import { Feature, IPlacemark } from '@/shared/types';
 
 import { createPoints, usePoint, useRoute } from '../lib';
 import {
 	handleWheel,
 	setCategoryTotals,
-	setCenter,
 	setFixedCenter,
 	setIsUrlBuid,
 	setMapLoading,
@@ -32,6 +33,8 @@ export const CustomMap = () => {
 	const [map, setMap] = useState<null | MapType>(null);
 	const [objectManagerState, setObjectManagerState] = useState<ObjectManager | null>(null);
 	const [pointCollection, setPointCollection] = useState<IPlacemark[]>([]);
+	const { selectedFilterParam } = getQueryParams();
+
 	const dispatch = useDispatch();
 	const { saveData, getAllData, filterDataByType, filterDataByOptions } = useIndexedDB();
 
@@ -46,9 +49,15 @@ export const CustomMap = () => {
 	const { selectedFilter, filtersIsOpen, filters } = useTypedSelector(state => state.filters);
 
 	const getVisibleMarkers = useCallback(
-		(map: MapType, objectManager: any) => {
+		async (map: any, objectManagerState: any) => {
+			if (!objectManagerState) return;
 			const bounds = map.getBounds();
-			const visibleMarkers = objectManager.objects.getAll().filter((marker: Feature) => {
+
+			const filteredMarkers: Feature[] = objectManagerState.objects.getAll();
+
+			// if (!filteredMarkers.length) return;
+
+			const visibleMarkers = filteredMarkers.filter(marker => {
 				const coordinates = marker.geometry.coordinates;
 				return (
 					bounds[0][0] <= coordinates[0] &&
@@ -57,47 +66,48 @@ export const CustomMap = () => {
 					coordinates[1] <= bounds[1][1]
 				);
 			});
-			const visibleWashingPoints = visibleMarkers.filter((marker: Feature) => marker.types.washing);
-			const visibleTirePoints = visibleMarkers.filter((marker: Feature) => marker.types.tire);
 
-			dispatch(
-				setCategoryTotals({
-					category: 'azs',
-					totalView: visibleMarkers.length
-				})
-			);
-			dispatch(
-				setCategoryTotals({
-					category: 'points',
-					totalView: visibleMarkers.length
-				})
-			);
-			dispatch(
-				setCategoryTotals({
-					category: 'washing',
-					totalView: visibleWashingPoints.length
-				})
-			);
-			dispatch(
-				setCategoryTotals({
-					category: 'tire',
-					totalView: visibleTirePoints.length
-				})
-			);
+			const visibleWashingPoints = visibleMarkers.filter(marker => marker.types?.washing);
+			const visibleTirePoints = visibleMarkers.filter(marker => marker.types?.tire);
+
+			dispatch(setCategoryTotals({ category: 'azs', totalView: visibleMarkers.length }));
+			dispatch(setCategoryTotals({ category: 'points', totalView: visibleMarkers.length }));
+			dispatch(setCategoryTotals({ category: 'washing', totalView: visibleWashingPoints.length }));
+			dispatch(setCategoryTotals({ category: 'tire', totalView: visibleTirePoints.length }));
 			dispatch(setPoints(visibleMarkers));
 		},
 		[dispatch]
 	);
 
 	const init = () => {
+		const params = new URLSearchParams(window.location.search);
+		const centerParam = params.get('center');
+		const centerArray = centerParam?.split('-').map(Number);
+		let geolocation = ymaps.geolocation;
 		let map = new ymaps.Map('map', {
-			center: [55.686736, 37.440496],
+			center: centerArray ? centerArray : [55.686736, 37.440496],
 			zoom
 		});
-
+		const objectManager = new ymaps.ObjectManager({
+			clusterize: true,
+			geoObjectOpenBalloonOnClick: true,
+			gridSize: 64,
+			clusterOpenBalloonOnClick: true,
+			clusterIcons: [
+				{
+					href: '/images/cluster.svg',
+					size: [20, 20],
+					offset: [-20, -20]
+				}
+			],
+			clusterIconContentLayout: '',
+			clusterIconColor: '#2d9bef'
+		});
+		setObjectManagerState(objectManager);
 		setMap(map);
 		map.container.getElement().style.cursor = 'pointer';
 		map.controls.remove('searchControl');
+		map.controls.remove('geolocationControl');
 		map.controls.remove('trafficControl');
 		map.controls.remove('typeSelector');
 		map.controls.remove('rulerControl');
@@ -117,26 +127,116 @@ export const CustomMap = () => {
 		map.geoObjects.events.add('click', function (e) {
 			dispatch(setActiveObject(e.get('objectId')));
 		});
+		const GeolocationButtonLayout = ymaps.templateLayoutFactory.createClass(
+			'<button class="custom-geolocation-button"></button>',
+			{
+				build: function () {
+					//@ts-ignore
+					GeolocationButtonLayout.superclass.build.call(this);
+					//@ts-ignore
+					this.getElement().addEventListener('click', this.onClick.bind(this));
+				},
+				onClick: function () {
+					//@ts-ignore
+					this.events.fire('click');
+				},
+				clear: function () {
+					//@ts-ignore
+					this.getElement().removeEventListener('click', this.onClick);
+					//@ts-ignore
+					GeolocationButtonLayout.superclass.clear.call(this);
+				}
+			}
+		);
+		var geolocationButton = new ymaps.control.Button({
+			options: {
+				layout: GeolocationButtonLayout
+			}
+		});
+		map.controls.add(geolocationButton, {
+			float: 'none',
+			position: {
+				bottom: '118px',
+				left: '24px'
+			}
+		});
+
+		geolocationButton.events.add('click', function () {
+			geolocation
+				.get({
+					provider: 'browser',
+					mapStateAutoApply: true
+				})
+				.then(function (result) {
+					//@ts-ignore
+					result.geoObjects.options.set('preset', 'islands#redCircleIcon');
+					map.geoObjects.add(result.geoObjects);
+				});
+		});
 	};
-
-	useEffect(() => {
-		ymaps.ready(init);
-		if (window.location.search.length > 0) {
-			dispatch(setIsUrlBuid(true));
+	const filter = useCallback(async () => {
+		if (objectManagerState && map) {
+			objectManagerState.removeAll();
+			const filteredDataType = await filterDataByType(selectedFilter);
+			const hasActiveFilters =
+				filters.features.length > 0 ||
+				filters.fuelFilters.length > 0 ||
+				filters.brandTitles.length > 0 ||
+				filters.addServices.length > 0 ||
+				filters.gateHeight ||
+				filters.terminal.length > 0 ||
+				filters.card.length;
+			if (hasActiveFilters) {
+				const filteredData = await filterDataByOptions(
+					filters.fuelFilters,
+					filters.features,
+					filters.brandTitles,
+					[],
+					filters.addServices,
+					filters.gateHeight,
+					filters.terminal,
+					filteredDataType,
+					filters.card
+				);
+				objectManagerState.removeAll();
+				objectManagerState.add(filteredData);
+				getVisibleMarkers(map, objectManagerState);
+			} else {
+				objectManagerState.removeAll();
+				objectManagerState.add(filteredDataType);
+				getVisibleMarkers(map, objectManagerState);
+			}
 		}
-	}, []);
+	}, [
+		objectManagerState,
+		selectedFilter,
+		filters.fuelFilters,
+		filters.features,
+		filters.brandTitles,
+		filters.addServices,
+		filters.gateHeight,
+		filters.terminal,
+		filters.card
+	]);
 
 	useEffect(() => {
-		if (!isLoading && map) {
-			const objectManager = new ymaps.ObjectManager({
-				clusterize: true,
-				geoObjectOpenBalloonOnClick: true,
-				gridSize: 128,
-				clusterOpenBalloonOnClick: true
-			});
-			map.geoObjects.add(objectManager);
-			objectManager.add(features);
-			setObjectManagerState(objectManager);
+		if (ymaps) {
+			ymaps.ready(init);
+			if (window.location.search.length > 0) {
+				dispatch(setIsUrlBuid(true));
+			}
+		}
+	}, [ymaps]);
+
+	useEffect(() => {
+		const applyFilters = async () => {
+			await filter();
+		};
+
+		if (!isLoading && map && features.length > 0 && objectManagerState) {
+			map.geoObjects.add(objectManagerState);
+			objectManagerState.add(features);
+
 			const mappedAzsPoints = features.map((marker: Feature) => {
 				const newObject = {
 					...marker,
@@ -181,63 +281,39 @@ export const CustomMap = () => {
 					total: features.length
 				})
 			);
-			map.events.add('boundschange', () => getVisibleMarkers(map, objectManager));
-			getVisibleMarkers(map, objectManager);
+			map.events.add('boundschange', () => getVisibleMarkers(map, objectManagerState));
+			getVisibleMarkers(map, objectManagerState);
 			dispatch(setMapLoading(false));
-		}
-	}, [isLoading, map, features]);
 
-	const filter = useCallback(async () => {
-		if (objectManagerState && map) {
-			const filteredData = await filterDataByType(selectedFilter, filtersIsOpen);
-			if (filteredData) {
-				objectManagerState.removeAll();
-				objectManagerState.add(filteredData);
-				getVisibleMarkers(map, objectManagerState);
+			if (selectedFilterParam !== null) {
+				dispatch(setSelectedFilter(+selectedFilterParam));
+				setTimeout(() => {
+					objectManagerState.removeAll();
+					applyFilters();
+				}, 0);
 			}
 		}
-	}, [selectedFilter, filtersIsOpen]);
-
-	const filterOptions = useCallback(async () => {
-		if (objectManagerState && map) {
-			objectManagerState.removeAll();
-			const filteredData = await filterDataByOptions(
-				filters.fuelFilters,
-				filters.features,
-				filters.brandTitles,
-				[],
-				filters.addServices,
-				filters.gateHeight,
-				filters.terminal
-			);
-
-			objectManagerState.add(filteredData);
-			getVisibleMarkers(map, objectManagerState);
-		}
-	}, [
-		filters.fuelFilters,
-		filters.features,
-		filters.brandTitles,
-		filters.addServices,
-		filters.gateHeight,
-		filters.terminal
-	]);
+	}, [features, objectManagerState]);
 
 	useEffect(() => {
 		if (!map || !objectManagerState) return;
 
+		const applyFilters = async () => {
+			await filter();
+		};
+
 		if (selectedFilter !== null || filtersIsOpen) {
-			filter();
+			applyFilters();
 		}
-	}, [filter, map, selectedFilter, filtersIsOpen]);
+	}, [filter, map, selectedFilter]);
 
 	const mergeData = (data1: any[][], data2: any[][]) => {
 		const data2Map = new Map(data2.map(item => [item[0], { address: item[1], list: item[2] }]));
 
 		return data1.map(item => {
 			const id = item[0];
-			const extraData = data2Map.get(id) || { address: '', list: [] }; // Подставляем пустые значения, если совпадения нет
-			return [...item, extraData.address, extraData.list]; // Добавляем новые данные в конец массива
+			const extraData = data2Map.get(id) || { address: '', list: [] };
+			return [...item, extraData.address, extraData.list];
 		});
 	};
 
@@ -246,7 +322,6 @@ export const CustomMap = () => {
 			const mergedData = mergeData(data.data, terminalsList.data);
 			await saveData(createPoints(mergedData));
 			const allData = await getAllData();
-			console.log(allData);
 			setFeatures(allData);
 		};
 		if (!isLoading && !isLoadingTerminal) {
@@ -257,20 +332,8 @@ export const CustomMap = () => {
 	useEffect(() => {
 		if (!objectManagerState) return;
 
-		const hasActiveFilters =
-			filters.features.length > 0 ||
-			filters.fuelFilters.length > 0 ||
-			filters.brandTitles.length > 0 ||
-			filters.addServices.length > 0 ||
-			filters.gateHeight ||
-			filters.terminal.length > 0;
-
 		const applyFilters = async () => {
-			if (hasActiveFilters) {
-				await filterOptions();
-			} else {
-				await filter();
-			}
+			await filter();
 		};
 
 		applyFilters();
@@ -284,7 +347,8 @@ export const CustomMap = () => {
 		objectManagerState,
 		features,
 		selectedFilter,
-		filtersIsOpen
+		filters.card
+		// filtersIsOpen
 	]);
 
 	usePoint({ ymaps, map, pointCollection, setPointCollection });

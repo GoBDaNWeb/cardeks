@@ -12,7 +12,7 @@ import { setActiveObject } from '@/entities/object-info';
 import { useGetTerminalsQuery } from '@/shared/api';
 import { useIndexedDB, useTypedSelector } from '@/shared/lib';
 import { Feature } from '@/shared/types';
-import { Button, CloseIcon, RouteIcon } from '@/shared/ui';
+import { Badge, Button, CloseIcon, RouteIcon } from '@/shared/ui';
 
 import s from './object-info.module.scss';
 
@@ -24,6 +24,9 @@ export const ObjectInfo = () => {
 
 	const { data, isLoading } = useGetTerminalsQuery();
 	const { objectId } = useTypedSelector(store => store.objectInfo);
+	const {
+		routeInfo: { routeIsBuilded }
+	} = useTypedSelector(state => state.map);
 
 	const notify = () =>
 		toast.success('координаты скопированы', {
@@ -70,7 +73,8 @@ export const ObjectInfo = () => {
 	}, [objectId]);
 
 	const objectInfoClass = clsx(s.objectInfo, {
-		[s.active]: objectId && !objectId.includes('__cluster__')
+		[s.active]: objectId && !objectId.includes('__cluster__'),
+		[s.top]: objectId && !objectId.includes('__cluster__') && routeIsBuilded
 	});
 
 	return (
@@ -83,15 +87,22 @@ export const ObjectInfo = () => {
 						<CloseIcon />
 					</Button>
 				</div>
+
 				<div className={s.features}>
 					{azsItem?.features.canManageCards ? (
-						<div className={s.feature}>Сбросить счетчик PIN-кода</div>
+						<div
+							className={s.feature}
+							title='После сброса PIN-кода через поддержку по телефону или через личный кабинет, держателю карты необходимо предъявить карту на одной из этих точек обслуживания, попросить вставить карту в терминал и снять информационный чек или провести транзакцию. В завершении необходимо ввести корректный PIN-код.'
+						>
+							Сбросить счетчик PIN-кода
+						</div>
 					) : null}
 					{azsItem?.features.abilityPPay ? <div className={s.feature}>Оплата из машины</div> : null}
 					{azsItem?.features.ppayBarcode ? (
 						<div className={s.feature}>Оплата по штрихкоду</div>
 					) : null}
 				</div>
+
 				<p className={s.address}>{terminal && terminal[1]}</p>
 				<Button
 					className={s.coords}
@@ -105,8 +116,26 @@ export const ObjectInfo = () => {
 			</div>
 			<div className={s.objectInfoContent}>
 				<div className={s.infoItem}>
+					<h6>Топливо</h6>
+					<div className={s.list}>
+						{azsItem &&
+							Object.entries(azsItem?.fuels)
+								.filter(([_, value]) => value)
+								.map(([key]) => (
+									<Badge key={key} className={s.fuelBadge}>
+										<p>{key}</p>
+									</Badge>
+								))}
+					</div>
+				</div>
+				<div className={s.infoItem}>
 					<h6>Принимает карты</h6>
-					<p>Кардекс, Лукойл</p>
+					<p>
+						{azsItem?.title.toLowerCase().includes('лукойл') ||
+						azsItem?.title.toLowerCase().includes('тебоил')
+							? 'Лукойл'
+							: 'Кардекс'}
+					</p>
 				</div>
 				<div className={s.infoItem}>
 					<h6>Терминалы</h6>
