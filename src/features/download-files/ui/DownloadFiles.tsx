@@ -43,6 +43,33 @@ export const DownloadFiles: FC<IDownloadFiles> = ({ title, text, btnText, downlo
 	const watchSelector = watch('selector');
 	const watchMail = watch('mail');
 
+	const generateCSVFile = (data: string[][]) => {
+		const csvContent = data.map(row => row.join(',')).join('\n');
+		return csvContent;
+	};
+
+	const generateGPXFile = (data: IGPX[]) => {
+		let gpxContent = `<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="YourApp">
+`;
+		data.forEach(point => {
+			gpxContent += `<wpt lat="${point.lat}" lon="${point.lon}">
+    <name>${point.name}</name>
+</wpt>
+`;
+		});
+		gpxContent += '</gpx>';
+		return gpxContent;
+	};
+
+	const generateExcelFile = async (tableRef: React.RefObject<HTMLTableElement>) => {
+		// Используйте библиотеку xlsx для генерации Excel файла
+		// Пример:
+		const XLSX = await import('xlsx');
+		const workbook = XLSX.utils.table_to_book(tableRef.current);
+		return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+	};
+
 	const onSubmit: SubmitHandler<FieldValues> = async data => {
 		const { radio, selector, mail } = data;
 
@@ -73,7 +100,7 @@ export const DownloadFiles: FC<IDownloadFiles> = ({ title, text, btnText, downlo
 			);
 
 			try {
-				const response = await fetch('http://cardeks.wuaze.com/send.php', {
+				const response = await fetch('https://dev5.paradigma-digital.ru/1.php', {
 					method: 'POST',
 					body: formData
 				});
