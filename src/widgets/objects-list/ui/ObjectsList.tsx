@@ -89,7 +89,7 @@ export const ObjectsList = () => {
 	const displayedPoints = points.slice(0, page * itemsPerPage);
 
 	const objectsListClass = clsx(s.objectsList, {
-		[s.active]: (activeMenu === 'objects-list' || mobileActiveMenu === 'objects') && !objectId
+		[s.active]: activeMenu === 'objects-list' || mobileActiveMenu === 'objects'
 	});
 
 	return (
