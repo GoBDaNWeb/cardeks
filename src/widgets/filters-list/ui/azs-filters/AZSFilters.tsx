@@ -84,6 +84,11 @@ export const AZSFilters: FC<IFilters> = ({ withoutServices, handleAddServices, s
 							onClick={() => handleSetFeatures(filter)}
 							key={filter.title}
 							isActive={features.some(f => f.value === filter.value)}
+							title={
+								filter.value === 'canManageCards'
+									? 'После сброса PIN-кода через поддержку по телефону или через личный кабинет, держателю карты необходимо предъявить карту на одной из этих точек обслуживания, попросить вставить карту в терминал и снять информационный чек или провести транзакцию. В завершении необходимо ввести корректный PIN-код.'
+									: ''
+							}
 						>
 							{filter.title}
 						</Chip>

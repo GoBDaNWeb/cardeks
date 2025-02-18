@@ -9,13 +9,14 @@ import s from './chip.module.scss';
 interface IChip {
 	isActive?: boolean;
 	onClick: () => void;
+	title?: string;
 }
 
-export const Chip: FC<PropsWithChildren<IChip>> = ({ children, isActive, onClick }) => {
+export const Chip: FC<PropsWithChildren<IChip>> = ({ children, isActive, onClick, title }) => {
 	const chipClass = clsx(s.chip, { [s.active]: isActive });
 
 	return (
-		<Button onClick={onClick} className={chipClass}>
+		<Button onClick={onClick} className={chipClass} title={title}>
 			{children}
 		</Button>
 	);

@@ -89,12 +89,7 @@ export const ObjectInfo = () => {
 
 				<div className={s.features}>
 					{azsItem?.features.canManageCards ? (
-						<div
-							className={s.feature}
-							title='После сброса PIN-кода через поддержку по телефону или через личный кабинет, держателю карты необходимо предъявить карту на одной из этих точек обслуживания, попросить вставить карту в терминал и снять информационный чек или провести транзакцию. В завершении необходимо ввести корректный PIN-код.'
-						>
-							Сбросить счетчик PIN-кода
-						</div>
+						<div className={s.feature}>Сбросить счетчик PIN-кода</div>
 					) : null}
 					{azsItem?.features.abilityPPay ? <div className={s.feature}>Оплата из машины</div> : null}
 					{azsItem?.features.ppayBarcode ? (
