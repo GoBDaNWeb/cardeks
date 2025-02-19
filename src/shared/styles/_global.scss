@@ -134,25 +134,6 @@
 		display: none !important;
 	}
 
-	.ymaps-2-1-79-float-button {
-		min-width: 40px !important;
-		min-height: 40px !important;
-		max-width: 40px !important;
-		max-height: 40px !important;
-		position: absolute !important;
-		display: flex !important;
-		align-items: center !important;
-		justify-content: center !important;
-		border-radius: var(--radius-s) !important;
-		box-shadow: var(--shadow) !important;
-		top: 0 !important;
-		@media (max-width: $tab) {
-			min-width: 36px !important;
-			min-height: 36px !important;
-			max-width: 36px !important;
-			max-height: 36px !important;
-		}
-	}
 	.ymaps-2-1-79-_checked {
 		background: var(--white-color) !important;
 		border: 1px solid var(--accent-color) !important;
@@ -163,30 +144,7 @@
 			margin-top: 4px;
 		}
 	}
-	.ymaps-2-1-79-float-button-icon_icon_ruler {
-		background-image: url('/images/icons/line.svg') !important;
-		width: 100% !important;
-		height: 100% !important;
-		border: none !important;
-		@media (max-width: $tab) {
-			background-image: url('/images/icons/line-mob.svg') !important;
-		}
-	}
-	.custom-geolocation-button {
-		background-image: url('/images/icons/geo.svg') !important;
-		background-repeat: no-repeat;
-		border-radius: var(--radius-s) !important;
-		background-color: var(--white-color) !important;
-		box-shadow: var(--shadow) !important;
-		min-width: 46px !important;
-		min-height: 46px !important;
-		max-width: 46px !important;
-		max-height: 46px !important;
-		border: none !important;
-		@media (max-width: $tab) {
-			background-image: url('/images/icons/geo-mob.svg') !important;
-		}
-	}
+
 	.ymaps3x0--controls {
 		height: fit-content !important;
 		position: absolute !important;

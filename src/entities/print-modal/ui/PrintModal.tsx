@@ -76,13 +76,6 @@ export const PrintModal = () => {
 		map.geoObjects.add(multiRoute);
 		map.geoObjects.add(objectManager);
 		objectManager.add(pointsOnRoute);
-		map.controls.add('rulerControl', {
-			float: 'none',
-			position: {
-				top: '80px',
-				left: '73px'
-			}
-		});
 	};
 
 	useEffect(() => {
