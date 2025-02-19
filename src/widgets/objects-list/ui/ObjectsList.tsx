@@ -127,9 +127,9 @@ export const ObjectsList = () => {
 						<Button onClick={() => handeOpenPrintModal()} title='Распечатать список ТО'>
 							<PrintIcon />
 						</Button>
-						<Button onClick={() => handeOpenMailModal()} title='Отправить список ТО на почту'>
+						{/* <Button onClick={() => handeOpenMailModal()} title='Отправить список ТО на почту'>
 							<MailIcon />
-						</Button>
+						</Button> */}
 					</div>
 					<Button onClick={() => handleClose()}>
 						<CloseIcon />

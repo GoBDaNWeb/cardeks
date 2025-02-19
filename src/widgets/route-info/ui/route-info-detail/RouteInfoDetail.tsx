@@ -87,9 +87,9 @@ export const RouteInfoDetail: FC<IRouteInfoDetail> = ({ setDetail }) => {
 						<Button onClick={() => handeOpenPrintModal()} title='Распечатать список ТО'>
 							<PrintIcon />
 						</Button>
-						<Button onClick={() => handeOpenMailModal()} title='Отправить список ТО на почту'>
+						{/* <Button onClick={() => handeOpenMailModal()} title='Отправить список ТО на почту'>
 							<MailIcon />
-						</Button>
+						</Button> */}
 					</div>
 					<Button className={s.closeBtn} onClick={setDetail}>
 						<CloseIcon />
