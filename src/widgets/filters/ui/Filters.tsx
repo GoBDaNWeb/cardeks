@@ -96,6 +96,22 @@ export const Filters = () => {
 			viewCount: pointsData.washing.totalView
 		}
 	];
+
+	const totalFilters = () => {
+		const gate = filters.gateHeight ? 1 : 0;
+		const teminal = filters.terminal.length ? 1 : 0;
+
+		return (
+			filters.fuelFilters.length +
+			filters.brandTitles.length +
+			filters.addServices.length -
+			1 +
+			filters.features.length +
+			teminal +
+			gate
+		);
+	};
+
 	return (
 		<div className={filtersClass}>
 			<div className={s.filtersTop}>
@@ -103,7 +119,7 @@ export const Filters = () => {
 					<div className={s.icon}>
 						<FilterIcon />
 					</div>
-					<p>Фильтры</p>
+					<p>Фильтры{totalFilters() > 0 ? <>: {totalFilters()}</> : null}</p>
 				</div>
 				<div className={s.rightBlock}>
 					{condition ? (

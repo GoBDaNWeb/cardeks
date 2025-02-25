@@ -3,6 +3,8 @@ import { useDispatch } from 'react-redux';
 
 import clsx from 'clsx';
 
+import { setOpenFilters, setSelectedFilter } from '@/widgets/filters';
+
 import { setWithFilters } from '@/features/route-form';
 
 import { useTypedSelector } from '@/shared/lib';
@@ -24,9 +26,12 @@ const AccordionTitle: FC<IAccordionTitle> = ({ handleOpen, isShow }) => {
 	const dispatch = useDispatch();
 
 	const { filterActive } = useTypedSelector(store => store.routeForm);
+	const { filtersIsOpen } = useTypedSelector(store => store.filters);
 
 	const handleOpenFilters = () => {
-		dispatch(setFilterActive(!filterActive));
+		dispatch(setOpenFilters(!filtersIsOpen));
+		dispatch(setSelectedFilter(0));
+		// dispatch(setFilterActive(!filterActive));
 	};
 
 	const handleChangeCheckbox = () => {

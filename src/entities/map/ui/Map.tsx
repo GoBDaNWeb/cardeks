@@ -42,10 +42,12 @@ export const CustomMap = () => {
 
 	const {
 		mapInfo: { zoom, isWheel, mapType, panorama, panoramaIsOpen, center, mapLoading },
-		routeInfo: { isSelectAddress }
+		routeInfo: { isSelectAddress, isUrlBuild, buildRoute }
 	} = useTypedSelector(state => state.map);
 
-	const { selectedFilter, filtersIsOpen, filters } = useTypedSelector(state => state.filters);
+	const { selectedFilter, filtersIsOpen, clearFilters, filters } = useTypedSelector(
+		state => state.filters
+	);
 
 	const init = () => {
 		const params = new URLSearchParams(window.location.search);
@@ -206,64 +208,65 @@ export const CustomMap = () => {
 		if (!isLoading && map && features.length > 0 && objectManagerState) {
 			map.geoObjects.add(objectManagerState);
 			objectManagerState.add(features);
+			if (!isUrlBuild && !buildRoute) {
+				const mappedAzsPoints = features.map((marker: Feature) => {
+					const newObject = {
+						...marker,
+						options: Object.keys(marker.types).reduce(
+							(acc, key) => {
+								if (key !== 'washing' && key !== 'tire') {
+									acc[key] = marker.types[key];
+								}
+								return acc;
+							},
+							{} as Record<string, number | boolean>
+						)
+					};
+					return newObject;
+				});
+				const azsPoints = mappedAzsPoints.filter((marker: Feature) => {
+					return Object.values(marker.fuels).some(value => value === true);
+				});
+				const washingPoints = features.filter((marker: Feature) => marker.types.washing);
+				const tirePoints = features.filter((marker: Feature) => marker.types.tire);
+				dispatch(
+					setCategoryTotals({
+						category: 'azs',
+						total: azsPoints.length
+					})
+				);
+				dispatch(
+					setCategoryTotals({
+						category: 'tire',
+						total: tirePoints.length
+					})
+				);
+				dispatch(
+					setCategoryTotals({
+						category: 'washing',
+						total: washingPoints.length
+					})
+				);
+				dispatch(
+					setCategoryTotals({
+						category: 'points',
+						total: features.length
+					})
+				);
+				map.events.add('boundschange', () => getVisibleMarkers(map, objectManagerState, dispatch));
+				getVisibleMarkers(map, objectManagerState, dispatch);
+				dispatch(setMapLoading(false));
 
-			const mappedAzsPoints = features.map((marker: Feature) => {
-				const newObject = {
-					...marker,
-					options: Object.keys(marker.types).reduce(
-						(acc, key) => {
-							if (key !== 'washing' && key !== 'tire') {
-								acc[key] = marker.types[key];
-							}
-							return acc;
-						},
-						{} as Record<string, number | boolean>
-					)
-				};
-				return newObject;
-			});
-			const azsPoints = mappedAzsPoints.filter((marker: Feature) => {
-				return Object.values(marker.fuels).some(value => value === true);
-			});
-			const washingPoints = features.filter((marker: Feature) => marker.types.washing);
-			const tirePoints = features.filter((marker: Feature) => marker.types.tire);
-			dispatch(
-				setCategoryTotals({
-					category: 'azs',
-					total: azsPoints.length
-				})
-			);
-			dispatch(
-				setCategoryTotals({
-					category: 'tire',
-					total: tirePoints.length
-				})
-			);
-			dispatch(
-				setCategoryTotals({
-					category: 'washing',
-					total: washingPoints.length
-				})
-			);
-			dispatch(
-				setCategoryTotals({
-					category: 'points',
-					total: features.length
-				})
-			);
-			map.events.add('boundschange', () => getVisibleMarkers(map, objectManagerState, dispatch));
-			getVisibleMarkers(map, objectManagerState, dispatch);
-			dispatch(setMapLoading(false));
-
-			if (selectedFilterParam !== null) {
-				dispatch(setSelectedFilter(+selectedFilterParam));
-				setTimeout(() => {
-					objectManagerState.removeAll();
-					applyFilters();
-				}, 0);
+				if (selectedFilterParam !== null) {
+					dispatch(setSelectedFilter(+selectedFilterParam));
+					setTimeout(() => {
+						objectManagerState.removeAll();
+						applyFilters();
+					}, 0);
+				}
 			}
 		}
-	}, [features, objectManagerState]);
+	}, [features, objectManagerState, isUrlBuild, buildRoute]);
 
 	useEffect(() => {
 		if (!map || !objectManagerState) return;
@@ -272,10 +275,10 @@ export const CustomMap = () => {
 			await filter();
 		};
 
-		if (selectedFilter !== null || filtersIsOpen) {
+		if ((selectedFilter !== null || filtersIsOpen) && !isUrlBuild && !buildRoute) {
 			applyFilters();
 		}
-	}, [filter, map, selectedFilter]);
+	}, [filter, map, selectedFilter, isUrlBuild]);
 
 	useEffect(() => {
 		const fetch = async () => {
@@ -295,8 +298,9 @@ export const CustomMap = () => {
 		const applyFilters = async () => {
 			await filter();
 		};
-
-		applyFilters();
+		if (clearFilters) {
+			applyFilters();
+		}
 	}, [
 		filters.fuelFilters,
 		filters.brandTitles,
@@ -307,7 +311,8 @@ export const CustomMap = () => {
 		objectManagerState,
 		features,
 		selectedFilter,
-		filters.card
+		filters.card,
+		clearFilters
 	]);
 
 	usePoint({ ymaps, map, pointCollection, setPointCollection });

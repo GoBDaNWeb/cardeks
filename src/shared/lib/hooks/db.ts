@@ -1,5 +1,7 @@
 import Dexie, { Table } from 'dexie';
 
+import { Feature } from '@/shared/types';
+
 export interface DataItem {
 	id: string;
 	name: string;
@@ -10,13 +12,14 @@ export interface DataItem {
 
 // Определение базы данных
 class AppDatabase extends Dexie {
-	dataItems!: Table<DataItem, string>;
+	points: Dexie.Table<Feature, string>;
 
 	constructor() {
-		super('AppDatabase');
+		super('azsDatabase');
 		this.version(1).stores({
-			dataItems: 'id'
+			points: 'id, title, fuels, features, types, filters.gateHeight, terminals'
 		});
+		this.points = this.table('points');
 	}
 }
 

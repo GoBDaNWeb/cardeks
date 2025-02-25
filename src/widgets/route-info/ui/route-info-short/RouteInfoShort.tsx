@@ -24,6 +24,10 @@ export const RouteInfoShort: FC<IRouteInfoShort> = ({ setDetail, handleClose }) 
 	const {
 		routeInfo: { routeAddresses, routeTime, routeLength, routeCoords }
 	} = useTypedSelector(state => state.map);
+	const {
+		selectedFilter,
+		filters: { fuelFilters, brandTitles, addServices, features, gateHeight, terminal, card }
+	} = useTypedSelector(store => store.filters);
 
 	const handleOpenNewRouteModal = () => {
 		dispatch(handleOpenModal(true));
@@ -72,7 +76,19 @@ export const RouteInfoShort: FC<IRouteInfoShort> = ({ setDetail, handleClose }) 
 							<DownloadIcon />
 						</Button>
 						<Button
-							onClick={() => handleCopyLink({ routeCoords })}
+							onClick={() =>
+								handleCopyLink({
+									routeCoords,
+									selectedFilter,
+									fuelFilters,
+									brandTitles,
+									addServices,
+									terminal,
+									features,
+									gateHeight,
+									card
+								})
+							}
 							title='Скопировать ссылку на карту с выбранными ТО'
 						>
 							<LinkIcon />

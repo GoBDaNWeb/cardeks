@@ -20,7 +20,6 @@ interface AppDB extends DBSchema {
 
 export const useIndexedDB = () => {
 	const [isDbReady, setIsDbReady] = useState(false);
-	const [typeFilters, setTypeFilters] = useState([]);
 	const workerRef = useRef<Worker | null>(null);
 	const [brandsCache, setBrandsCache] = useState<string[] | null>(null);
 
@@ -53,6 +52,7 @@ export const useIndexedDB = () => {
 		card?: string
 	): Promise<Feature[]> => {
 		let query = db.points.toCollection();
+
 		// Фильтрация по видам топлива
 		if (fuels.length > 0) {
 			query = query.filter(item =>
@@ -70,13 +70,13 @@ export const useIndexedDB = () => {
 		// Фильтрация по типам АЗС
 		if (azsTypes.length > 0) {
 			query = query.filter(item =>
-				azsTypes.some(t => item.types?.[t.value as keyof typeof item.types] === true)
+				azsTypes.every(t => item.types?.[t.value as keyof typeof item.types] === true)
 			);
 		}
 
 		// Фильтрация по высоте ворот
 		if (gateHeight) {
-			query = query.filter(item => (item.filters?.gateHeight ?? 0) > gateHeight);
+			query = query.filter(item => (item.filters?.gateHeight ?? 0) >= gateHeight);
 		}
 
 		// Фильтрация по терминалу
@@ -91,9 +91,7 @@ export const useIndexedDB = () => {
 				titleFilter.some(brand => item.title.toLowerCase().includes(brand.toLowerCase()))
 			);
 		}
-		if (addServices.length) {
-			query = query.filter(item => filterObj(item.types, addServices));
-		}
+
 		// Фильтрация по типу карты
 		if (card) {
 			query = query.filter(item => {
@@ -110,12 +108,10 @@ export const useIndexedDB = () => {
 	};
 	const filterDataByType = async (selectedFilter: number): Promise<Feature[]> => {
 		const data = await db.points.toArray();
-		const promise = new Promise(resolve => {
+		return new Promise(resolve => {
 			workerRef.current?.postMessage({ data, selectedFilter });
 			workerRef.current!.onmessage = event => resolve(event.data);
 		});
-		setTypeFilters(await promise);
-		return promise;
 	};
 
 	const getBrands = async (): Promise<string[]> => {

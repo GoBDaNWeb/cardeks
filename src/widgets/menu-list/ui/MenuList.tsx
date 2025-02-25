@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
+import { setOpenFilters, setSelectedFilter, setСlearFilters } from '@/widgets/filters';
+
 import { setFilterActive } from '@/features/route-form';
 
-import { setBuildRoute, setChangeRoute, setRouteBuilded } from '@/entities/map';
+import { setBuildRoute, setChangeRoute, setIsUrlBuid, setRouteBuilded } from '@/entities/map';
 import { setActiveObject } from '@/entities/object-info';
 
 import { useGetPointsQuery } from '@/shared/api';
@@ -19,7 +21,9 @@ export const MenuList = () => {
 	const dispatch = useDispatch();
 	const { activeMenu } = useTypedSelector(store => store.menu);
 	const { isLoading } = useGetPointsQuery();
-
+	const {
+		routeInfo: { routeIsBuilded }
+	} = useTypedSelector(state => state.map);
 	const { getAllData } = useIndexedDB();
 	const fetch = async () => {
 		const data = await getAllData();
@@ -44,6 +48,15 @@ export const MenuList = () => {
 		} else {
 			dispatch(setActiveMenu(menu));
 			dispatch(setFilterActive(false));
+		}
+		if (routeIsBuilded && menu === 'route') {
+			dispatch(setСlearFilters(true));
+			dispatch(setOpenFilters(false));
+			dispatch(setIsUrlBuid(false));
+			dispatch(setSelectedFilter(null));
+			setTimeout(() => {
+				dispatch(setСlearFilters(false));
+			}, 300);
 		}
 	};
 

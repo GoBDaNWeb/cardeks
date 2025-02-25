@@ -3,9 +3,10 @@ import { useDispatch } from 'react-redux';
 
 import clsx from 'clsx';
 
+import { setOpenFilters, setSelectedFilter, setСlearFilters } from '@/widgets/filters';
 import { clearActiveMenu } from '@/widgets/menu-list';
 
-import { setBuildRoute, setChangeRoute, setRouteBuilded } from '@/entities/map';
+import { setBuildRoute, setChangeRoute, setIsUrlBuid, setRouteBuilded } from '@/entities/map';
 
 import { useTypedSelector } from '@/shared/lib';
 
@@ -29,6 +30,13 @@ export const RouteInfo = () => {
 		dispatch(setRouteBuilded(false));
 		dispatch(setChangeRoute(false));
 		dispatch(clearActiveMenu());
+		dispatch(setСlearFilters(true));
+		dispatch(setOpenFilters(false));
+		dispatch(setIsUrlBuid(false));
+		dispatch(setSelectedFilter(null));
+		setTimeout(() => {
+			dispatch(setСlearFilters(false));
+		}, 300);
 	};
 
 	const handleDetail = (status: boolean) => {

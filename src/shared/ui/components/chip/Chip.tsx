@@ -8,7 +8,7 @@ import s from './chip.module.scss';
 
 interface IChip {
 	isActive?: boolean;
-	onClick: () => void;
+	onClick?: () => void;
 	title?: string;
 }
 

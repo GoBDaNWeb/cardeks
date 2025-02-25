@@ -5,6 +5,7 @@ import clsx from 'clsx';
 
 import { setActiveObject } from '@/entities/object-info';
 
+import { fuelList } from '@/shared/config';
 import { Badge, Button, CloseIcon, MapIcon, PlusIcon, RouteIcon } from '@/shared/ui';
 
 import s from './object-item.module.scss';
@@ -54,11 +55,11 @@ export const ObjectItem: FC<ObjectItemType> = ({
 			</div>
 			<div className={s.objectItemBadges}>
 				{fuels &&
-					Object.entries(fuels)
-						.filter(([_, value]) => value)
-						.map(([key]) => (
-							<Badge key={key} className={s.badge}>
-								<p>{key}</p>
+					fuelList
+						.filter(fuel => fuels[fuel.value]) // Фильтруем только доступные виды топлива
+						.map(fuel => (
+							<Badge key={fuel.value} className={s.badge}>
+								<p>{fuel.title}</p>
 							</Badge>
 						))}
 			</div>

@@ -264,7 +264,7 @@ export const FiltersList = () => {
 	}, [filtersIsOpen]);
 
 	const filterListClass = clsx(s.filtersList, {
-		[s.left]: activeMenu || objectId,
+		[s.left]: activeMenu,
 		[s.active]: filtersIsOpen
 	});
 
@@ -323,8 +323,11 @@ export const FiltersList = () => {
 					<div className={s.brandWrapper}>
 						<div className={s.chips}>
 							{brandState.selectedBrands.map((brand: string, index: number) => (
-								<Chip key={index} onClick={() => handleRemoveBrand(brand)} isActive>
+								<Chip key={index} isActive>
 									{brand}
+									<div className={s.closeBtn} onClick={() => handleRemoveBrand(brand)}>
+										<CloseIcon />
+									</div>
 								</Chip>
 							))}
 						</div>

@@ -28,6 +28,10 @@ export const RouteInfoDetail: FC<IRouteInfoDetail> = ({ setDetail }) => {
 	const [deletedPoints, setDeletedPoints] = useState<Feature[]>([]);
 
 	const dispatch = useDispatch();
+	const {
+		selectedFilter,
+		filters: { fuelFilters, brandTitles, addServices, features, gateHeight, terminal, card }
+	} = useTypedSelector(store => store.filters);
 
 	useEffect(() => {
 		const newDeletedPoints = pointsList.filter(
@@ -79,7 +83,19 @@ export const RouteInfoDetail: FC<IRouteInfoDetail> = ({ setDetail }) => {
 							<DownloadIcon />
 						</Button>
 						<Button
-							onClick={() => handleCopyLink({ routeCoords })}
+							onClick={() =>
+								handleCopyLink({
+									routeCoords,
+									selectedFilter,
+									fuelFilters,
+									brandTitles,
+									addServices,
+									terminal,
+									features,
+									gateHeight,
+									card
+								})
+							}
 							title='Скопировать ссылку на карту с выбранными ТО'
 						>
 							<LinkIcon />

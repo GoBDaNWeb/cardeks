@@ -10,6 +10,7 @@ import { setAddress, setCurrentPointId } from '@/entities/map';
 import { setActiveObject } from '@/entities/object-info';
 
 import { useGetTerminalsQuery } from '@/shared/api';
+import { fuelList } from '@/shared/config';
 import { useIndexedDB, useTypedSelector } from '@/shared/lib';
 import { Feature } from '@/shared/types';
 import { Badge, Button, CloseIcon, RouteIcon } from '@/shared/ui';
@@ -76,6 +77,7 @@ export const ObjectInfo = () => {
 		[s.active]: objectId && !objectId.includes('__cluster__'),
 		[s.top]: objectId && !objectId.includes('__cluster__') && routeIsBuilded
 	});
+
 	return (
 		<div className={objectInfoClass}>
 			<div className={s.objectInfoTop}>
@@ -109,26 +111,41 @@ export const ObjectInfo = () => {
 				</Button>
 			</div>
 			<div className={s.objectInfoContent}>
-				<div className={s.infoItem}>
-					<h6>Топливо</h6>
-					<div className={s.list}>
-						{azsItem &&
-							Object.entries(azsItem?.fuels)
-								.filter(([_, value]) => value)
-								.map(([key]) => (
-									<Badge key={key} className={s.fuelBadge}>
-										<p>{key}</p>
-									</Badge>
-								))}
+				{azsItem && fuelList.filter(fuel => azsItem.fuels[fuel.value]).length ? (
+					<div className={s.infoItem}>
+						<h6>Топливо</h6>
+						<div className={s.list}>
+							{azsItem &&
+								fuelList
+									.filter(fuel => azsItem.fuels[fuel.value]) // Фильтруем только доступные виды топлива
+									.map(fuel => (
+										<Badge key={fuel.value} className={s.fuelBadge}>
+											<p>{fuel.title}</p>
+										</Badge>
+									))}
+						</div>
 					</div>
-				</div>
+				) : null}
+
 				<div className={s.infoItem}>
 					<h6>Принимает карты</h6>
 					<p>
-						{azsItem?.title.toLowerCase().includes('лукойл') ||
-						azsItem?.title.toLowerCase().includes('тебоил')
-							? 'Лукойл'
-							: 'Кардекс'}
+						{terminal ? (
+							<>
+								{terminal[2]?.filter((item: string) => {
+									return item.includes('2005');
+								}).length > 0 ? (
+									'Кардекс'
+								) : (
+									<>
+										{azsItem?.title.toLowerCase().includes('лукойл') ||
+										azsItem?.title.toLowerCase().includes('тебойл')
+											? 'Лукойл'
+											: 'Кардекс'}
+									</>
+								)}
+							</>
+						) : null}
 					</p>
 				</div>
 				{terminal && terminal[2].length ? (

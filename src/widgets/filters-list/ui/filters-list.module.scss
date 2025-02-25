@@ -75,6 +75,23 @@
 			display: flex;
 			flex-wrap: wrap;
 			gap: 5px;
+			& > button {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+			}
+			.closeBtn {
+				display: flex;
+				align-items: center;
+
+				svg {
+					width: 18px;
+					height: 18px;
+					path {
+						stroke: var(--white-color);
+					}
+				}
+			}
 		}
 		.dropdown {
 			max-height: 200px;

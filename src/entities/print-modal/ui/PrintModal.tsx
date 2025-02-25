@@ -112,7 +112,7 @@ export const PrintModal = () => {
 					<div
 						id='print_map'
 						className={s.printMap}
-						style={{ width: '100%', height: '250px' }}
+						style={{ width: '662px', height: '250px' }}
 					></div>
 					<div className={s.azsList}>
 						{routeIsBuilded

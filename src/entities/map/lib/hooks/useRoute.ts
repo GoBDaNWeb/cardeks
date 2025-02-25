@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
+import { setOpenFilters } from '@/widgets/filters';
 import { setActiveMenu } from '@/widgets/menu-list';
 
 import { getQueryParams, useIndexedDB, useTypedSelector } from '@/shared/lib';
@@ -37,21 +38,29 @@ export const useRoute = ({
 	const [addressesCollection, setAddressesCollection] = useState<string[]>([]);
 	const [routeCoordsState, setRouteCoordsState] = useState<number[][]>([]);
 	const dispatch = useDispatch();
-	const { filterDataByOptions } = useIndexedDB();
+	const { filterDataByOptions, filterDataByType } = useIndexedDB();
 	const {
 		routeInfo: { routeCoords, buildRoute, routeIsChanged, pointsOnRoute, isUrlBuild }
 	} = useTypedSelector(state => state.map);
-	const {
-		addSettings,
-		filters: { brandTitles, azsTypes },
-		withFilters
-	} = useTypedSelector(state => state.routeForm);
+	const { selectedFilter, filters } = useTypedSelector(state => state.filters);
+	const { addSettings, withFilters } = useTypedSelector(state => state.routeForm);
 	const { routesParam } = getQueryParams();
 
 	const multiRouteRef = useRef<any>(null);
 
 	const filtered = async () => {
-		const filteredData = await filterDataByOptions([], [], brandTitles, azsTypes);
+		const filteredDataType = await filterDataByType(selectedFilter);
+		const filteredData = await filterDataByOptions(
+			filters.fuelFilters,
+			filters.features,
+			filters.brandTitles,
+			[],
+			filters.addServices,
+			filters.gateHeight,
+			filters.terminal,
+			filteredDataType,
+			filters.card
+		);
 		return filteredData;
 	};
 
@@ -63,7 +72,9 @@ export const useRoute = ({
 			if (multiRouteRef.current) {
 				map.geoObjects.remove(multiRouteRef.current);
 			}
-
+			let lineGeoObjects;
+			//@ts-ignore
+			let lines;
 			if (condition) {
 				let multiRoute = new ymaps.multiRouter.MultiRoute(
 					{
@@ -83,46 +94,48 @@ export const useRoute = ({
 				);
 				map.geoObjects.add(multiRoute);
 				multiRouteRef.current = multiRoute;
+
 				if (addSettings.includes(0)) {
 					multiRoute.model.setParams({ avoidTrafficJams: true }, true);
 				}
-				multiRoute.model.events.add('update', async () => {
-					if (objectManagerState) {
-						objectManagerState.removeAll();
-					}
-					var lineGeoObjects = multiRoute
-						.getRoutes()
-						.toArray()
-						.map((route: any) => new ymaps.Polyline(routeToLineString(route)));
+				const routePromise = new Promise(resolve => {
+					multiRoute.model.events.add('update', async () => {
+						if (objectManagerState) {
+							objectManagerState.removeAll();
+						}
+						lineGeoObjects = multiRoute
+							.getRoutes()
+							.toArray()
+							.map((route: any) => new ymaps.Polyline(routeToLineString(route)));
 
-					var lines = new ymaps.GeoObjectCollection(
-						{ children: lineGeoObjects },
-						{ visible: false }
-					);
-					map.geoObjects.add(lines);
+						lines = new ymaps.GeoObjectCollection({ children: lineGeoObjects }, { visible: false });
+						map.geoObjects.add(lines);
+						const routes = multiRoute.getRoutes();
 
-					const routes = multiRoute.getRoutes();
-
-					if (routes.getLength() > 0) {
-						const activeRoute = routes.get(0);
-
-						const time = activeRoute.properties.get('duration').text;
-						const length = activeRoute.properties.get('distance').text;
-						dispatch(setRouteTime(time));
-						dispatch(setRouteLength(length));
-					}
-					dispatch(setRouteBuilded(true));
-					dispatch(setRouteChanged(false));
-
+						if (routes.getLength() > 0) {
+							const activeRoute = routes.get(0);
+							const time = activeRoute.properties.get('duration').text;
+							const length = activeRoute.properties.get('distance').text;
+							dispatch(setRouteTime(time));
+							dispatch(setRouteLength(length));
+						}
+						dispatch(setRouteBuilded(true));
+						dispatch(setRouteChanged(false));
+						dispatch(setOpenFilters(false));
+						dispatch(setMapLoading(false));
+						resolve('route');
+					});
+				});
+				routePromise.then(async res => {
 					if (urlBuild && features) {
-						dispatch(setMapLoading(true));
 						dispatch(setActiveMenu('route'));
 						dispatch(setRouteAddresses(addressesCollection));
 						objectManagerState.removeAll();
 
+						//@ts-ignore
 						const azsOnRoute = await getAzsOnRoute(features, lines, threshold, routesArr[0]);
 						if (azsOnRoute) {
-							objectManagerState.add(azsOnRoute);
+							// objectManagerState.add(azsOnRoute);
 							dispatch(setPointsOnRoute(azsOnRoute));
 						}
 						setRouteCoordsState([...routesArr]);
@@ -137,7 +150,6 @@ export const useRoute = ({
 
 						Promise.all(geocodePromises).then(addresses => {
 							dispatch(setRouteAddresses(addresses));
-							dispatch(setMapLoading(false));
 						});
 						routesArr.forEach((coords, index) => {
 							const myPlacemark = createPlacemark({ ymaps, coords, index });
@@ -145,18 +157,27 @@ export const useRoute = ({
 							setPointCollection(prevCollection => [...prevCollection, myPlacemark]);
 						});
 					} else {
-						filtered();
-						const newFilteredPoints = await filtered();
-						const azsOnRoute = await getAzsOnRoute(
-							withFilters ? newFilteredPoints : features,
-							lines,
-							threshold,
-							routeCoords[0]
-						);
-						if (azsOnRoute && objectManagerState) {
-							objectManagerState.add(azsOnRoute);
-							dispatch(setPointsOnRoute(azsOnRoute));
+						if (withFilters) {
+							const newFilteredPoints = await filtered();
+							const azsOnRoute = await getAzsOnRoute(
+								newFilteredPoints,
+								//@ts-ignore
+								lines,
+								threshold,
+								routeCoords[0]
+							);
+
+							if (azsOnRoute && objectManagerState) {
+								dispatch(setPointsOnRoute(azsOnRoute));
+							}
+						} else {
+							//@ts-ignore
+							const azsOnRoute = await getAzsOnRoute(features, lines, threshold, routeCoords[0]);
+							if (azsOnRoute && objectManagerState) {
+								dispatch(setPointsOnRoute(azsOnRoute));
+							}
 						}
+
 						dispatch(setRouteAddresses(addressesCollection));
 					}
 				});
