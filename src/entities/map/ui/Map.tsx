@@ -194,7 +194,7 @@ export const CustomMap = () => {
 	useEffect(() => {
 		if (ymaps) {
 			ymaps.ready(init);
-			if (window.location.search.length > 0) {
+			if (window.location.search.includes('routes')) {
 				dispatch(setIsUrlBuid(true));
 			}
 		}
@@ -208,6 +208,8 @@ export const CustomMap = () => {
 		if (!isLoading && map && features.length > 0 && objectManagerState) {
 			map.geoObjects.add(objectManagerState);
 			objectManagerState.add(features);
+			dispatch(setMapLoading(false));
+
 			if (!isUrlBuild && !buildRoute) {
 				const mappedAzsPoints = features.map((marker: Feature) => {
 					const newObject = {
@@ -255,7 +257,6 @@ export const CustomMap = () => {
 				);
 				map.events.add('boundschange', () => getVisibleMarkers(map, objectManagerState, dispatch));
 				getVisibleMarkers(map, objectManagerState, dispatch);
-				dispatch(setMapLoading(false));
 
 				if (selectedFilterParam !== null) {
 					dispatch(setSelectedFilter(+selectedFilterParam));
