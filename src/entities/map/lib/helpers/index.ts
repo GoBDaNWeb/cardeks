@@ -5,7 +5,6 @@ export { getImage } from './getImage';
 export { getPointInfo } from './getPointInfo';
 export { changePointImage } from './changePointImage';
 export { createPoints } from './createPoints';
-export { getAzsOnRoute } from './getAzsOnRoute';
 export { routeToLineString } from './routeToLineString';
 export { getVisibleMarkers } from './getVisibleMarkers';
 export { mergeData } from './mergeData';

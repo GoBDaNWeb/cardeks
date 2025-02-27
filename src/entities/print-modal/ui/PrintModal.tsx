@@ -102,37 +102,37 @@ export const PrintModal = () => {
 					<div className={s.text}>
 						<h5>Распечатать список</h5>
 						<p>
-							АЗС: {pointsOnRoute.length}, фильтров:
+							АЗС: {routeIsBuilded ? pointsOnRoute.length : points.length}, фильтров:
 							{filters.brandTitles.length + filters.azsTypes.length}
 						</p>
 					</div>
 					<CardeksLogo />
 				</div>
 				<div className={s.printModalContent} ref={contentRef}>
-					<div
-						id='print_map'
-						className={s.printMap}
-						style={{ width: '662px', height: '250px' }}
-					></div>
-					<div className={s.azsList}>
-						{routeIsBuilded
-							? pointsOnRoute.map((point: Feature) => {
-									const filteredFuelList = fuelList.filter(
-										item => point.fuels[item.value] === true
-									);
-									return (
-										<PrintItem point={point} filteredFuelList={filteredFuelList} key={point.id} />
-									);
-								})
-							: points.map((point: Feature) => {
-									const filteredFuelList = fuelList.filter(
-										item => point.fuels[item.value] === true
-									);
-									return (
-										<PrintItem point={point} filteredFuelList={filteredFuelList} key={point.id} />
-									);
-								})}
+					<div className={s.mapWrapper}>
+						<div id='print_map' className={s.printMap}></div>
 					</div>
+					<table className={s.azsList}>
+						<tbody>
+							{routeIsBuilded
+								? pointsOnRoute.map((point: Feature) => {
+										const filteredFuelList = fuelList.filter(
+											item => point.fuels[item.value] === true
+										);
+										return (
+											<PrintItem point={point} filteredFuelList={filteredFuelList} key={point.id} />
+										);
+									})
+								: points.map((point: Feature) => {
+										const filteredFuelList = fuelList.filter(
+											item => point.fuels[item.value] === true
+										);
+										return (
+											<PrintItem point={point} filteredFuelList={filteredFuelList} key={point.id} />
+										);
+									})}
+						</tbody>
+					</table>
 				</div>
 				<div className={s.printModalBottom}>
 					<Button variant='primary' onClick={() => reactToPrintFn()}>

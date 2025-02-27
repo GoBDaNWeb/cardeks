@@ -164,6 +164,9 @@ export const CustomMap = () => {
 					dispatch(setCurrentPointId(getPointId(0)));
 					//@ts-ignore
 					dispatch(setCurrentCoords([result.geoObjects.position]));
+				})
+				.catch(e => {
+					console.log(e);
 				});
 		}
 	}, [getLocation]);

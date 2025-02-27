@@ -261,7 +261,7 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IU
 		}
 	}, [isSelectAddress, currentPointId]);
 	useEffect(() => {
-		if (getLocationPoint) {
+		if (getLocationPoint && currentCoords.length) {
 			getAddress(currentCoords);
 			setTimeout(() => {
 				map.setCenter(...currentCoords, 15);

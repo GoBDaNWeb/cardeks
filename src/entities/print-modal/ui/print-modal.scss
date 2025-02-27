@@ -1,15 +1,55 @@
 @import '@/shared/styles/mixins';
 
-.print-table {
+.print-item {
 	width: 100%;
+	display: flex;
+	// gap: 20px;
+	padding-bottom: 12px;
+	margin-bottom: 12px;
+	td {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+	.title {
+		@include text-s;
+		border-bottom: 1px solid var(--line-color);
+		padding-bottom: 12px;
+		padding-right: 20px;
+		&:last-child {
+			padding-right: 0;
+		}
+	}
+	.name {
+		@include text-m;
+		padding-right: 20px;
+	}
+	.address {
+		@include text-s;
+		padding-right: 20px;
+	}
+	.fuelList {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		p {
+			@include text-s;
+		}
+	}
+	.card {
+		@include text-s;
+	}
+	.col-1 {
+		width: 50%;
+	}
+	.col-2 {
+		width: 25%;
+	}
+	.col-3 {
+		width: 25%;
+	}
 	thead {
 		tr {
-			display: grid;
-			grid-template-columns: 1fr 0.8fr 0.8fr 0.3fr;
-			gap: 20px;
-			padding-bottom: 12px;
-			margin-bottom: 12px;
-			border-bottom: 1px solid var(--line-color);
 		}
 		th {
 			@include text-s;

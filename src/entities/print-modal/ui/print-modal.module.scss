@@ -47,6 +47,20 @@
 			&::-webkit-scrollbar {
 				width: 5px;
 			}
+			.mapWrapper {
+				position: relative;
+				width: 100%;
+				height: 250px;
+				background: #d3d3d3;
+				.printMap {
+					width: 100%;
+					height: 100%;
+					margin: 0;
+					padding: 0;
+					user-select: none;
+				}
+			}
+
 			.azsList {
 				display: flex;
 				flex-direction: column;
