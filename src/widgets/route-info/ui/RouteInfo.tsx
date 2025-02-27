@@ -36,7 +36,7 @@ export const RouteInfo = () => {
 		dispatch(setSelectedFilter(null));
 		setTimeout(() => {
 			dispatch(setСlearFilters(false));
-		}, 300);
+		}, 0);
 	};
 
 	const handleDetail = (status: boolean) => {

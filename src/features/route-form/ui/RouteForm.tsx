@@ -234,6 +234,7 @@ export const RouteForm: React.FC = () => {
 							handleFocus={() => handleFocus(index)}
 							handleBlur={handleBlur}
 							isSelect={currentPointId && currentPointId?.split('.')[1] == index && isSelectAddress}
+							hasLocation={index === 0}
 						/>
 						{data?.results && dropdownOpen ? (
 							<SearchDropdown

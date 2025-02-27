@@ -10,17 +10,22 @@ import { setSelectedFilter } from '@/widgets/filters';
 import { setActiveObject } from '@/entities/object-info';
 
 import { useGetPointsQuery, useGetTerminalsQuery } from '@/shared/api';
-import { getQueryParams, useIndexedDB, useTypedSelector } from '@/shared/lib';
+import { getPointId, getQueryParams, useIndexedDB, useTypedSelector } from '@/shared/lib';
 import { Feature, IPlacemark } from '@/shared/types';
 
 import { createPoints, getVisibleMarkers, mergeData, usePoint, useRoute } from '../lib';
 import {
 	handleWheel,
 	setCategoryTotals,
+	setCoords,
+	setCurrentCoords,
+	setCurrentPointId,
 	setFixedCenter,
 	setIsUrlBuid,
 	setMapLoading,
 	setPanoramaOpen,
+	setSearch,
+	setSelectAddress,
 	setZoom
 } from '../model';
 
@@ -28,6 +33,8 @@ import s from './map.module.scss';
 
 export const CustomMap = () => {
 	const ymaps = window.ymaps;
+	let geolocation = window.ymaps.geolocation;
+
 	const [features, setFeatures] = useState<Feature[]>([]);
 	const [map, setMap] = useState<null | MapType>(null);
 	const [objectManagerState, setObjectManagerState] = useState<ObjectManager | null>(null);
@@ -42,7 +49,7 @@ export const CustomMap = () => {
 
 	const {
 		mapInfo: { zoom, isWheel, mapType, panorama, panoramaIsOpen, center, mapLoading },
-		routeInfo: { isSelectAddress, isUrlBuild, buildRoute }
+		routeInfo: { isSelectAddress, isUrlBuild, buildRoute, getLocation }
 	} = useTypedSelector(state => state.map);
 
 	const { selectedFilter, filtersIsOpen, clearFilters, filters } = useTypedSelector(
@@ -53,7 +60,6 @@ export const CustomMap = () => {
 		const params = new URLSearchParams(window.location.search);
 		const centerParam = params.get('center');
 		const centerArray = centerParam?.split('-').map(Number);
-		let geolocation = ymaps.geolocation;
 		let map = new ymaps.Map('map', {
 			center: centerArray ? centerArray : [55.686736, 37.440496],
 			zoom
@@ -146,6 +152,22 @@ export const CustomMap = () => {
 		});
 	};
 
+	useEffect(() => {
+		if (getLocation) {
+			geolocation
+				.get({
+					provider: 'browser',
+					mapStateAutoApply: true
+				})
+				.then(function (result) {
+					dispatch(setSelectAddress(true));
+					dispatch(setCurrentPointId(getPointId(0)));
+					//@ts-ignore
+					dispatch(setCurrentCoords([result.geoObjects.position]));
+				});
+		}
+	}, [getLocation]);
+
 	const filter = useCallback(async () => {
 		if (objectManagerState && map) {
 			objectManagerState.removeAll();
@@ -170,6 +192,29 @@ export const CustomMap = () => {
 					filteredDataType,
 					filters.card
 				);
+				const azsPoints = filteredData.filter((marker: Feature) => {
+					return Object.values(marker.fuels).some(value => value === true);
+				});
+				const washingPoints = filteredData.filter((marker: Feature) => marker.types.washing);
+				const tirePoints = filteredData.filter((marker: Feature) => marker.types.tire);
+				dispatch(
+					setCategoryTotals({
+						category: 'azs',
+						total: azsPoints.length
+					})
+				);
+				dispatch(
+					setCategoryTotals({
+						category: 'tire',
+						total: tirePoints.length
+					})
+				);
+				dispatch(
+					setCategoryTotals({
+						category: 'washing',
+						total: washingPoints.length
+					})
+				);
 				objectManagerState.removeAll();
 				objectManagerState.add(filteredData);
 				getVisibleMarkers(map, objectManagerState, dispatch);
@@ -177,6 +222,29 @@ export const CustomMap = () => {
 				objectManagerState.removeAll();
 				objectManagerState.add(filteredDataType);
 				getVisibleMarkers(map, objectManagerState, dispatch);
+				const azsPoints = filteredDataType.filter((marker: Feature) => {
+					return Object.values(marker.fuels).some(value => value === true);
+				});
+				const washingPoints = filteredDataType.filter((marker: Feature) => marker.types.washing);
+				const tirePoints = filteredDataType.filter((marker: Feature) => marker.types.tire);
+				dispatch(
+					setCategoryTotals({
+						category: 'azs',
+						total: azsPoints.length
+					})
+				);
+				dispatch(
+					setCategoryTotals({
+						category: 'tire',
+						total: tirePoints.length
+					})
+				);
+				dispatch(
+					setCategoryTotals({
+						category: 'washing',
+						total: washingPoints.length
+					})
+				);
 			}
 		}
 	}, [
@@ -277,6 +345,7 @@ export const CustomMap = () => {
 		};
 
 		if ((selectedFilter !== null || filtersIsOpen) && !isUrlBuild && !buildRoute) {
+			console.log('filter 1');
 			applyFilters();
 		}
 	}, [filter, map, selectedFilter, isUrlBuild]);
@@ -300,6 +369,7 @@ export const CustomMap = () => {
 			await filter();
 		};
 		if (clearFilters) {
+			console.log('filter 2');
 			applyFilters();
 		}
 	}, [

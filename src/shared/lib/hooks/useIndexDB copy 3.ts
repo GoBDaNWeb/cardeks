@@ -10,8 +10,6 @@ import FilterWorker from '../helpers/filterWorker?worker';
 
 import { db } from './db';
 
-const ymaps = window.ymaps;
-
 // Определение схемы для IndexedDB
 interface AppDB extends DBSchema {
 	points: {
@@ -56,59 +54,25 @@ export const useIndexedDB = () => {
 		filteredData?: Feature[],
 		card?: string
 	): Promise<Feature[]> => {
-		let query = db.points.toCollection();
-		// Фильтрация по видам топлива
+		let query = db.points;
 
-		if (fuels.length > 0) {
-			query = query.filter(item =>
-				fuels.every(f => item.fuels?.[f.value as keyof typeof item.fuels] === true)
+		if (fuels.length) query = query.where('fuels').anyOf(fuels.map(f => f.value));
+		if (featuresList.length) query = query.where('features').anyOf(featuresList.map(f => f.value));
+		if (azsTypes.length) query = query.where('types').anyOf(azsTypes.map(t => t.value));
+		if (gateHeight) query = query.where('filters.gateHeight').above(gateHeight);
+		if (terminal.trim()) query = query.where('terminals').equals(terminal.trim());
+		if (titleFilter?.length)
+			query = query.filter(({ title }) =>
+				titleFilter.some(brand => title.toLowerCase().includes(brand.toLowerCase()))
 			);
-		}
-
-		// Фильтрация по особенностям
-		if (featuresList.length > 0) {
-			query = query.filter(item =>
-				featuresList.every(f => item.features?.[f.value as keyof typeof item.features] === true)
-			);
-		}
-
-		// Фильтрация по типам АЗС
-		if (azsTypes.length > 0) {
-			query = query.filter(item =>
-				azsTypes.some(t => item.types?.[t.value as keyof typeof item.types] === true)
-			);
-		}
-
-		// Фильтрация по высоте ворот
-		if (gateHeight) {
-			query = query.filter(item => (item.filters?.gateHeight ?? 0) > gateHeight);
-		}
-
-		// Фильтрация по терминалу
-		if (terminal.trim()) {
-			const trimmedTerminal = terminal.trim();
-			query = query.filter(item => item.terminals?.includes(trimmedTerminal));
-		}
-
-		// Фильтрация по названию бренда
-		if (titleFilter?.length) {
-			query = query.filter(item =>
-				titleFilter.some(brand => item.title.toLowerCase().includes(brand.toLowerCase()))
-			);
-		}
-		if (addServices.length) {
-			query = query.filter(item => filterObj(item.types, addServices));
-		}
-		// Фильтрация по типу карты
 		if (card) {
-			query = query.filter(item => {
-				if (card === 'Лукойл') {
-					return ['Лукойл', 'Тебойл'].includes(item.title);
-				} else if (card === 'Кардекс') {
-					return !['Лукойл', 'Тебойл'].includes(item.title);
-				}
-				return true;
-			});
+			query = query.filter(({ title }) =>
+				card === 'Лукойл'
+					? ['Лукойл', 'Тебойл'].includes(title)
+					: card === 'Кардекс'
+						? !['Лукойл', 'Тебойл'].includes(title)
+						: true
+			);
 		}
 
 		return await query.toArray();
@@ -139,34 +103,6 @@ export const useIndexedDB = () => {
 		return data;
 	};
 
-	const getAzsOnRoute = async (
-		azsArr?: Feature[],
-		lines: any,
-		threshold: number = 500,
-		firstRouteCoord: number[]
-	): Promise<Feature[]> => {
-		if (!firstRouteCoord || !lines) return [];
-
-		const linesArr = lines.toArray(); // Вызываем один раз!
-		const filteredAzs =
-			azsArr && azsArr.length > 0 ? azsArr : await db.points.filter(el => el.geometry).toArray();
-
-		const mappedFiltered = await Promise.all(
-			filteredAzs
-				.filter(el =>
-					linesArr.some(
-						line => line.geometry.getClosest(el.geometry.coordinates).distance < threshold
-					)
-				)
-				.map(async item => ({
-					...item,
-					distance: ymaps.coordSystem.geo.getDistance(firstRouteCoord, item.geometry.coordinates)
-				}))
-		);
-
-		return mappedFiltered;
-	};
-
 	return {
 		saveData,
 		getAllData,
@@ -174,7 +110,6 @@ export const useIndexedDB = () => {
 		filterDataByType,
 		getBrands,
 		getDataById,
-		isDbReady,
-		getAzsOnRoute
+		isDbReady
 	};
 };

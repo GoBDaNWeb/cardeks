@@ -18,7 +18,7 @@ import {
 	setRouteLength,
 	setRouteTime
 } from '../../model';
-import { createPlacemark, getAzsOnRoute, routeToLineString } from '../helpers';
+import { createPlacemark, routeToLineString } from '../helpers';
 
 interface IUseRouteProps {
 	ymaps: any;
@@ -38,7 +38,7 @@ export const useRoute = ({
 	const [addressesCollection, setAddressesCollection] = useState<string[]>([]);
 	const [routeCoordsState, setRouteCoordsState] = useState<number[][]>([]);
 	const dispatch = useDispatch();
-	const { filterDataByOptions, filterDataByType } = useIndexedDB();
+	const { filterDataByOptions, filterDataByType, getAzsOnRoute } = useIndexedDB();
 	const {
 		routeInfo: { routeCoords, buildRoute, routeIsChanged, pointsOnRoute, isUrlBuild }
 	} = useTypedSelector(state => state.map);
@@ -133,7 +133,7 @@ export const useRoute = ({
 						objectManagerState.removeAll();
 
 						//@ts-ignore
-						const azsOnRoute = await getAzsOnRoute(features, lines, threshold, routesArr[0]);
+						const azsOnRoute = await getAzsOnRoute([], lines, threshold, routesArr[0]);
 						if (azsOnRoute) {
 							// objectManagerState.add(azsOnRoute);
 							dispatch(setPointsOnRoute(azsOnRoute));
@@ -172,7 +172,7 @@ export const useRoute = ({
 							}
 						} else {
 							//@ts-ignore
-							const azsOnRoute = await getAzsOnRoute(features, lines, threshold, routeCoords[0]);
+							const azsOnRoute = await getAzsOnRoute([], lines, threshold, routeCoords[0]);
 							if (azsOnRoute && objectManagerState) {
 								dispatch(setPointsOnRoute(azsOnRoute));
 							}

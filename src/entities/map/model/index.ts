@@ -31,5 +31,7 @@ export {
 	setIsUrlBuid,
 	setIsCursorPoint,
 	setCategoryTotals,
+	setLocation,
+	setCurrentCoords,
 	default as mapReducer
 } from './map.slice';

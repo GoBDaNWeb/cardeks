@@ -6,6 +6,7 @@ import { DBSchema, IDBPDatabase, openDB } from 'idb';
 import { Feature, IList } from '@/shared/types';
 
 import { filterObj } from '../helpers';
+import FilterOptionsWorker from '../helpers/filterOptionsWorder?worker';
 import FilterWorker from '../helpers/filterWorker?worker';
 
 import { db } from './db';
@@ -25,6 +26,7 @@ export const useIndexedDB = () => {
 	const [isDbReady, setIsDbReady] = useState(false);
 	const [typeFilters, setTypeFilters] = useState([]);
 	const workerRef = useRef<Worker | null>(null);
+	const workerOprionsRef = useRef<Worker | null>(null);
 	const [brandsCache, setBrandsCache] = useState<string[] | null>(null);
 
 	useEffect(() => {
@@ -33,7 +35,11 @@ export const useIndexedDB = () => {
 
 	useEffect(() => {
 		workerRef.current = new FilterWorker();
-		return () => workerRef.current?.terminate();
+		workerOprionsRef.current = new FilterOptionsWorker();
+		return () => {
+			workerRef.current?.terminate();
+			workerOprionsRef.current?.terminate();
+		};
 	}, []);
 
 	const saveData = async (data: Feature[]) => {
@@ -56,62 +62,23 @@ export const useIndexedDB = () => {
 		filteredData?: Feature[],
 		card?: string
 	): Promise<Feature[]> => {
-		let query = db.points.toCollection();
-		// Фильтрация по видам топлива
-
-		if (fuels.length > 0) {
-			query = query.filter(item =>
-				fuels.every(f => item.fuels?.[f.value as keyof typeof item.fuels] === true)
-			);
-		}
-
-		// Фильтрация по особенностям
-		if (featuresList.length > 0) {
-			query = query.filter(item =>
-				featuresList.every(f => item.features?.[f.value as keyof typeof item.features] === true)
-			);
-		}
-
-		// Фильтрация по типам АЗС
-		if (azsTypes.length > 0) {
-			query = query.filter(item =>
-				azsTypes.some(t => item.types?.[t.value as keyof typeof item.types] === true)
-			);
-		}
-
-		// Фильтрация по высоте ворот
-		if (gateHeight) {
-			query = query.filter(item => (item.filters?.gateHeight ?? 0) > gateHeight);
-		}
-
-		// Фильтрация по терминалу
-		if (terminal.trim()) {
-			const trimmedTerminal = terminal.trim();
-			query = query.filter(item => item.terminals?.includes(trimmedTerminal));
-		}
-
-		// Фильтрация по названию бренда
-		if (titleFilter?.length) {
-			query = query.filter(item =>
-				titleFilter.some(brand => item.title.toLowerCase().includes(brand.toLowerCase()))
-			);
-		}
-		if (addServices.length) {
-			query = query.filter(item => filterObj(item.types, addServices));
-		}
-		// Фильтрация по типу карты
-		if (card) {
-			query = query.filter(item => {
-				if (card === 'Лукойл') {
-					return ['Лукойл', 'Тебойл'].includes(item.title);
-				} else if (card === 'Кардекс') {
-					return !['Лукойл', 'Тебойл'].includes(item.title);
-				}
-				return true;
+		const data = filteredData || (await getAllData());
+		console.log('fuels', fuels);
+		return new Promise(resolve => {
+			workerOprionsRef.current?.postMessage({
+				data,
+				fuels,
+				featuresList,
+				titleFilter,
+				azsTypes,
+				addServices,
+				gateHeight,
+				terminal,
+				filteredData,
+				card
 			});
-		}
-
-		return await query.toArray();
+			workerOprionsRef.current!.onmessage = event => resolve(event.data);
+		});
 	};
 	const filterDataByType = async (selectedFilter: number): Promise<Feature[]> => {
 		const data = await db.points.toArray();

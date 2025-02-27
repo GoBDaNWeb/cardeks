@@ -31,6 +31,7 @@ interface IRouteInfo {
 	isSelectAddress: boolean;
 	selectedAddress: string;
 	routeCoords: number[][];
+	currentCoords: number[][];
 	currentPointId: string | null;
 	fieldsCount: number;
 	swapPoints: string[];
@@ -46,6 +47,7 @@ interface IRouteInfo {
 	pointsOnRoute: Feature[];
 	isUrlBuild: boolean;
 	isCursorPoint: boolean;
+	getLocation: boolean;
 }
 
 interface IRootState {
@@ -81,6 +83,7 @@ const initialState: IRootState = {
 		isSelectAddress: false,
 		selectedAddress: '',
 		routeCoords: [],
+		currentCoords: [],
 		currentPointId: null,
 		fieldsCount: 2,
 		swapPoints: [],
@@ -95,7 +98,8 @@ const initialState: IRootState = {
 		azsOnRoute: 0,
 		pointsOnRoute: [],
 		isUrlBuild: false,
-		isCursorPoint: false
+		isCursorPoint: false,
+		getLocation: false
 	}
 };
 
@@ -118,6 +122,9 @@ const mapSlice = createSlice({
 			state.mapInfo.mapLoading = action.payload;
 		},
 
+		setLocation(state, action) {
+			state.routeInfo.getLocation = action.payload;
+		},
 		setPointsOnRoute(state, action) {
 			state.routeInfo.pointsOnRoute = action.payload;
 		},
@@ -141,6 +148,9 @@ const mapSlice = createSlice({
 		},
 		setCoords(state, action) {
 			state.routeInfo.routeCoords = action.payload;
+		},
+		setCurrentCoords(state, action) {
+			state.routeInfo.currentCoords = action.payload;
 		},
 		setCurrentPointId(state, action) {
 			state.routeInfo.currentPointId = action.payload;
@@ -256,6 +266,8 @@ export const {
 	setMapLoading,
 	setIsUrlBuid,
 	setIsCursorPoint,
-	setCategoryTotals
+	setCategoryTotals,
+	setLocation,
+	setCurrentCoords
 } = mapSlice.actions;
 export default mapSlice.reducer;

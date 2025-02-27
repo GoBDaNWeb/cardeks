@@ -56,7 +56,7 @@ export const MenuList = () => {
 			dispatch(setSelectedFilter(null));
 			setTimeout(() => {
 				dispatch(setСlearFilters(false));
-			}, 300);
+			}, 0);
 		}
 	};
 

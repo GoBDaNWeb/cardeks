@@ -1,9 +1,12 @@
 import { FC } from 'react';
 import { UseFormRegister } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
 
 import clsx from 'clsx';
 
-import { Button, CloseIcon, Input, OnMapIcon } from '@/shared/ui';
+import { setLocation } from '@/entities/map';
+
+import { Button, CloseIcon, Input, LocationIcon, OnMapIcon } from '@/shared/ui';
 
 import s from './route-input.module.scss';
 
@@ -29,6 +32,7 @@ interface IRouteInput {
 	isSelect: boolean;
 	fields: FieldsType[];
 	register?: UseFormRegister<RouteFormValues>;
+	hasLocation?: boolean;
 }
 
 export const RouteInput: FC<IRouteInput> = ({
@@ -41,10 +45,19 @@ export const RouteInput: FC<IRouteInput> = ({
 	onChange,
 	handleFocus,
 	handleBlur,
-	isSelect
+	isSelect,
+	hasLocation
 }) => {
-	const searchBtnClass = clsx({ [s.active]: isSelect });
+	const dispatch = useDispatch();
 
+	const handleGetLocation = () => {
+		dispatch(setLocation(true));
+		setTimeout(() => {
+			dispatch(setLocation(false));
+		}, 300);
+	};
+
+	const searchBtnClass = clsx({ [s.active]: isSelect });
 	return (
 		<div className={s.routeInput}>
 			<p className={s.letter}>{letter}</p>
@@ -65,6 +78,11 @@ export const RouteInput: FC<IRouteInput> = ({
 				<Button onClick={handleSelectPoint} className={searchBtnClass}>
 					<OnMapIcon />
 				</Button>
+				{hasLocation ? (
+					<Button onClick={handleGetLocation}>
+						<LocationIcon />
+					</Button>
+				) : null}
 			</div>
 		</div>
 	);

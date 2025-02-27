@@ -35,11 +35,13 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IU
 			isSelectAddress,
 			currentPointId,
 			routeCoords,
+			currentCoords,
 			swapPoints,
 			deletePointId,
 			selectedAddress,
 			fieldsCount,
-			isCursorPoint
+			isCursorPoint,
+			getLocation: getLocationPoint
 		}
 	} = useTypedSelector(store => store.map);
 
@@ -151,9 +153,7 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IU
 	}, [currentPointId]);
 
 	useEffect(() => {
-		if (buildSearch) {
-			handleAddPoint(null, false);
-		}
+		handleAddPoint(null, false);
 	}, [buildSearch]);
 
 	useEffect(() => {
@@ -260,7 +260,15 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IU
 			}
 		}
 	}, [isSelectAddress, currentPointId]);
-
+	useEffect(() => {
+		if (getLocationPoint) {
+			getAddress(currentCoords);
+			setTimeout(() => {
+				map.setCenter(...currentCoords, 15);
+			}, 400);
+			dispatch(setSelectAddress(false));
+		}
+	}, [getLocationPoint, currentCoords]);
 	useEffect(() => {
 		if (activeMenu !== 'route' || mobileActiveMenu !== 'route') {
 			handleClearPoints();

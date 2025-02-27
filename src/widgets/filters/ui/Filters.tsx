@@ -46,7 +46,7 @@ export const Filters = () => {
 		dispatch(setSelectedFilter(null));
 		setTimeout(() => {
 			dispatch(setСlearFilters(false));
-		}, 300);
+		}, 0);
 	};
 
 	useEffect(() => {
@@ -100,12 +100,11 @@ export const Filters = () => {
 	const totalFilters = () => {
 		const gate = filters.gateHeight ? 1 : 0;
 		const teminal = filters.terminal.length ? 1 : 0;
-
+		const addServices = filters.addServices.length ? filters.addServices.length - 1 : 0;
 		return (
 			filters.fuelFilters.length +
 			filters.brandTitles.length +
-			filters.addServices.length -
-			1 +
+			addServices +
 			filters.features.length +
 			teminal +
 			gate

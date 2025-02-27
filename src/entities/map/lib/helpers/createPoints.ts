@@ -16,6 +16,32 @@ export const createPoints = (arr: any) => {
 		const azs = options.filter(option => {
 			return option === 1;
 		});
+		const fuels = {
+			DT: item[2] === 0 ? false : true,
+			DTP: item[3] === 0 ? false : true,
+			Ai92: item[4] === 0 ? false : true,
+			Ai92P: item[5] === 0 ? false : true,
+			Ai95: item[6] === 0 ? false : true,
+			Ai95P: item[7] === 0 ? false : true,
+			Ai98: item[8] === 0 ? false : true,
+			Ai100: item[9] === 0 ? false : true,
+			AdBlue: item[10] === 0 ? false : true,
+			Gaz: item[11] === 0 ? false : true,
+			Metan: item[12] === 0 ? false : true
+		};
+		const features = {
+			abilityPPay: item[15] === 0 ? false : true,
+			canManageCards: item[16] === 0 ? false : true,
+			ppayBarcode: item[17] === 0 ? false : true
+		};
+		const types = {
+			washing: item[13] === 0 ? false : true,
+			tire: item[14] === 0 ? false : true,
+			azs: azs.length > 0
+		};
+		const filteredFuels = Object.keys(fuels).filter(key => fuels[key]);
+		const filteredFeatures = Object.keys(features).filter(key => features[key]);
+		const filteredTypes = Object.keys(types).filter(key => types[key]);
 		const pin = () => {
 			if (item[1].toLowerCase().includes('лукойл')) {
 				return '/images/pins/8.png';
@@ -74,6 +100,9 @@ export const createPoints = (arr: any) => {
 				iconImageSize: [35, 48],
 				iconImageOffset: [-16, -38]
 			},
+			fuelTypes: filteredFuels,
+			featureKeys: filteredFeatures,
+			typeKeys: filteredTypes,
 			fuels: {
 				DT: item[2] === 0 ? false : true,
 				DTP: item[3] === 0 ? false : true,
