@@ -41,7 +41,8 @@
 		.printModalContent {
 			padding: 20px 32px;
 			padding-top: 0;
-			overflow: auto;
+			overflow-y: auto;
+			overflow-x: hidden;
 			scrollbar-width: thin;
 			scrollbar-color: var(--accent-color) #ffffff;
 			&::-webkit-scrollbar {
@@ -50,10 +51,12 @@
 			.mapWrapper {
 				position: relative;
 				width: 100%;
+				overflow: hidden;
+
 				height: 250px;
 				background: #d3d3d3;
 				.printMap {
-					width: 100%;
+					width: 125%;
 					height: 100%;
 					margin: 0;
 					padding: 0;

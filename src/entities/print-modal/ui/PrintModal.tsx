@@ -63,7 +63,7 @@ export const PrintModal = () => {
 			clusterIconColor: '#2d9bef'
 		});
 		let map = new ymaps.Map('print_map', {
-			center: fixedCenter,
+			center: fixedCenter.length ? fixedCenter : [55.686736, 37.440496],
 			zoom: zoom
 		});
 		setMap(map);
