@@ -72,10 +72,11 @@ export const useRoute = ({
 			if (multiRouteRef.current) {
 				map.geoObjects.remove(multiRouteRef.current);
 			}
-			let lineGeoObjects;
-			//@ts-ignore
-			let lines;
+
 			if (condition) {
+				let lineGeoObjects;
+				//@ts-ignore
+				let lines;
 				let multiRoute = new ymaps.multiRouter.MultiRoute(
 					{
 						referencePoints: routesArr,
@@ -132,14 +133,8 @@ export const useRoute = ({
 						dispatch(setRouteAddresses(addressesCollection));
 						objectManagerState.removeAll();
 
-						//@ts-ignore
-						const azsOnRoute = await getAzsOnRoute([], lines, threshold, routesArr[0]);
-						if (azsOnRoute) {
-							// objectManagerState.add(azsOnRoute);
-							dispatch(setPointsOnRoute(azsOnRoute));
-						}
 						setRouteCoordsState([...routesArr]);
-
+						// dispatch(setCoords(routesArr));
 						const geocodePromises = routesArr.map((coord: number[]) => {
 							return ymaps.geocode(coord).then((res: any) => {
 								const firstGeoObject = res.geoObjects.get(0);
@@ -156,6 +151,25 @@ export const useRoute = ({
 							map.geoObjects.add(myPlacemark);
 							setPointCollection(prevCollection => [...prevCollection, myPlacemark]);
 						});
+						if (withFilters) {
+							const newFilteredPoints = await filtered();
+							const azsOnRoute = await getAzsOnRoute(
+								newFilteredPoints,
+								//@ts-ignore
+								lines,
+								threshold,
+								routesArr[0]
+							);
+							if (azsOnRoute && objectManagerState) {
+								dispatch(setPointsOnRoute(azsOnRoute));
+							}
+						} else {
+							//@ts-ignore
+							const azsOnRoute = await getAzsOnRoute([], lines, threshold, routeCoords[0]);
+							if (azsOnRoute && objectManagerState) {
+								dispatch(setPointsOnRoute(azsOnRoute));
+							}
+						}
 					} else {
 						if (withFilters) {
 							const newFilteredPoints = await filtered();

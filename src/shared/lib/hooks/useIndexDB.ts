@@ -146,7 +146,6 @@ export const useIndexedDB = () => {
 		firstRouteCoord: number[]
 	): Promise<Feature[]> => {
 		if (!firstRouteCoord || !lines) return [];
-
 		const linesArr = lines.toArray(); // Вызываем один раз!
 		const filteredAzs =
 			azsArr && azsArr.length > 0 ? azsArr : await db.points.filter(el => el.geometry).toArray();

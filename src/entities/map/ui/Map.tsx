@@ -297,7 +297,8 @@ export const CustomMap = () => {
 					};
 					return newObject;
 				});
-				const azsPoints = mappedAzsPoints.filter((marker: Feature) => {
+
+				const azsPoints = features.filter((marker: Feature) => {
 					return Object.values(marker.fuels).some(value => value === true);
 				});
 				const washingPoints = features.filter((marker: Feature) => marker.types.washing);
@@ -348,7 +349,6 @@ export const CustomMap = () => {
 		};
 
 		if ((selectedFilter !== null || filtersIsOpen) && !isUrlBuild && !buildRoute) {
-			console.log('filter 1');
 			applyFilters();
 		}
 	}, [filter, map, selectedFilter, isUrlBuild]);
@@ -372,7 +372,6 @@ export const CustomMap = () => {
 			await filter();
 		};
 		if (clearFilters) {
-			console.log('filter 2');
 			applyFilters();
 		}
 	}, [

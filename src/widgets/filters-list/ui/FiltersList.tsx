@@ -195,6 +195,7 @@ export const FiltersList = () => {
 	useEffect(() => {
 		if (filtersIsOpen && selectedFilter !== prevSelectedFilter.current) {
 			dispatch(setFeatures([]));
+			dispatch(setFuelFilters([]));
 			dispatch(setAddServices([]));
 			dispatch(setGateHeight(null));
 			setServices([]);

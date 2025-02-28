@@ -44,7 +44,14 @@ export const RouteForm: React.FC = () => {
 
 	const {
 		searchInfo: { searchValue, buildSearch },
-		routeInfo: { selectedAddress, currentPointId, changeRoute, isSelectAddress }
+		routeInfo: {
+			selectedAddress,
+			currentPointId,
+			changeRoute,
+			isSelectAddress,
+			routeAddresses,
+			isUrlBuild
+		}
 	} = useTypedSelector(store => store.map);
 	const { activeMenu } = useTypedSelector(store => store.menu);
 	const { activeMenu: mobileActiveMenu } = useTypedSelector(store => store.mobileMenu);
@@ -153,6 +160,14 @@ export const RouteForm: React.FC = () => {
 	};
 
 	useEffect(() => {
+		if (isUrlBuild && routeAddresses.length) {
+			routeAddresses.forEach((address: string, index: number) => {
+				setValue(getPointId(index), address);
+			});
+		}
+	}, [routeAddresses, isUrlBuild]);
+
+	useEffect(() => {
 		setSearchData(currentInputValue);
 		dispatch(setAddress(currentInputValue));
 	}, [debounced]);
@@ -168,11 +183,13 @@ export const RouteForm: React.FC = () => {
 			handleClearInputs();
 			dispatch(setFieldsCount(2));
 			dispatch(setIsCursorPoint(false));
-			setTimeout(() => {
-				dispatch(setCoords([]));
-			}, 300);
+			if (!isUrlBuild) {
+				setTimeout(() => {
+					dispatch(setCoords([]));
+				}, 300);
+			}
 		}
-	}, [activeMenu, mobileActiveMenu]);
+	}, [activeMenu, mobileActiveMenu, isUrlBuild]);
 
 	useEffect(() => {
 		if (isSuccess) {
