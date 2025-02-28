@@ -86,9 +86,11 @@ export const CustomMap = () => {
 		map.controls.remove('searchControl');
 		map.controls.remove('geolocationControl');
 		map.controls.remove('trafficControl');
+		map.controls.remove('fullscreenControl');
 		map.controls.remove('typeSelector');
 		map.controls.remove('rulerControl');
 		map.controls.remove('zoomControl');
+		map.controls.remove('expandControl');
 		map.controls.add('rulerControl', {
 			float: 'none',
 			position: {
@@ -282,21 +284,21 @@ export const CustomMap = () => {
 			dispatch(setMapLoading(false));
 
 			if (!isUrlBuild && !buildRoute) {
-				const mappedAzsPoints = features.map((marker: Feature) => {
-					const newObject = {
-						...marker,
-						options: Object.keys(marker.types).reduce(
-							(acc, key) => {
-								if (key !== 'washing' && key !== 'tire') {
-									acc[key] = marker.types[key];
-								}
-								return acc;
-							},
-							{} as Record<string, number | boolean>
-						)
-					};
-					return newObject;
-				});
+				// const mappedAzsPoints = features.map((marker: Feature) => {
+				// 	const newObject = {
+				// 		...marker,
+				// 		options: Object.keys(marker.types).reduce(
+				// 			(acc, key) => {
+				// 				if (key !== 'washing' && key !== 'tire') {
+				// 					acc[key] = marker.types[key];
+				// 				}
+				// 				return acc;
+				// 			},
+				// 			{} as Record<string, number | boolean>
+				// 		)
+				// 	};
+				// 	return newObject;
+				// });
 
 				const azsPoints = features.filter((marker: Feature) => {
 					return Object.values(marker.fuels).some(value => value === true);

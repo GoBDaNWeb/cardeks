@@ -149,7 +149,6 @@ export const useIndexedDB = () => {
 		const linesArr = lines.toArray(); // Вызываем один раз!
 		const filteredAzs =
 			azsArr && azsArr.length > 0 ? azsArr : await db.points.filter(el => el.geometry).toArray();
-
 		const mappedFiltered = await Promise.all(
 			filteredAzs
 				.filter(el =>
