@@ -64,7 +64,6 @@ export const FiltersList = () => {
 		activeCard: 0,
 		dataCards: [] as string[]
 	});
-
 	const [services, setServices] = useState<string[]>(addServicesParam ? addServicesParam : []);
 	const prevSelectedFilter = useRef(selectedFilter);
 	const dispatch = useDispatch();
@@ -258,9 +257,14 @@ export const FiltersList = () => {
 	// Сброс фильтров при открытии/закрытии
 	useEffect(() => {
 		updateBrandState({ inputBrandValue: '' });
+		updateCardState({ inputCardValue: '' });
 		if (brandState.dataBrands) {
 			updateBrandState({ filteredBrands: brandState.dataBrands });
 			updateBrandState({ currentBrands: brandState.dataBrands });
+		}
+		if (cardState.dataCards) {
+			updateCardState({ filteredCards: cardState.dataCards });
+			updateCardState({ currentCards: cardState.dataCards });
 		}
 	}, [filtersIsOpen]);
 

@@ -53,66 +53,41 @@ export const useIndexedDB = () => {
 		addServices: string[] = [],
 		gateHeight?: number,
 		terminal: string = '',
-		filteredData?: Feature[],
-		card?: string
+		card?: string,
+		selectedFilter: number
 	): Promise<Feature[]> => {
 		let query = db.points.toCollection();
-		// Фильтрация по видам топлива
-
-		if (fuels.length > 0) {
-			query = query.filter(item =>
-				fuels.every(f => item.fuels?.[f.value as keyof typeof item.fuels] === true)
-			);
-		}
-
-		// Фильтрация по особенностям
-		if (featuresList.length > 0) {
-			query = query.filter(item =>
-				featuresList.every(f => item.features?.[f.value as keyof typeof item.features] === true)
-			);
-		}
-
-		// Фильтрация по типам АЗС
-		if (azsTypes.length > 0) {
-			query = query.filter(item =>
-				azsTypes.some(t => item.types?.[t.value as keyof typeof item.types] === true)
-			);
-		}
-
-		// Фильтрация по высоте ворот
-		if (gateHeight) {
-			query = query.filter(item => (item.filters?.gateHeight ?? 0) > gateHeight);
-		}
-
-		// Фильтрация по терминалу
-		if (terminal.trim()) {
-			const trimmedTerminal = terminal.trim();
-			query = query.filter(item => item.terminals?.includes(trimmedTerminal));
-		}
-
-		// Фильтрация по названию бренда
-		if (titleFilter?.length) {
-			query = query.filter(item =>
-				titleFilter.some(brand => item.title.toLowerCase().includes(brand.toLowerCase()))
-			);
-		}
-		if (addServices.length) {
-			query = query.filter(item => filterObj(item.types, addServices));
-		}
-		// Фильтрация по типу карты
-		if (card) {
+		if (selectedFilter !== null) {
 			query = query.filter(item => {
-				if (card === 'Лукойл') {
-					return ['Лукойл', 'Тебойл'].includes(item.title);
-				} else if (card === 'Кардекс') {
-					return !['Лукойл', 'Тебойл'].includes(item.title);
-				}
+				if (selectedFilter === 0) return item.types?.azs;
+				if (selectedFilter === 1) return item.types?.tire;
+				if (selectedFilter === 2) return item.types?.washing;
 				return true;
 			});
 		}
 
+		query = query.filter(
+			({ types, features, title, fuels: featureFuels, filters, terminals }) =>
+				(fuels.length === 0 || fuels.every(fuel => featureFuels?.[fuel.value])) &&
+				(featuresList.length === 0 || featuresList.every(f => features?.[f.value])) &&
+				(azsTypes.length === 0 || azsTypes.some(type => types?.[type.value])) &&
+				(addServices.length === 0 || filterObj(types, addServices)) &&
+				(!gateHeight || (filters?.gateHeight ?? 0) > gateHeight) &&
+				(!terminal.trim() || terminals?.some(t => t.trim() === terminal.trim())) &&
+				(!titleFilter?.length ||
+					titleFilter.some(brand => title.toLowerCase().includes(brand.toLowerCase()))) &&
+				(!card ||
+					card.length === 0 ||
+					(card === 'Лукойл'
+						? ['Лукойл', 'Тебойл'].includes(title)
+						: card === 'Кардекс'
+							? !['Лукойл', 'Тебойл'].includes(title)
+							: true))
+		);
+
 		return await query.toArray();
 	};
+
 	const filterDataByType = async (selectedFilter: number): Promise<Feature[]> => {
 		const data = await db.points.toArray();
 		const promise = new Promise(resolve => {

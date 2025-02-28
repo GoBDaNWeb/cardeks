@@ -38,7 +38,7 @@ export const useRoute = ({
 	const [addressesCollection, setAddressesCollection] = useState<string[]>([]);
 	const [routeCoordsState, setRouteCoordsState] = useState<number[][]>([]);
 	const dispatch = useDispatch();
-	const { filterDataByOptions, filterDataByType, getAzsOnRoute } = useIndexedDB();
+	const { filterDataByOptions, getAzsOnRoute } = useIndexedDB();
 	const {
 		routeInfo: { routeCoords, buildRoute, routeIsChanged, pointsOnRoute, isUrlBuild }
 	} = useTypedSelector(state => state.map);
@@ -49,7 +49,6 @@ export const useRoute = ({
 	const multiRouteRef = useRef<any>(null);
 
 	const filtered = async () => {
-		const filteredDataType = await filterDataByType(selectedFilter);
 		const filteredData = await filterDataByOptions(
 			filters.fuelFilters,
 			filters.features,
@@ -58,8 +57,8 @@ export const useRoute = ({
 			filters.addServices,
 			filters.gateHeight,
 			filters.terminal,
-			filteredDataType,
-			filters.card
+			filters.card,
+			selectedFilter
 		);
 		return filteredData;
 	};

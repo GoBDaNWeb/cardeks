@@ -176,81 +176,44 @@ export const CustomMap = () => {
 	const filter = useCallback(async () => {
 		if (objectManagerState && map) {
 			objectManagerState.removeAll();
-			const filteredDataType = await filterDataByType(selectedFilter);
-			const hasActiveFilters =
-				filters.features.length > 0 ||
-				filters.fuelFilters.length > 0 ||
-				filters.brandTitles.length > 0 ||
-				filters.addServices.length > 0 ||
-				filters.gateHeight ||
-				filters.terminal.length > 0 ||
-				filters.card.length;
-			if (hasActiveFilters) {
-				const filteredData = await filterDataByOptions(
-					filters.fuelFilters,
-					filters.features,
-					filters.brandTitles,
-					[],
-					filters.addServices,
-					filters.gateHeight,
-					filters.terminal,
-					filteredDataType,
-					filters.card
-				);
-				const azsPoints = filteredData.filter((marker: Feature) => {
-					return Object.values(marker.fuels).some(value => value === true);
-				});
-				const washingPoints = filteredData.filter((marker: Feature) => marker.types.washing);
-				const tirePoints = filteredData.filter((marker: Feature) => marker.types.tire);
-				dispatch(
-					setCategoryTotals({
-						category: 'azs',
-						total: azsPoints.length
-					})
-				);
-				dispatch(
-					setCategoryTotals({
-						category: 'tire',
-						total: tirePoints.length
-					})
-				);
-				dispatch(
-					setCategoryTotals({
-						category: 'washing',
-						total: washingPoints.length
-					})
-				);
-				objectManagerState.removeAll();
-				objectManagerState.add(filteredData);
-				getVisibleMarkers(map, objectManagerState, dispatch);
-			} else {
-				objectManagerState.removeAll();
-				objectManagerState.add(filteredDataType);
-				getVisibleMarkers(map, objectManagerState, dispatch);
-				const azsPoints = filteredDataType.filter((marker: Feature) => {
-					return Object.values(marker.fuels).some(value => value === true);
-				});
-				const washingPoints = filteredDataType.filter((marker: Feature) => marker.types.washing);
-				const tirePoints = filteredDataType.filter((marker: Feature) => marker.types.tire);
-				dispatch(
-					setCategoryTotals({
-						category: 'azs',
-						total: azsPoints.length
-					})
-				);
-				dispatch(
-					setCategoryTotals({
-						category: 'tire',
-						total: tirePoints.length
-					})
-				);
-				dispatch(
-					setCategoryTotals({
-						category: 'washing',
-						total: washingPoints.length
-					})
-				);
-			}
+
+			const filteredData = await filterDataByOptions(
+				filters.fuelFilters,
+				filters.features,
+				filters.brandTitles,
+				[],
+				filters.addServices,
+				filters.gateHeight,
+				filters.terminal,
+				filters.card,
+				selectedFilter
+			);
+			const azsPoints = filteredData.filter((marker: Feature) => {
+				return Object.values(marker.fuels).some(value => value === true);
+			});
+			const washingPoints = filteredData.filter((marker: Feature) => marker.types.washing);
+			const tirePoints = filteredData.filter((marker: Feature) => marker.types.tire);
+			dispatch(
+				setCategoryTotals({
+					category: 'azs',
+					total: azsPoints.length
+				})
+			);
+			dispatch(
+				setCategoryTotals({
+					category: 'tire',
+					total: tirePoints.length
+				})
+			);
+			dispatch(
+				setCategoryTotals({
+					category: 'washing',
+					total: washingPoints.length
+				})
+			);
+			objectManagerState.removeAll();
+			objectManagerState.add(filteredData);
+			getVisibleMarkers(map, objectManagerState, dispatch);
 		}
 	}, [
 		objectManagerState,
