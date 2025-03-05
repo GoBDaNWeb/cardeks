@@ -60,6 +60,9 @@ export interface Feature {
 	features: {
 		[key: string]: boolean | number;
 	};
+	addittional: {
+		[key: string]: boolean | number;
+	};
 	distance?: number;
 	address?: string;
 }

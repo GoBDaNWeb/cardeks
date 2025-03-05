@@ -82,8 +82,8 @@ export const createPoints = (arr: any) => {
 			id: item[0],
 			geometry: { type: 'Point', coordinates: [item[18], item[19]] },
 			title: item[1],
-			address: item[21],
-			terminals: item[22],
+			address: item[22],
+			terminals: item[23],
 			properties: {
 				hintContent: `<div class='my-hint'>${item[1]}</div>
 				<div>${azs.length > 0 ? 'АЗС' : ''}  ${item[13] === 0 ? '' : 'Мойка  '} ${item[14] === 0 ? '' : 'Шиномонтаж'}</div>`
@@ -125,6 +125,9 @@ export const createPoints = (arr: any) => {
 				abilityPPay: item[15] === 0 ? false : true,
 				canManageCards: item[16] === 0 ? false : true,
 				ppayBarcode: item[17] === 0 ? false : true
+			},
+			addittional: {
+				relatedProducts: item[21] === 0 ? false : true
 			}
 		};
 		return newObj;

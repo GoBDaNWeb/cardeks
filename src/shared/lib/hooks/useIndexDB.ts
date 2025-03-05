@@ -6,7 +6,6 @@ import { DBSchema, IDBPDatabase, openDB } from 'idb';
 import { Feature, IList } from '@/shared/types';
 
 import { filterObj } from '../helpers';
-import FilterWorker from '../helpers/filterWorker?worker';
 
 import { db } from './db';
 
@@ -24,16 +23,10 @@ const cache = new Map<string, Feature>();
 export const useIndexedDB = () => {
 	const [isDbReady, setIsDbReady] = useState(false);
 	const [typeFilters, setTypeFilters] = useState([]);
-	const workerRef = useRef<Worker | null>(null);
 	const [brandsCache, setBrandsCache] = useState<string[] | null>(null);
 
 	useEffect(() => {
 		setIsDbReady(true);
-	}, []);
-
-	useEffect(() => {
-		workerRef.current = new FilterWorker();
-		return () => workerRef.current?.terminate();
 	}, []);
 
 	const saveData = async (data: Feature[]) => {
@@ -88,16 +81,6 @@ export const useIndexedDB = () => {
 		return await query.toArray();
 	};
 
-	const filterDataByType = async (selectedFilter: number): Promise<Feature[]> => {
-		const data = await db.points.toArray();
-		const promise = new Promise(resolve => {
-			workerRef.current?.postMessage({ data, selectedFilter });
-			workerRef.current!.onmessage = event => resolve(event.data);
-		});
-		setTypeFilters(await promise);
-		return promise;
-	};
-
 	const getBrands = async (): Promise<string[]> => {
 		if (brandsCache) return brandsCache;
 		const uniqueTitles = await db.points.orderBy('title').uniqueKeys();
@@ -144,7 +127,6 @@ export const useIndexedDB = () => {
 		saveData,
 		getAllData,
 		filterDataByOptions,
-		filterDataByType,
 		getBrands,
 		getDataById,
 		isDbReady,

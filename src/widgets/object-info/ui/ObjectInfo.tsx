@@ -60,6 +60,7 @@ export const ObjectInfo = () => {
 				const filterTerminal = data.data.find((item: any) => {
 					return item[0] === objectId;
 				});
+				console.log('currentAzs', currentAzs);
 				if (filterTerminal) {
 					setTerminal(filterTerminal);
 				}
@@ -148,6 +149,12 @@ export const ObjectInfo = () => {
 						) : null}
 					</p>
 				</div>
+				{azsItem && azsItem.addittional.relatedProducts ? (
+					<div className={s.infoItem}>
+						<h6>Дополнительно</h6>
+						<p> Сопутствующие товары</p>
+					</div>
+				) : null}
 				{terminal && terminal[2].length ? (
 					<div className={s.infoItem}>
 						<h6>Терминалы</h6>

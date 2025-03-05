@@ -42,7 +42,7 @@ export const CustomMap = () => {
 	const { selectedFilterParam } = getQueryParams();
 
 	const dispatch = useDispatch();
-	const { saveData, getAllData, filterDataByType, filterDataByOptions } = useIndexedDB();
+	const { saveData, getAllData, filterDataByOptions } = useIndexedDB();
 
 	const { data, isLoading } = useGetPointsQuery();
 	const { data: terminalsList, isLoading: isLoadingTerminal } = useGetTerminalsQuery();
