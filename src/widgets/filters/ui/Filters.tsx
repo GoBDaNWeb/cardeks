@@ -55,7 +55,7 @@ export const Filters = () => {
 		}
 	}, [filtersIsOpen]);
 	useEffect(() => {
-		if (mobileActiveMenu !== null) {
+		if (mobileActiveMenu !== null && mobileActiveMenu !== 'filters') {
 			setActiveTab(null);
 			dispatch(setOpenFilters(false));
 		}
@@ -73,7 +73,10 @@ export const Filters = () => {
 	const filtersClass = clsx(s.filters, {
 		[s.left]: activeMenu === 'route',
 		[s.routeFilterActive]: filterActive || filtersIsOpen,
-		[s.hide]: (routeIsBuilded && activeMenu === 'route') || mobileActiveMenu !== null || changeRoute
+		[s.hide]:
+			(routeIsBuilded && activeMenu === 'route') ||
+			(mobileActiveMenu !== 'filters' && mobileActiveMenu !== null) ||
+			changeRoute
 	});
 
 	const filterTabs = [

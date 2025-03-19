@@ -43,6 +43,7 @@ export const ObjectsList = () => {
 	const handleClose = () => {
 		dispatch(clearActiveMenu());
 		dispatch(setActiveMenu(null));
+		dispatch(setActiveMenuMob(null));
 	};
 
 	const loadMore = () => {

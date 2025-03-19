@@ -123,6 +123,12 @@ export const AZSFilters: FC<IFilters> = ({ withoutServices, handleAddServices, s
 									{service.title}
 								</Chip>
 							))}
+							<Chip
+							// isActive={services?.includes(service.value)}
+							// onClick={() => handleAddServices?.(service.value)}
+							>
+								Сопутствующие товары
+							</Chip>
 						</div>
 					</div>
 					{services?.includes('washing') ? <WashFilters withoutServices /> : null}

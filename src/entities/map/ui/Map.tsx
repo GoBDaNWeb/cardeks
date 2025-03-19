@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Loader from 'react-js-loader';
 import { useDispatch } from 'react-redux';
 
@@ -40,7 +40,8 @@ export const CustomMap = () => {
 	const [objectManagerState, setObjectManagerState] = useState<ObjectManager | null>(null);
 	const [pointCollection, setPointCollection] = useState<IPlacemark[]>([]);
 	const { selectedFilterParam } = getQueryParams();
-
+	const previousObjectRef = useRef(null);
+	const previousOptionsRef = useRef(null);
 	const dispatch = useDispatch();
 	const { saveData, getAllData, filterDataByOptions } = useIndexedDB();
 
@@ -55,6 +56,7 @@ export const CustomMap = () => {
 	const { selectedFilter, filtersIsOpen, clearFilters, filters } = useTypedSelector(
 		state => state.filters
 	);
+	const { objectId: currenctObjectId } = useTypedSelector(state => state.objectInfo);
 
 	const init = () => {
 		const params = new URLSearchParams(window.location.search);
@@ -106,6 +108,7 @@ export const CustomMap = () => {
 		map.geoObjects.events.add('click', function (e) {
 			dispatch(setActiveObject(e.get('objectId')));
 		});
+
 		const GeolocationButtonLayout = ymaps.templateLayoutFactory.createClass(
 			'<button class="custom-geolocation-button"></button>',
 			{
@@ -228,6 +231,103 @@ export const CustomMap = () => {
 	]);
 
 	useEffect(() => {
+		if (objectManagerState && map) {
+			//@ts-ignore
+			objectManagerState.objects.overlays.events.add('click', function (e) {
+				const objectId = e.get('objectId');
+				const targetObject = objectManagerState.objects.getById(objectId);
+
+				if (!targetObject) return;
+				//@ts-ignore
+				if (targetObject.isDisabled) return;
+				//@ts-ignore
+				if (previousObjectRef.current && previousObjectRef.current.id !== objectId) {
+					const restoredObject = JSON.parse(JSON.stringify(previousObjectRef.current));
+					//@ts-ignore
+					restoredObject.options = { ...previousOptionsRef.current };
+
+					objectManagerState.remove(previousObjectRef.current);
+					setTimeout(() => {
+						objectManagerState.add(restoredObject);
+					}, 10);
+				}
+
+				previousObjectRef.current = JSON.parse(JSON.stringify(targetObject));
+				//@ts-ignore
+				previousOptionsRef.current = { ...targetObject.options };
+
+				const newObject = JSON.parse(JSON.stringify(targetObject));
+				newObject.options.iconImageHref = newObject.options.iconImageHref.replace(
+					/(\.png)$/,
+					'r$1'
+				);
+				newObject.options.iconImageSize = [45, 65];
+				newObject.options.iconImageOffset = [-20, -53];
+				newObject.isDisabled = true;
+
+				objectManagerState.remove(targetObject);
+				setTimeout(() => {
+					objectManagerState.add(newObject);
+				}, 0);
+			});
+			if (currenctObjectId === null && previousObjectRef.current) {
+				const restoredObject = JSON.parse(JSON.stringify(previousObjectRef.current));
+				//@ts-ignore
+				restoredObject.options = { ...previousOptionsRef.current };
+
+				objectManagerState.remove(previousObjectRef.current);
+				setTimeout(() => {
+					objectManagerState.add(restoredObject);
+				}, 10);
+
+				previousObjectRef.current = null;
+				previousOptionsRef.current = null;
+			}
+
+			if (currenctObjectId !== null) {
+				const selectedObject = objectManagerState.objects.getById(currenctObjectId);
+
+				if (selectedObject) {
+					if (previousObjectRef.current && previousObjectRef.current.id !== currenctObjectId) {
+						const restoredObject = JSON.parse(JSON.stringify(previousObjectRef.current));
+						//@ts-ignore
+						restoredObject.options = { ...previousOptionsRef.current };
+
+						objectManagerState.remove(previousObjectRef.current);
+						setTimeout(() => {
+							objectManagerState.add(restoredObject);
+						}, 10);
+					}
+
+					const updatedObject = JSON.parse(JSON.stringify(selectedObject));
+					updatedObject.options.iconImageHref = updatedObject.options.iconImageHref.replace(
+						/(\.png)$/,
+						'r$1'
+					);
+					updatedObject.options.iconImageSize = [45, 65];
+					updatedObject.options.iconImageOffset = [-20, -53];
+
+					objectManagerState.remove(selectedObject);
+					setTimeout(() => {
+						objectManagerState.add(updatedObject);
+					}, 0);
+
+					previousObjectRef.current = JSON.parse(JSON.stringify(selectedObject));
+					//@ts-ignore
+					previousOptionsRef.current = { ...selectedObject.options };
+				}
+			}
+		}
+
+		return () => {
+			if (objectManagerState) {
+				//@ts-ignore
+				objectManagerState.objects.overlays.events.remove('click');
+			}
+		};
+	}, [objectManagerState, map, currenctObjectId]);
+
+	useEffect(() => {
 		if (ymaps) {
 			ymaps.ready(init);
 			if (window.location.search.includes('routes')) {
@@ -242,27 +342,13 @@ export const CustomMap = () => {
 		};
 
 		if (!isLoading && map && features.length > 0 && objectManagerState) {
-			map.geoObjects.add(objectManagerState);
 			objectManagerState.add(features);
+
+			map.geoObjects.add(objectManagerState);
+
 			dispatch(setMapLoading(false));
 
 			if (!isUrlBuild && !buildRoute) {
-				// const mappedAzsPoints = features.map((marker: Feature) => {
-				// 	const newObject = {
-				// 		...marker,
-				// 		options: Object.keys(marker.types).reduce(
-				// 			(acc, key) => {
-				// 				if (key !== 'washing' && key !== 'tire') {
-				// 					acc[key] = marker.types[key];
-				// 				}
-				// 				return acc;
-				// 			},
-				// 			{} as Record<string, number | boolean>
-				// 		)
-				// 	};
-				// 	return newObject;
-				// });
-
 				const azsPoints = features.filter((marker: Feature) => {
 					return Object.values(marker.fuels).some(value => value === true);
 				});

@@ -49,7 +49,7 @@ export const Layout: FC<PropsWithChildren> = ({ children }) => {
 				<ObjectsList />
 				<ObjectInfo />
 				<RouteBuild />
-				<RouteFiltersList />
+				{/* <RouteFiltersList /> */}
 				<SettingsMapMenu />
 				<RouteInfo />
 				<MenuList />

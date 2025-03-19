@@ -52,7 +52,6 @@ export const ObjectInfo = () => {
 
 		dispatch(setActiveObject(null));
 	};
-
 	useEffect(() => {
 		const fetch = async () => {
 			if (objectId && !objectId.includes('__cluster__')) {
@@ -60,7 +59,6 @@ export const ObjectInfo = () => {
 				const filterTerminal = data.data.find((item: any) => {
 					return item[0] === objectId;
 				});
-				console.log('currentAzs', currentAzs);
 				if (filterTerminal) {
 					setTerminal(filterTerminal);
 				}
@@ -83,7 +81,16 @@ export const ObjectInfo = () => {
 		<div className={objectInfoClass}>
 			<div className={s.objectInfoTop}>
 				<div className={s.titleWrapper}>
-					<p>{azsItem?.title}</p>
+					<div className={s.title}>
+						<p>{azsItem?.title}</p>
+
+						<a
+							href={`https://yandex.ru/maps/?rtext=${azsItem?.geometry.coordinates.join(',')}&rtt=mt`}
+							target='_blank'
+						>
+							Открыть на Я.Картах
+						</a>
+					</div>
 
 					<Button onClick={() => handleClose()}>
 						<CloseIcon />
@@ -149,7 +156,7 @@ export const ObjectInfo = () => {
 						) : null}
 					</p>
 				</div>
-				{azsItem && azsItem.addittional.relatedProducts ? (
+				{azsItem && azsItem.addittional && azsItem.addittional.relatedProducts ? (
 					<div className={s.infoItem}>
 						<h6>Дополнительно</h6>
 						<p> Сопутствующие товары</p>

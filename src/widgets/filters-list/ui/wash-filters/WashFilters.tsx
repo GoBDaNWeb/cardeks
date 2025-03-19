@@ -82,6 +82,12 @@ export const WashFilters: FC<IFilters> = ({ withoutServices, handleAddServices, 
 									{service.title}
 								</Chip>
 							))}
+							<Chip
+							// isActive={services?.includes(service.value)}
+							// onClick={() => handleAddServices?.(service.value)}
+							>
+								Сопутствующие товары
+							</Chip>
 						</div>
 					</div>
 					{services?.includes('azs') ? <AZSFilters withoutServices /> : null}

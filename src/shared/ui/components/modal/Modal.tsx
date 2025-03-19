@@ -19,7 +19,6 @@ export const Modal: FC<PropsWithChildren<IModal>> = forwardRef(
 		useLockedBody(isOpen);
 		const nodeRef = useRef<HTMLDivElement | null>(null);
 		const modalClass = clsx(s.modal, className);
-
 		return (
 			<CSSTransition
 				classNames={{

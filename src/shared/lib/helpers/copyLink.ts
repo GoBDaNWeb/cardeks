@@ -14,7 +14,7 @@ interface ICopyLink {
 	zoom?: number;
 	selectedFilter?: number | null;
 	fuelFilters?: IList[];
-	brandTitles?: string[];
+	brandTitles?: string;
 	addServices?: string[];
 	terminal?: string;
 	features?: IList[];
@@ -58,7 +58,7 @@ export const handleCopyLink = (params: ICopyLink) => {
 		addParam('fuels', fuelsResult);
 	}
 	if (params.brandTitles?.length) {
-		const brandsResult = params.brandTitles.join('-');
+		const brandsResult = params.brandTitles;
 		addParam('brands', brandsResult);
 	}
 	if (params.addServices?.length) {

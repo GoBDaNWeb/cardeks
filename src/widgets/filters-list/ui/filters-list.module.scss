@@ -141,6 +141,9 @@
 		transform: translateX(-556px);
 	}
 }
+.filtersList.top {
+	top: 40px !important;
+}
 .filtersList {
 	width: 633px;
 	box-shadow: var(--shadow);
@@ -184,6 +187,7 @@
 		border-radius: 0 0 var(--radius-s) var(--radius-s);
 		transform: translateX(0);
 	}
+
 	.filterListTop {
 		display: flex;
 		justify-content: space-between;

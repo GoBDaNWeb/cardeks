@@ -68,7 +68,18 @@
 			display: flex;
 			justify-content: space-between;
 			width: 100%;
-
+			.title {
+				display: flex;
+				align-items: baseline;
+				gap: 10px;
+				a {
+					@include text-sm;
+					transition: var(--trs-300);
+					&:hover {
+						color: var(--accent-color);
+					}
+				}
+			}
 			p {
 				@include h5;
 			}

@@ -12,11 +12,10 @@ const {
 	gateHeightParam,
 	cardParam
 } = getQueryParams();
-
 type FiltersType = {
 	fuelFilters: IList[];
 	features: IList[];
-	brandTitles: string[];
+	brandTitles: string;
 	addServices: string[];
 	gateHeight: number | null;
 	terminal: string;
@@ -36,7 +35,7 @@ const initialState: IFilters = {
 	filters: {
 		card: cardParam ? cardParam : '',
 		fuelFilters: fuelsParam && fuelsParam.length > 0 ? fuelsParam : [],
-		brandTitles: brandsParam && brandsParam.length > 0 ? brandsParam : [],
+		brandTitles: brandsParam && brandsParam.length > 0 ? brandsParam : '',
 		addServices: addServicesParam && addServicesParam.length > 0 ? addServicesParam : [],
 		features: featuresParam && featuresParam.length > 0 ? featuresParam : [],
 		gateHeight: gateHeightParam ? +gateHeightParam : null,

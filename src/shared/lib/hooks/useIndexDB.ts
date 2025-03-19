@@ -58,7 +58,6 @@ export const useIndexedDB = () => {
 				return true;
 			});
 		}
-
 		query = query.filter(
 			({ types, features, title, fuels: featureFuels, filters, terminals }) =>
 				(fuels.length === 0 || fuels.every(fuel => featureFuels?.[fuel.value])) &&
@@ -67,8 +66,7 @@ export const useIndexedDB = () => {
 				(addServices.length === 0 || filterObj(types, addServices)) &&
 				(!gateHeight || (filters?.gateHeight ?? 0) > gateHeight) &&
 				(!terminal.trim() || terminals?.some(t => t.trim() === terminal.trim())) &&
-				(!titleFilter?.length ||
-					titleFilter.some(brand => title.toLowerCase().includes(brand.toLowerCase()))) &&
+				(!titleFilter?.length || title.toLowerCase().includes(titleFilter.toLowerCase())) &&
 				(!card ||
 					card.length === 0 ||
 					(card === 'Лукойл'

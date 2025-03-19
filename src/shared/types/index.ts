@@ -63,6 +63,7 @@ export interface Feature {
 	addittional: {
 		[key: string]: boolean | number;
 	};
+	isDisabled?: boolean;
 	distance?: number;
 	address?: string;
 }

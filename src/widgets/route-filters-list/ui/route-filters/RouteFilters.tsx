@@ -97,7 +97,7 @@ export const RouteFilters = () => {
 			setFilteredBrands(dataBrands);
 			setCurrentBrands(dataBrands);
 		}
-		dispatch(setBrandTitles([]));
+		dispatch(setBrandTitles(''));
 		setSelectedBrands([]);
 	}, [activeMenu]);
 
@@ -109,9 +109,9 @@ export const RouteFilters = () => {
 		}
 	}, [dataBrands]);
 
-	useEffect(() => {
-		dispatch(setBrandTitles(selectedBrands));
-	}, [selectedBrands]);
+	// useEffect(() => {
+	// 	dispatch(setBrandTitles(selectedBrands));
+	// }, [selectedBrands]);
 
 	const dropdownClass = clsx(s.dropdown, { [s.active]: dropdownActive });
 	const routeFiltersClass = clsx(s.routeFilters, { [s.active]: dropdownActive });
