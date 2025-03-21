@@ -1,7 +1,7 @@
 import { ReactElement } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { setOpenFilters } from '@/widgets/filters';
+import { setOpenFilters, setSelectedFilter } from '@/widgets/filters';
 import { setActiveMenu } from '@/widgets/menu-list';
 
 import { setBuildRoute, setChangeRoute, setRouteBuilded } from '@/entities/map';
@@ -41,12 +41,14 @@ const menuList: IMenuList[] = [
 export const MobileMenu = () => {
 	const dispatch = useDispatch();
 	const { activeMenu } = useTypedSelector(store => store.menu);
+	const { selectedFilter } = useTypedSelector(store => store.filters);
 
 	const { activeMenu: activeMenuMobile } = useTypedSelector(store => store.mobileMenu);
 
 	const handleSetActiveMenu = (type: 'search' | 'filters' | 'objects' | 'route') => {
 		if (type === 'filters') {
 			dispatch(setOpenFilters(true));
+			dispatch(setSelectedFilter(selectedFilter ? selectedFilter : 0));
 		}
 		if (activeMenuMobile === type) {
 			dispatch(setActiveMobileMenu(null));
