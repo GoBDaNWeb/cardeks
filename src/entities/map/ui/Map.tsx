@@ -138,7 +138,7 @@ export const CustomMap = () => {
 		map.controls.add(geolocationButton, {
 			float: 'none',
 			position: {
-				bottom: '118px',
+				bottom: '104px',
 				left: '24px'
 			}
 		});
@@ -249,7 +249,7 @@ export const CustomMap = () => {
 					objectManagerState.remove(previousObjectRef.current);
 					setTimeout(() => {
 						objectManagerState.add(restoredObject);
-					}, 10);
+					}, 50);
 				}
 
 				previousObjectRef.current = JSON.parse(JSON.stringify(targetObject));
@@ -268,7 +268,7 @@ export const CustomMap = () => {
 				objectManagerState.remove(targetObject);
 				setTimeout(() => {
 					objectManagerState.add(newObject);
-				}, 0);
+				}, 50);
 			});
 			if (currenctObjectId === null && previousObjectRef.current) {
 				const restoredObject = JSON.parse(JSON.stringify(previousObjectRef.current));
@@ -278,7 +278,7 @@ export const CustomMap = () => {
 				objectManagerState.remove(previousObjectRef.current);
 				setTimeout(() => {
 					objectManagerState.add(restoredObject);
-				}, 10);
+				}, 50);
 
 				previousObjectRef.current = null;
 				previousOptionsRef.current = null;
@@ -296,7 +296,7 @@ export const CustomMap = () => {
 						objectManagerState.remove(previousObjectRef.current);
 						setTimeout(() => {
 							objectManagerState.add(restoredObject);
-						}, 10);
+						}, 50);
 					}
 
 					const updatedObject = JSON.parse(JSON.stringify(selectedObject));
@@ -310,7 +310,7 @@ export const CustomMap = () => {
 					objectManagerState.remove(selectedObject);
 					setTimeout(() => {
 						objectManagerState.add(updatedObject);
-					}, 0);
+					}, 50);
 
 					previousObjectRef.current = JSON.parse(JSON.stringify(selectedObject));
 					//@ts-ignore

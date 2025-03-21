@@ -10,7 +10,7 @@
 	box-sizing: border-box;
 	transition: border-color var(--trs-300);
 	border: 1px solid rgba(0, 0, 0, 0);
-	height: 48px;
+	height: 43px;
 	justify-content: space-between;
 
 	&:hover {
@@ -46,6 +46,8 @@
 				left: 0;
 			}
 			svg {
+				width: 21px;
+				height: 21px;
 				@media (max-width: $tab) {
 					width: 16px;
 					height: 16px;

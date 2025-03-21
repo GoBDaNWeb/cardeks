@@ -6,12 +6,12 @@
 	pointer-events: none;
 }
 .filters.left {
-	transform: translateX(-642px);
+	transform: translateX(-577px);
 	@media (max-width: $desktop-sm) {
-		transform: translateX(-556px);
+		transform: translateX(-500px);
 	}
 	@media (max-width: $tab) {
-		transform: translateX(-366px);
+		transform: translateX(-329px);
 	}
 }
 .filters.routeFilterActive {
@@ -24,7 +24,7 @@
 	background: var(--white-color);
 	border-radius: var(--radius-s);
 	width: 100%;
-	max-width: 633px;
+	max-width: 569px;
 	z-index: 3;
 	box-shadow: var(--shadow);
 	transition:

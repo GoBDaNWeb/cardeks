@@ -4,8 +4,6 @@ import { useDispatch } from 'react-redux';
 import { setOpenFilters } from '@/widgets/filters';
 import { setActiveMenu } from '@/widgets/menu-list';
 
-import { setFilterActive } from '@/features/route-form';
-
 import { setBuildRoute, setChangeRoute, setRouteBuilded } from '@/entities/map';
 import { setActiveMenu as setActiveMobileMenu } from '@/entities/mobile-menu';
 
@@ -49,7 +47,6 @@ export const MobileMenu = () => {
 	const handleSetActiveMenu = (type: 'search' | 'filters' | 'objects' | 'route') => {
 		if (type === 'filters') {
 			dispatch(setOpenFilters(true));
-			console.log('da');
 		}
 		if (activeMenuMobile === type) {
 			dispatch(setActiveMobileMenu(null));

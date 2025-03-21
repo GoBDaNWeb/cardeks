@@ -94,23 +94,23 @@
 		box-shadow: var(--shadow) !important;
 
 		cursor: pointer;
-		min-width: 46px !important;
-		min-height: 46px !important;
-		max-width: 46px !important;
-		max-height: 46px !important;
+		min-width: 41px !important;
+		min-height: 41px !important;
+		max-width: 41px !important;
+		max-height: 41px !important;
 		border: none !important;
 		@media (max-width: $tab) {
 			background-image: url('/images/icons/geo-mob.svg') !important;
-			min-width: 40px !important;
-			min-height: 40px !important;
-			max-width: 40px !important;
-			max-height: 40px !important;
-		}
-		@media (max-width: $tab-sm) {
 			min-width: 36px !important;
 			min-height: 36px !important;
 			max-width: 36px !important;
 			max-height: 36px !important;
+		}
+		@media (max-width: $tab-sm) {
+			min-width: 32px !important;
+			min-height: 32px !important;
+			max-width: 32px !important;
+			max-height: 32px !important;
 		}
 	}
 	.ymaps3x0--controls {

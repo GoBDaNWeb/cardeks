@@ -136,16 +136,16 @@
 	opacity: 1;
 }
 .filtersList.left {
-	transform: translateX(-642px);
+	transform: translateX(-577px);
 	@media (max-width: $desktop-sm) {
-		transform: translateX(-556px);
+		transform: translateX(-500px);
 	}
 }
 .filtersList.top {
 	top: 40px !important;
 }
 .filtersList {
-	width: 633px;
+	width: 569px;
 	box-shadow: var(--shadow);
 	border-radius: var(--radius-s);
 	background: var(--white-color);

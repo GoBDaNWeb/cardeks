@@ -37,7 +37,7 @@
 		@include text-sm;
 	}
 	&::placeholder {
-		@include text-m;
+		@include text-sm;
 		color: var(--secondary-color);
 		opacity: 1;
 		letter-spacing: 0;
@@ -48,7 +48,7 @@
 	}
 	&:focus {
 		&::placeholder {
-			@include text-m;
+			@include text-sm;
 			color: var(--primary-color);
 			opacity: 1;
 			letter-spacing: 0;

@@ -80,6 +80,7 @@ export const FiltersList = () => {
 	}, []);
 
 	const { activeMenu: mobileActiveMenu } = useTypedSelector(store => store.mobileMenu);
+	const { activeMenu } = useTypedSelector(store => store.menu);
 
 	const handleCloseFiltersList = () => {
 		dispatch(setOpenFilters(false));
@@ -201,7 +202,7 @@ export const FiltersList = () => {
 	}, [filtersIsOpen]);
 
 	const filterListClass = clsx(s.filtersList, {
-		// [s.left]: activeMenu,
+		[s.left]: activeMenu && !mobileActiveMenu,
 		[s.active]: filtersIsOpen,
 		[s.top]: mobileActiveMenu === 'route'
 	});

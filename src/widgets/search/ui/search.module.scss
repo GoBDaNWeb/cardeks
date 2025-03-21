@@ -8,13 +8,13 @@
 	top: 24px;
 	left: 24px;
 	z-index: 3;
-	width: 370px;
+	width: 333px;
 	@media (max-width: $desktop-sm) {
 		left: 16px;
 		top: 16px;
 	}
 	@media (max-width: $tab) {
-		width: 300px;
+		width: 270px;
 	}
 	@media (max-width: $tab-sm) {
 		display: none;

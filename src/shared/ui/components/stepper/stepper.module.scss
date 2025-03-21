@@ -22,12 +22,16 @@
 		background: var(--tertiary-color);
 	}
 	button {
+		width: 21px;
+		height: 21px;
 		@media (max-width: $tab) {
 			width: 16px;
 			height: 16px;
 		}
 	}
 	svg {
+		width: 21px;
+		height: 21px;
 		@media (max-width: $tab) {
 			width: 16px;
 			height: 16px;
