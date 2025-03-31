@@ -25,7 +25,10 @@ export const FilterTab: FC<IFilterTab> = ({
 	isActive,
 	isSelected
 }) => {
-	const filterTabClass = clsx(s.filterTab, { [s.active]: isActive, [s.selected]: isSelected });
+	const filterTabClass = clsx(s.filterTab, {
+		[s.active]: isActive,
+		[s.selected]: isSelected
+	});
 
 	return (
 		<Button onClick={onClick} className={filterTabClass}>

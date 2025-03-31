@@ -1,7 +1,12 @@
 import { FC, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { setAddServices, setFeatures, setFuelFilters } from '@/widgets/filters';
+import {
+	setRelatedProducts as handleSetRelatedProducts,
+	setAddServices,
+	setFeatures,
+	setFuelFilters
+} from '@/widgets/filters';
 
 import { azsMainFilters, fuelList } from '@/shared/config';
 import { useTypedSelector } from '@/shared/lib';
@@ -25,8 +30,16 @@ export const AZSFilters: FC<IFilters> = ({ withoutServices, handleAddServices, s
 	const { filters, clearFilters } = useTypedSelector(store => store.filters);
 	const [fuels, setFuels] = useState<IList[]>(filters.fuelFilters);
 	const [features, setMainFeatures] = useState<IList[]>(filters.features);
+	const [relatedProduct, setRelatedProducts] = useState<boolean>(filters.relatedProducts || false);
 
 	const dispatch = useDispatch();
+
+	const hadleSetRelatedProducts = () => {
+		setRelatedProducts(prev => !prev);
+	};
+	useEffect(() => {
+		dispatch(handleSetRelatedProducts(relatedProduct));
+	}, [relatedProduct]);
 
 	// Обработчик выбора топлива
 	const handleSetFuels = (fuel: IList) => {
@@ -123,10 +136,7 @@ export const AZSFilters: FC<IFilters> = ({ withoutServices, handleAddServices, s
 									{service.title}
 								</Chip>
 							))}
-							<Chip
-							// isActive={services?.includes(service.value)}
-							// onClick={() => handleAddServices?.(service.value)}
-							>
+							<Chip isActive={relatedProduct} onClick={() => hadleSetRelatedProducts()}>
 								Сопутствующие товары
 							</Chip>
 						</div>

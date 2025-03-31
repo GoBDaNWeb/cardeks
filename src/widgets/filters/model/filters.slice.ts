@@ -20,6 +20,7 @@ type FiltersType = {
 	gateHeight: number | null;
 	terminal: string;
 	card: string;
+	relatedProducts: boolean;
 };
 
 interface IFilters {
@@ -39,7 +40,8 @@ const initialState: IFilters = {
 		addServices: addServicesParam && addServicesParam.length > 0 ? addServicesParam : [],
 		features: featuresParam && featuresParam.length > 0 ? featuresParam : [],
 		gateHeight: gateHeightParam ? +gateHeightParam : null,
-		terminal: terminalParam && terminalParam ? terminalParam : ''
+		terminal: terminalParam && terminalParam ? terminalParam : '',
+		relatedProducts: false
 	}
 };
 
@@ -61,6 +63,9 @@ const filters = createSlice({
 		},
 		setAddServices(state, action) {
 			state.filters.addServices = action.payload;
+		},
+		setRelatedProducts(state, action) {
+			state.filters.relatedProducts = action.payload;
 		},
 		setBrandTitles(state, action) {
 			state.filters.brandTitles = action.payload;
@@ -90,6 +95,7 @@ export const {
 	setBrandTitles,
 	setFeatures,
 	setTerminal,
-	setCard
+	setCard,
+	setRelatedProducts
 } = filters.actions;
 export default filters.reducer;

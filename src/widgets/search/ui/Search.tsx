@@ -104,7 +104,11 @@ export const Search = () => {
 				handleBlur={handleBlur}
 			/>
 			{data?.results && dropdownOpen ? (
-				<SearchDropdown list={data} handleSeletAddress={handleSeletAddress} />
+				<SearchDropdown
+					list={data}
+					handleSearchAddress={() => handleSearchAddress()}
+					handleSeletAddress={handleSeletAddress}
+				/>
 			) : null}
 		</div>
 	);

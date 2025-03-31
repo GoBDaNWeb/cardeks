@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import clsx from 'clsx';
 
 import {
+	setRelatedProducts as handleSetRelatedProducts,
 	setAddServices,
 	setBrandTitles,
 	setCard,
@@ -14,9 +15,6 @@ import {
 	setOpenFilters,
 	setTerminal
 } from '@/widgets/filters';
-import { setActiveMenu } from '@/widgets/menu-list';
-
-import { setActiveMenu as setActiveMenuMob } from '@/entities/mobile-menu';
 
 import { getQueryParams, useDebounce, useIndexedDB, useTypedSelector } from '@/shared/lib';
 import { ArrowTopIcon, Button, Chip, CloseIcon, Dropdown, Input } from '@/shared/ui';
@@ -153,6 +151,7 @@ export const FiltersList = () => {
 			dispatch(setAddServices([]));
 			dispatch(setGateHeight(null));
 			setServices([]);
+			dispatch(handleSetRelatedProducts(false));
 		}
 		prevSelectedFilter.current = selectedFilter;
 	}, [selectedFilter, filtersIsOpen]);
@@ -183,6 +182,7 @@ export const FiltersList = () => {
 			dispatch(setAddServices([]));
 			dispatch(setGateHeight(null));
 			dispatch(setFeatures([]));
+			dispatch(handleSetRelatedProducts(false));
 		}
 	}, [clearFilters]);
 

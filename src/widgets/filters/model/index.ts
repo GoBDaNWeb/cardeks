@@ -9,5 +9,6 @@ export {
 	setFeatures,
 	setTerminal,
 	setCard,
+	setRelatedProducts,
 	default as filtersReducer
 } from './filters.slice';

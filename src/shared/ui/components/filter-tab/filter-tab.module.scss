@@ -2,27 +2,7 @@
 @import '@/shared/styles/variables';
 
 .filterTab.active {
-	background: var(--accent-color);
-	.content {
-		.title {
-			color: var(--white-color);
-		}
-		.count {
-			color: var(--white-color);
-			span {
-				color: var(--white-color);
-				opacity: 0.5;
-			}
-		}
-	}
-	.icon {
-		svg {
-			path {
-				fill: var(--white-color);
-			}
-		}
-	}
-	&:hover {
+	@media (min-width: $tab-sm) {
 		background: var(--accent-color);
 		.content {
 			.title {
@@ -43,6 +23,34 @@
 				}
 			}
 		}
+		&:hover {
+			background: var(--accent-color);
+			.content {
+				.title {
+					color: var(--white-color);
+				}
+				.count {
+					color: var(--white-color);
+					span {
+						color: var(--white-color);
+						opacity: 0.5;
+					}
+				}
+			}
+			.icon {
+				svg {
+					path {
+						fill: var(--white-color);
+					}
+				}
+			}
+		}
+	}
+	@media (max-width: $tab-sm) {
+		border-color: var(--line-color) !important;
+		.title {
+			color: var(--accent-hover-color) !important;
+		}
 	}
 }
 .filterTab {
@@ -53,6 +61,7 @@
 	padding: 9px 16px 12px;
 	justify-content: space-between;
 	background: var(--white-color);
+
 	&.selected {
 		border-color: var(--accent-hover-color);
 	}
@@ -73,6 +82,7 @@
 		min-width: fit-content;
 		border-right: 1px solid var(--line-color);
 		border-radius: 0px;
+		justify-content: flex-end;
 		&:last-child {
 			border-right: none;
 		}

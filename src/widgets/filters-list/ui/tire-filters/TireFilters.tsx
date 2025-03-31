@@ -1,8 +1,9 @@
-import { FC, useEffect } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { setAddServices } from '@/widgets/filters';
+import { setRelatedProducts as handleSetRelatedProducts, setAddServices } from '@/widgets/filters';
 
+import { useTypedSelector } from '@/shared/lib';
 import { Chip } from '@/shared/ui';
 
 import { addServicesTireList } from '../../config';
@@ -19,8 +20,16 @@ interface IFilters {
 }
 
 export const TireFilters: FC<IFilters> = ({ withoutServices, handleAddServices, services }) => {
-	const dispatch = useDispatch();
+	const { filters } = useTypedSelector(store => store.filters);
+	const [relatedProduct, setRelatedProducts] = useState<boolean>(filters.relatedProducts || false);
 
+	const dispatch = useDispatch();
+	const hadleSetRelatedProducts = () => {
+		setRelatedProducts(prev => !prev);
+	};
+	useEffect(() => {
+		dispatch(handleSetRelatedProducts(relatedProduct));
+	}, [relatedProduct, dispatch]);
 	useEffect(() => {
 		if (services) {
 			if (services.length > 0) {
@@ -47,10 +56,7 @@ export const TireFilters: FC<IFilters> = ({ withoutServices, handleAddServices, 
 									{service.title}
 								</Chip>
 							))}
-							<Chip
-							// isActive={services?.includes(service.value)}
-							// onClick={() => handleAddServices?.(service.value)}
-							>
+							<Chip isActive={relatedProduct} onClick={() => hadleSetRelatedProducts()}>
 								Сопутствующие товары
 							</Chip>
 						</div>

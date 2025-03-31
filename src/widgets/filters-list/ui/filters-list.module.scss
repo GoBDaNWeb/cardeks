@@ -191,6 +191,16 @@
 	.filterListTop {
 		display: flex;
 		justify-content: space-between;
+		.closeBtn {
+			@media (max-width: $tab) {
+				width: 16px;
+				height: 16px;
+				svg {
+					width: 100%;
+					height: 100%;
+				}
+			}
+		}
 	}
 	.filterListBottom {
 		padding-top: 20px;
@@ -215,6 +225,12 @@
 				@include text-sm;
 				color: var(--secondary-color);
 				transition: var(--trs-300);
+			}
+		}
+		.closeBtn {
+			@media (max-width: $tab) {
+				width: 16px;
+				height: 16px;
 			}
 		}
 	}

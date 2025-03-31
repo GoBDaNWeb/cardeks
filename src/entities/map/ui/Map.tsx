@@ -75,11 +75,11 @@ export const CustomMap = () => {
 			clusterIcons: [
 				{
 					href: '/images/cluster.svg',
-					size: [20, 20],
-					offset: [-20, -20]
+					size: [35, 35],
+					offset: [-35, -35]
 				}
 			],
-			clusterIconContentLayout: '',
+			// clusterIconContentLayout: '',
 			clusterIconColor: '#2d9bef'
 		});
 		setObjectManagerState(objectManager);
@@ -189,11 +189,11 @@ export const CustomMap = () => {
 				filters.gateHeight,
 				filters.terminal,
 				filters.card,
-				selectedFilter
+				selectedFilter,
+				filters.relatedProducts
 			);
-			const azsPoints = filteredData.filter((marker: Feature) => {
-				return Object.values(marker.fuels).some(value => value === true);
-			});
+
+			const azsPoints = filteredData;
 			const washingPoints = filteredData.filter((marker: Feature) => marker.types.washing);
 			const tirePoints = filteredData.filter((marker: Feature) => marker.types.tire);
 			dispatch(
@@ -227,7 +227,8 @@ export const CustomMap = () => {
 		filters.addServices,
 		filters.gateHeight,
 		filters.terminal,
-		filters.card
+		filters.card,
+		filters.relatedProducts
 	]);
 
 	useEffect(() => {
@@ -349,9 +350,7 @@ export const CustomMap = () => {
 			dispatch(setMapLoading(false));
 
 			if (!isUrlBuild && !buildRoute) {
-				const azsPoints = features.filter((marker: Feature) => {
-					return Object.values(marker.fuels).some(value => value === true);
-				});
+				const azsPoints = features;
 				const washingPoints = features.filter((marker: Feature) => marker.types.washing);
 				const tirePoints = features.filter((marker: Feature) => marker.types.tire);
 				dispatch(

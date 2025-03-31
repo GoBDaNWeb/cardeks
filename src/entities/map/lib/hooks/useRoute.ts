@@ -58,7 +58,8 @@ export const useRoute = ({
 			filters.gateHeight,
 			filters.terminal,
 			filters.card,
-			selectedFilter
+			selectedFilter,
+			filters.relatedProducts
 		);
 		return filteredData;
 	};
@@ -159,6 +160,7 @@ export const useRoute = ({
 								threshold,
 								routesArr[0]
 							);
+
 							if (azsOnRoute && objectManagerState) {
 								dispatch(setPointsOnRoute(azsOnRoute));
 							}

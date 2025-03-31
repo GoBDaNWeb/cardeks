@@ -1,7 +1,11 @@
 import { FC, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { setAddServices, setGateHeight } from '@/widgets/filters';
+import {
+	setRelatedProducts as handleSetRelatedProducts,
+	setAddServices,
+	setGateHeight
+} from '@/widgets/filters';
 
 import { useTypedSelector } from '@/shared/lib';
 import { Chip } from '@/shared/ui';
@@ -21,6 +25,8 @@ interface IFilters {
 export const WashFilters: FC<IFilters> = ({ withoutServices, handleAddServices, services }) => {
 	const { clearFilters, filters } = useTypedSelector(store => store.filters);
 	const [gateHeights, setGateHeights] = useState<number | null>(filters.gateHeight);
+	const [relatedProduct, setRelatedProducts] = useState<boolean>(filters.relatedProducts || false);
+
 	const dispatch = useDispatch();
 
 	const handleAddGate = (height: number) => {
@@ -30,6 +36,13 @@ export const WashFilters: FC<IFilters> = ({ withoutServices, handleAddServices, 
 			setGateHeights(height);
 		}
 	};
+
+	const hadleSetRelatedProducts = () => {
+		setRelatedProducts(prev => !prev);
+	};
+	useEffect(() => {
+		dispatch(handleSetRelatedProducts(relatedProduct));
+	}, [relatedProduct, dispatch]);
 
 	useEffect(() => {
 		if (services) {
@@ -82,10 +95,7 @@ export const WashFilters: FC<IFilters> = ({ withoutServices, handleAddServices, 
 									{service.title}
 								</Chip>
 							))}
-							<Chip
-							// isActive={services?.includes(service.value)}
-							// onClick={() => handleAddServices?.(service.value)}
-							>
+							<Chip isActive={relatedProduct} onClick={() => hadleSetRelatedProducts()}>
 								Сопутствующие товары
 							</Chip>
 						</div>

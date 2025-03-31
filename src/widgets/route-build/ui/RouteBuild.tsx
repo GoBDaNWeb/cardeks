@@ -44,7 +44,7 @@ export const RouteBuild = () => {
 		<div className={routeBuildClass}>
 			<div className={s.routeBuildTop}>
 				<h5>Построить маршрут</h5>
-				<Button onClick={() => handleClose()}>
+				<Button onClick={() => handleClose()} className={s.closeBtn}>
 					<CloseIcon />
 				</Button>
 			</div>

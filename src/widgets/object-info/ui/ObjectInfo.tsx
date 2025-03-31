@@ -92,7 +92,7 @@ export const ObjectInfo = () => {
 						</a>
 					</div>
 
-					<Button onClick={() => handleClose()}>
+					<Button onClick={() => handleClose()} className={s.closeBtn}>
 						<CloseIcon />
 					</Button>
 				</div>

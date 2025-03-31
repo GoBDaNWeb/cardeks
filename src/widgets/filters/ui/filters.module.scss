@@ -15,7 +15,9 @@
 	}
 }
 .filters.routeFilterActive {
-	background: var(--tertiary-color);
+	@media (min-width: $tab-sm) {
+		background: var(--tertiary-color);
+	}
 }
 .filters {
 	position: absolute;

@@ -17,7 +17,8 @@ class AppDatabase extends Dexie {
 	constructor() {
 		super('azsDatabase');
 		this.version(1).stores({
-			points: 'id, title, fuels, features, types, filters.gateHeight, *terminals'
+			points:
+				'id, title, fuels, features, types, filters.gateHeight, *terminals, *geometry.coordinates.lat, *geometry.coordinates.lng, [geometry.coordinates.lat+geometry.coordinates.lng] '
 		});
 		this.points = this.table('points');
 	}

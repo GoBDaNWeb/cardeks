@@ -47,7 +47,8 @@ export const useIndexedDB = () => {
 		gateHeight?: number,
 		terminal: string = '',
 		card?: string,
-		selectedFilter: number
+		selectedFilter: number,
+		relatedProducts: boolean
 	): Promise<Feature[]> => {
 		let query = db.points.toCollection();
 		if (selectedFilter !== null) {
@@ -59,21 +60,25 @@ export const useIndexedDB = () => {
 			});
 		}
 		query = query.filter(
-			({ types, features, title, fuels: featureFuels, filters, terminals }) =>
-				(fuels.length === 0 || fuels.every(fuel => featureFuels?.[fuel.value])) &&
-				(featuresList.length === 0 || featuresList.every(f => features?.[f.value])) &&
-				(azsTypes.length === 0 || azsTypes.some(type => types?.[type.value])) &&
-				(addServices.length === 0 || filterObj(types, addServices)) &&
-				(!gateHeight || (filters?.gateHeight ?? 0) > gateHeight) &&
-				(!terminal.trim() || terminals?.some(t => t.trim() === terminal.trim())) &&
-				(!titleFilter?.length || title.toLowerCase().includes(titleFilter.toLowerCase())) &&
-				(!card ||
-					card.length === 0 ||
-					(card === 'Лукойл'
-						? ['Лукойл', 'Тебойл'].includes(title)
-						: card === 'Кардекс'
-							? !['Лукойл', 'Тебойл'].includes(title)
-							: true))
+			({ types, features, title, fuels: featureFuels, filters, terminals, addittional }) => {
+				return (
+					(fuels.length === 0 || fuels.every(fuel => featureFuels?.[fuel.value])) &&
+					(featuresList.length === 0 || featuresList.every(f => features?.[f.value])) &&
+					(azsTypes.length === 0 || azsTypes.some(type => types?.[type.value])) &&
+					(addServices.length === 0 || filterObj(types, addServices)) &&
+					(!gateHeight || (filters?.gateHeight ?? 0) > gateHeight) &&
+					(!terminal.trim() || terminals?.some(t => t.trim() === terminal.trim())) &&
+					(!titleFilter?.length || title.toLowerCase().includes(titleFilter.toLowerCase())) &&
+					(!card ||
+						card.length === 0 ||
+						(card === 'Лукойл'
+							? ['Лукойл', 'Тебойл'].includes(title)
+							: card === 'Кардекс'
+								? !['Лукойл', 'Тебойл'].includes(title)
+								: true)) &&
+					addittional?.relatedProducts === relatedProducts
+				);
+			}
 		);
 
 		return await query.toArray();
@@ -102,21 +107,23 @@ export const useIndexedDB = () => {
 		firstRouteCoord: number[]
 	): Promise<Feature[]> => {
 		if (!firstRouteCoord || !lines) return [];
-		const linesArr = lines.toArray(); // Вызываем один раз!
-		const filteredAzs =
-			azsArr && azsArr.length > 0 ? azsArr : await db.points.filter(el => el.geometry).toArray();
-		const mappedFiltered = await Promise.all(
-			filteredAzs
-				.filter(el =>
-					linesArr.some(
-						line => line.geometry.getClosest(el.geometry.coordinates).distance < threshold
-					)
-				)
-				.map(async item => ({
+		const linesArr = lines.toArray();
+		if (!linesArr.length) return [];
+
+		const azsData = azsArr?.length ? azsArr : await db.points.filter(el => el.geometry).toArray();
+		if (!azsData.length) return [];
+
+		const mappedFiltered: Feature[] = [];
+		for (const item of azsData) {
+			const { coordinates } = item.geometry;
+
+			if (linesArr.some(line => line.geometry.getClosest(coordinates).distance < threshold)) {
+				mappedFiltered.push({
 					...item,
-					distance: ymaps.coordSystem.geo.getDistance(firstRouteCoord, item.geometry.coordinates)
-				}))
-		);
+					distance: ymaps.coordSystem.geo.getDistance(firstRouteCoord, coordinates)
+				});
+			}
+		}
 
 		return mappedFiltered;
 	};
