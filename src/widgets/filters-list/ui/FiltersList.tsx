@@ -5,7 +5,6 @@ import { useDispatch } from 'react-redux';
 import clsx from 'clsx';
 
 import {
-	setRelatedProducts as handleSetRelatedProducts,
 	setAddServices,
 	setBrandTitles,
 	setCard,
@@ -16,7 +15,7 @@ import {
 	setTerminal
 } from '@/widgets/filters';
 
-import { getQueryParams, useDebounce, useIndexedDB, useTypedSelector } from '@/shared/lib';
+import { getQueryParams, useIndexedDB, useTypedSelector } from '@/shared/lib';
 import { ArrowTopIcon, Button, Chip, CloseIcon, Dropdown, Input } from '@/shared/ui';
 
 import { cardsList } from '../config';
@@ -42,14 +41,21 @@ export const FiltersList = () => {
 		selectedFilter,
 		filtersIsOpen,
 		clearFilters,
-		filters: { terminal, card, brandTitles }
+		filters: { brandTitles, terminal, card }
 	} = useTypedSelector(store => store.filters);
 
 	const [inputTerminalValue, setInputTerminalValue] = useState(terminal);
 	const [dropdownActive, setDropdownActive] = useState(false);
 	const [dropdownCardActive, setDropdownCardActive] = useState(false);
-	const [brandValue, setBrandValue] = useState(brandTitles);
 
+	const [brandState, setBrandState] = useState({
+		filteredBrands: [] as string[],
+		selectedBrands: brandTitles as string[],
+		inputBrandValue: '',
+		currentBrands: brandTitles as string[],
+		activeBrand: 0,
+		dataBrands: [] as string[]
+	});
 	const [cardState, setCardState] = useState({
 		filteredCards: [] as string[],
 		selectedCard: card as string,
@@ -61,28 +67,39 @@ export const FiltersList = () => {
 	const [services, setServices] = useState<string[]>(addServicesParam ? addServicesParam : []);
 	const prevSelectedFilter = useRef(selectedFilter);
 	const dispatch = useDispatch();
-	const { isDbReady } = useIndexedDB();
-	const debounced = useDebounce(brandValue);
+	const { getBrands, isDbReady } = useIndexedDB();
 
+	const updateBrandState = (newState: Partial<typeof brandState>) => {
+		setBrandState(prev => ({ ...prev, ...newState }));
+	};
 	const updateCardState = (newState: Partial<typeof cardState>) => {
 		setCardState(prev => ({ ...prev, ...newState }));
 	};
 
-	useEffect(() => {
-		dispatch(setBrandTitles(brandValue));
-	}, [debounced]);
+	const handleGetBradns = useCallback(async () => {
+		const brands = await getBrands();
+		if (brandTitles) {
+			const filterBrands = brands.filter(brand => {
+				return !brandTitles.includes(brand);
+			});
+			updateBrandState({ dataBrands: filterBrands });
+
+			return;
+		} else {
+			updateBrandState({ dataBrands: brands });
+		}
+	}, [getBrands]);
 
 	const handleGetCards = useCallback(async () => {
 		const cards = cardsList;
 		updateCardState({ dataCards: cards });
 	}, []);
 
-	const { activeMenu: mobileActiveMenu } = useTypedSelector(store => store.mobileMenu);
-	const { activeMenu } = useTypedSelector(store => store.menu);
+	const { activeMenu } = useTypedSelector(state => state.menu);
+	const { objectId } = useTypedSelector(store => store.objectInfo);
 
 	const handleCloseFiltersList = () => {
 		dispatch(setOpenFilters(false));
-		// dispatch(setActiveMenuMob(null));
 	};
 
 	const handleChangeTerminalInputValue = (e: FormEvent<HTMLInputElement>) => {
@@ -93,7 +110,16 @@ export const FiltersList = () => {
 
 	const handleChangeInputBrandValue = (e: FormEvent<HTMLInputElement>) => {
 		const value = (e.target as HTMLInputElement).value;
-		setBrandValue(value);
+		updateBrandState({ inputBrandValue: value });
+		updateBrandState({ activeBrand: 0 });
+		if (value.length === 0) {
+			updateBrandState({ currentBrands: brandState.filteredBrands });
+		} else {
+			const filterBrands = brandState.filteredBrands.filter((brand: string) => {
+				return brand.toLowerCase().trim().includes(value.toLowerCase());
+			});
+			updateBrandState({ currentBrands: filterBrands });
+		}
 	};
 	const handleChangeInputCardValue = (e: FormEvent<HTMLInputElement>) => {
 		const value = (e.target as HTMLInputElement).value;
@@ -120,6 +146,22 @@ export const FiltersList = () => {
 			updateCardState({ currentCards: filter });
 		}
 	};
+	const handleSearchBrands = (brand: string) => {
+		updateBrandState({ selectedBrands: [...brandState.selectedBrands, brand] });
+		updateBrandState({ filteredBrands: brandState.filteredBrands.filter(b => b !== brand) });
+		updateBrandState({ inputBrandValue: '' });
+		setDropdownActive(false);
+		if (brandState.dataBrands) {
+			const filter = brandState.dataBrands.filter(b => b !== brand);
+			updateBrandState({ currentBrands: filter });
+		}
+	};
+
+	const handleRemoveBrand = (brand: string) => {
+		updateBrandState({ selectedBrands: brandState.selectedBrands.filter(b => b !== brand) });
+		updateBrandState({ currentBrands: [...brandState.currentBrands, brand] });
+		updateBrandState({ filteredBrands: [...brandState.filteredBrands, brand] });
+	};
 
 	const handleAddServices = (service: string) => {
 		setServices(prevServices => {
@@ -138,6 +180,11 @@ export const FiltersList = () => {
 		updateCardState({ filteredCards: cardState.dataCards });
 	};
 
+	const handleBlur = () => {
+		setTimeout(() => {
+			setDropdownActive(false);
+		}, 150);
+	};
 	const handleBlurCard = () => {
 		setTimeout(() => {
 			setDropdownCardActive(false);
@@ -151,16 +198,20 @@ export const FiltersList = () => {
 			dispatch(setAddServices([]));
 			dispatch(setGateHeight(null));
 			setServices([]);
-			dispatch(handleSetRelatedProducts(false));
 		}
 		prevSelectedFilter.current = selectedFilter;
 	}, [selectedFilter, filtersIsOpen]);
 
 	useEffect(() => {
 		if (isDbReady) {
+			handleGetBradns();
 			handleGetCards();
 		}
 	}, [filtersIsOpen, isDbReady]);
+
+	useEffect(() => {
+		dispatch(setBrandTitles(brandState.selectedBrands));
+	}, [brandState.selectedBrands]);
 
 	useEffect(() => {
 		dispatch(setCard(cardState.selectedCard));
@@ -168,24 +219,34 @@ export const FiltersList = () => {
 
 	useEffect(() => {
 		if (clearFilters) {
+			updateBrandState({ filteredBrands: [] });
+			updateBrandState({ selectedBrands: [] });
+			updateBrandState({ currentBrands: [] });
+			updateBrandState({ activeBrand: 0 });
 			updateCardState({ filteredCards: [] });
 			updateCardState({ selectedCard: '' });
 			updateCardState({ inputCardValue: '' });
 			updateCardState({ currentCards: [] });
 			updateCardState({ activeCard: 0 });
 			setInputTerminalValue('');
-			setBrandValue('');
-			dispatch(setBrandTitles(''));
+
+			dispatch(setBrandTitles([]));
 			dispatch(setCard(''));
 			dispatch(setTerminal(''));
 			dispatch(setFuelFilters([]));
 			dispatch(setAddServices([]));
 			dispatch(setGateHeight(null));
 			dispatch(setFeatures([]));
-			dispatch(handleSetRelatedProducts(false));
 		}
 	}, [clearFilters]);
 
+	// Инициализация брендов при загрузке данных
+	useEffect(() => {
+		if (brandState.dataBrands) {
+			updateBrandState({ filteredBrands: brandState.dataBrands });
+			updateBrandState({ currentBrands: brandState.dataBrands });
+		}
+	}, [brandState.dataBrands]);
 	useEffect(() => {
 		if (cardState.dataCards) {
 			updateCardState({ filteredCards: cardState.dataCards });
@@ -193,8 +254,14 @@ export const FiltersList = () => {
 		}
 	}, [cardState.dataCards]);
 
+	// Сброс фильтров при открытии/закрытии
 	useEffect(() => {
+		updateBrandState({ inputBrandValue: '' });
 		updateCardState({ inputCardValue: '' });
+		if (brandState.dataBrands) {
+			updateBrandState({ filteredBrands: brandState.dataBrands });
+			updateBrandState({ currentBrands: brandState.dataBrands });
+		}
 		if (cardState.dataCards) {
 			updateCardState({ filteredCards: cardState.dataCards });
 			updateCardState({ currentCards: cardState.dataCards });
@@ -202,12 +269,12 @@ export const FiltersList = () => {
 	}, [filtersIsOpen]);
 
 	const filterListClass = clsx(s.filtersList, {
-		[s.left]: activeMenu && !mobileActiveMenu,
-		[s.active]: filtersIsOpen,
-		[s.top]: mobileActiveMenu === 'route'
+		[s.left]: activeMenu,
+		[s.active]: filtersIsOpen
 	});
 
 	const terminalClass = clsx(s.filterRow, s.terminalWrapper);
+	const dropdownClass = clsx(s.dropdown, { [s.active]: dropdownActive });
 	const dropdownCardClass = clsx(s.dropdown, {
 		[s.active]: dropdownCardActive
 	});
@@ -259,12 +326,41 @@ export const FiltersList = () => {
 				<div className={s.filterRow}>
 					<p>Бренд</p>
 					<div className={s.brandWrapper}>
+						<div className={s.chips}>
+							{brandState.selectedBrands.length > 0
+								? brandState.selectedBrands.map((brand: string, index: number) => (
+										<Chip key={index} isActive>
+											{brand}
+											<div className={s.closeBtn} onClick={() => handleRemoveBrand(brand)}>
+												<CloseIcon />
+											</div>
+										</Chip>
+									))
+								: null}
+						</div>
 						<Input
 							onChange={handleChangeInputBrandValue}
-							value={brandValue}
+							value={brandState.inputBrandValue}
 							isStyled
 							placeholder='Название'
+							onFocus={() => setDropdownActive(true)}
+							onBlur={() => handleBlur()}
 						/>
+
+						<Dropdown className={dropdownClass}>
+							{brandState.currentBrands.length > 0
+								? brandState.currentBrands.map((brand: string, index: number) => (
+										<div
+											onMouseEnter={() => updateBrandState({ activeBrand: index })}
+											className={`${s.brand} ${index === brandState.activeBrand ? s.active : ''}`}
+											key={index}
+											onClick={() => handleSearchBrands(brand)}
+										>
+											{brand}
+										</div>
+									))
+								: null}
+						</Dropdown>
 					</div>
 				</div>
 				{selectedFilter !== null &&

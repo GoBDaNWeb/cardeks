@@ -97,7 +97,7 @@ export const RouteFilters = () => {
 			setFilteredBrands(dataBrands);
 			setCurrentBrands(dataBrands);
 		}
-		dispatch(setBrandTitles(''));
+		dispatch(setBrandTitles([]));
 		setSelectedBrands([]);
 	}, [activeMenu]);
 

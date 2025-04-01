@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { DBSchema } from 'idb';
 
@@ -22,6 +22,7 @@ const cache = new Map<string, Feature>();
 
 export const useIndexedDB = () => {
 	const [isDbReady, setIsDbReady] = useState(false);
+	const [typeFilters, setTypeFilters] = useState([]);
 	const [brandsCache, setBrandsCache] = useState<string[] | null>(null);
 
 	useEffect(() => {
@@ -67,8 +68,7 @@ export const useIndexedDB = () => {
 					(addServices.length === 0 || filterObj(types, addServices)) &&
 					(!gateHeight || (filters?.gateHeight ?? 0) > gateHeight) &&
 					(!terminal.trim() || terminals?.some(t => t.trim() === terminal.trim())) &&
-					(!titleFilter?.length ||
-						titleFilter.some(brand => title.toLowerCase().includes(brand.toLowerCase()))) &&
+					(!titleFilter?.length || title.toLowerCase().includes(titleFilter.toLowerCase())) &&
 					(!card ||
 						card.length === 0 ||
 						(card === 'Лукойл'
@@ -99,7 +99,8 @@ export const useIndexedDB = () => {
 	};
 
 	/**
-	 * Функция поиска АЗС на маршруте с использованием Web Worker и пространственного индекса (RBush)
+	 * Оптимизированная функция поиска АЗС на маршруте с использованием Web Worker.
+	 * Вынос вычислительно тяжёлой фильтрации в отдельный поток помогает не блокировать UI.
 	 */
 	const getAzsOnRoute = async (
 		azsArr: Feature[] | undefined,
@@ -116,17 +117,100 @@ export const useIndexedDB = () => {
 		const azsData = azsArr?.length ? azsArr : await db.points.filter(el => el.geometry).toArray();
 		if (!azsData.length) return [];
 
-		// Извлекаем координаты полилинии маршрута
+		// Извлекаем координаты полилинии маршрута.
+		// Если метод getCoordinates существует, используем его, иначе предполагаем наличие свойства coordinates.
 		const routeGeometry = linesArr[0].geometry;
 		const polyline: number[][] =
 			typeof routeGeometry.getCoordinates === 'function'
 				? routeGeometry.getCoordinates()
 				: routeGeometry.coordinates;
 
-		// Создаем воркер из отдельного файла
-		const worker = new Worker(new URL('./azsWorker.js', import.meta.url));
+		// Определяем код воркера как строку
+		const workerCode = `
+			self.onmessage = function(e) {
+				const { azsData, polyline, threshold, firstRouteCoord } = e.data;
 
-		// Обертка в Promise для ожидания ответа от воркера
+				// Функция для перевода градусов в радианы
+				function toRad(value) {
+					return value * Math.PI / 180;
+				}
+
+				// Вычисление расстояния по формуле гаверсина (в метрах)
+				function haversineDistance(coord1, coord2) {
+					const R = 6371000; // радиус Земли в метрах
+					const lat1 = toRad(coord1[0]);
+					const lat2 = toRad(coord2[0]);
+					const dLat = toRad(coord2[0] - coord1[0]);
+					const dLon = toRad(coord2[1] - coord1[1]);
+					const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+						Math.cos(lat1) * Math.cos(lat2) *
+						Math.sin(dLon / 2) * Math.sin(dLon / 2);
+					const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+					return R * c;
+				}
+
+				// Вычисление расстояния от точки до отрезка
+				function pointToSegmentDistance(point, segStart, segEnd) {
+					const [x, y] = point;
+					const [x1, y1] = segStart;
+					const [x2, y2] = segEnd;
+					const A = x - x1;
+					const B = y - y1;
+					const C = x2 - x1;
+					const D = y2 - y1;
+					const dot = A * C + B * D;
+					const lenSq = C * C + D * D;
+					let param = -1;
+					if (lenSq !== 0) {
+						param = dot / lenSq;
+					}
+					let xx, yy;
+					if (param < 0) {
+						xx = x1;
+						yy = y1;
+					} else if (param > 1) {
+						xx = x2;
+						yy = y2;
+					} else {
+						xx = x1 + param * C;
+						yy = y1 + param * D;
+					}
+					return haversineDistance(point, [xx, yy]);
+				}
+
+				// Вычисление минимального расстояния от точки до полилинии
+				function pointToPolylineDistance(point, polyline) {
+					let minDistance = Infinity;
+					for (let i = 0; i < polyline.length - 1; i++) {
+						const segStart = polyline[i];
+						const segEnd = polyline[i + 1];
+						const d = pointToSegmentDistance(point, segStart, segEnd);
+						if (d < minDistance) {
+							minDistance = d;
+						}
+					}
+					return minDistance;
+				}
+
+				const result = [];
+				for (let item of azsData) {
+					const point = item.geometry.coordinates;
+					const distanceToLine = pointToPolylineDistance(point, polyline);
+					if (distanceToLine < threshold) {
+						// Вычисляем расстояние от первой координаты маршрута до точки
+						item.distance = haversineDistance(firstRouteCoord, point);
+						result.push(item);
+					}
+				}
+				self.postMessage(result);
+			};
+		`;
+
+		// Создаём Blob с кодом воркера и инициализируем воркер
+		const blob = new Blob([workerCode], { type: 'application/javascript' });
+		const worker = new Worker(URL.createObjectURL(blob));
+
+		// Обёртка в Promise для ожидания ответа от воркера
 		const result: Feature[] = await new Promise((resolve, reject) => {
 			worker.onmessage = event => {
 				resolve(event.data);
@@ -138,7 +222,6 @@ export const useIndexedDB = () => {
 			};
 			worker.postMessage({ azsData, polyline, threshold, firstRouteCoord });
 		});
-
 		return result;
 	};
 

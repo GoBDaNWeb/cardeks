@@ -1,1 +1,0 @@
-export { useFiltersLogic } from './useFilterLogic';

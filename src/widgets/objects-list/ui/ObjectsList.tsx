@@ -34,7 +34,6 @@ export const ObjectsList = () => {
 	} = useTypedSelector(state => state.map);
 	const { activeMenu } = useTypedSelector(store => store.menu);
 	const { activeMenu: mobileActiveMenu } = useTypedSelector(store => store.mobileMenu);
-	const { objectId } = useTypedSelector(store => store.objectInfo);
 	const {
 		selectedFilter,
 		filters: { fuelFilters, brandTitles, addServices, features, gateHeight, terminal, card }

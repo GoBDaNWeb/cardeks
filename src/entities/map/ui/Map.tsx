@@ -345,11 +345,10 @@ export const CustomMap = () => {
 		if (!isLoading && map && features.length > 0 && objectManagerState) {
 			objectManagerState.add(features);
 
-			map.geoObjects.add(objectManagerState);
-
 			dispatch(setMapLoading(false));
 
 			if (!isUrlBuild && !buildRoute) {
+				map.geoObjects.add(objectManagerState);
 				const azsPoints = features;
 				const washingPoints = features.filter((marker: Feature) => marker.types.washing);
 				const tirePoints = features.filter((marker: Feature) => marker.types.tire);

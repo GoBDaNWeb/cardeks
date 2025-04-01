@@ -15,7 +15,7 @@ export const getQueryParams = () => {
 				const [title, value] = entry.split(separator).map(decodeURIComponent);
 				return { title, value };
 			}),
-		brandsParam: params.get('brands'),
+		brandsParam: params.get('brands')?.split('-'),
 		selectedFilterParam: params.get('selectedFilter'),
 		addServicesParam: params.get('addServices')?.split('-'),
 		terminalParam: params.get('terminal'),
