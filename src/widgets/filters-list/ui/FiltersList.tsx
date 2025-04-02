@@ -67,7 +67,7 @@ export const FiltersList = () => {
 	const [services, setServices] = useState<string[]>(addServicesParam ? addServicesParam : []);
 	const prevSelectedFilter = useRef(selectedFilter);
 	const dispatch = useDispatch();
-	const { getBrands, isDbReady } = useIndexedDB();
+	const { getBrands, isDbReady, getAllData } = useIndexedDB();
 
 	const updateBrandState = (newState: Partial<typeof brandState>) => {
 		setBrandState(prev => ({ ...prev, ...newState }));
@@ -77,18 +77,21 @@ export const FiltersList = () => {
 	};
 
 	const handleGetBradns = useCallback(async () => {
-		const brands = await getBrands();
-		if (brandTitles) {
-			const filterBrands = brands.filter(brand => {
-				return !brandTitles.includes(brand);
-			});
-			updateBrandState({ dataBrands: filterBrands });
+		if (isDbReady && filtersIsOpen) {
+			const brands = await getBrands();
+			const data = await getAllData();
+			if (brandTitles) {
+				const filterBrands = brands.filter(brand => {
+					return !brandTitles.includes(brand);
+				});
+				updateBrandState({ dataBrands: filterBrands });
 
-			return;
-		} else {
-			updateBrandState({ dataBrands: brands });
+				return;
+			} else {
+				updateBrandState({ dataBrands: brands });
+			}
 		}
-	}, [getBrands]);
+	}, [getBrands, isDbReady, filtersIsOpen]);
 
 	const handleGetCards = useCallback(async () => {
 		const cards = cardsList;

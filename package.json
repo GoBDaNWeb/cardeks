@@ -19,6 +19,7 @@
     "@yandex/ymaps3-default-ui-theme": "^0.0.12",
     "clsx": "^2.1.1",
     "dexie": "^4.0.11",
+    "exceljs": "^4.4.0",
     "file-saver": "^2.0.5",
     "idb": "^8.0.1",
     "rbush": "^4.0.1",

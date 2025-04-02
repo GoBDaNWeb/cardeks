@@ -151,13 +151,13 @@ export const DownloadFiles: FC<IDownloadFiles> = ({ title, text, btnText, downlo
 							)}
 						/>
 					</div>
-					{/* <Controller
+					<Controller
 						control={control}
 						name='radio'
 						render={({ field: { onChange } }) => (
 							<Radio label='Excel' name='download' onChange={() => onChange('excel')} />
 						)}
-					/> */}
+					/>
 					{!download ? (
 						<Controller
 							control={control}
