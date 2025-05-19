@@ -1,20 +1,23 @@
 import { getQueryParams } from '@/shared/lib';
 import { Feature, MapTypes } from '@/shared/types';
 
-import { createSlice } from '@reduxjs/toolkit';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 const { zoomParam, routesParam } = getQueryParams();
 
-interface ISearchInfo {
+// Types
+export interface ISearchInfo {
 	search: boolean;
 	searchValue: string;
 	buildSearch: boolean;
 }
-interface ICategoryTotals {
+
+export interface ICategoryTotals {
 	total: number;
 	totalView: number;
 }
-interface IMapInfo {
+
+export interface IMapInfo {
 	zoom: number;
 	isWheel: boolean;
 	mapType: MapTypes;
@@ -24,10 +27,10 @@ interface IMapInfo {
 	center: number[];
 	fixedCenter: number[];
 	mapLoading: boolean;
-	pointsData: Record<'points' | 'washing' | 'tire' | 'azs', ICategoryTotals>;
+	pointsData: Record<CategoryType, ICategoryTotals>;
 }
 
-interface IRouteInfo {
+export interface IRouteInfo {
 	isSelectAddress: boolean;
 	selectedAddress: string;
 	routeCoords: number[][];
@@ -50,30 +53,40 @@ interface IRouteInfo {
 	getLocation: boolean;
 }
 
-interface IRootState {
+export interface IMapState {
 	searchInfo: ISearchInfo;
 	mapInfo: IMapInfo;
 	routeInfo: IRouteInfo;
 }
 
-const initialState: IRootState = {
+// Constants
+export const DEFAULT_ZOOM = 8;
+export const DEFAULT_MAP_TYPE: MapTypes = 'yandex#map';
+export const DEFAULT_FIELDS_COUNT = 2;
+
+export type CategoryType = 'points' | 'washing' | 'tire' | 'azs';
+
+// Initial state
+const initialPointsData: Record<CategoryType, ICategoryTotals> = {
+	points: { total: 0, totalView: 0 },
+	washing: { total: 0, totalView: 0 },
+	tire: { total: 0, totalView: 0 },
+	azs: { total: 0, totalView: 0 }
+};
+
+const initialState: IMapState = {
 	searchInfo: {
 		search: false,
 		searchValue: '',
 		buildSearch: false
 	},
 	mapInfo: {
-		zoom: zoomParam ? +zoomParam : 8,
+		zoom: zoomParam ? +zoomParam : DEFAULT_ZOOM,
 		isWheel: false,
-		mapType: 'yandex#map',
+		mapType: DEFAULT_MAP_TYPE,
 		panorama: false,
 		panoramaIsOpen: false,
-		pointsData: {
-			points: { total: 0, totalView: 0 },
-			washing: { total: 0, totalView: 0 },
-			tire: { total: 0, totalView: 0 },
-			azs: { total: 0, totalView: 0 }
-		},
+		pointsData: initialPointsData,
 		points: [],
 		center: [],
 		fixedCenter: [],
@@ -85,10 +98,10 @@ const initialState: IRootState = {
 		routeCoords: [],
 		currentCoords: [],
 		currentPointId: null,
-		fieldsCount: 2,
+		fieldsCount: DEFAULT_FIELDS_COUNT,
 		swapPoints: [],
 		deletePointId: null,
-		buildRoute: routesParam ? true : false,
+		buildRoute: Boolean(routesParam),
 		changeRoute: false,
 		routeIsChanged: false,
 		routeIsBuilded: false,
@@ -103,131 +116,127 @@ const initialState: IRootState = {
 	}
 };
 
+// Slice
 const mapSlice = createSlice({
 	name: 'mapSlice',
 	initialState,
 	reducers: {
-		setZoom(state, action) {
+		setZoom(state, action: PayloadAction<number>) {
 			state.mapInfo.zoom = action.payload;
 		},
-		handleWheel(state, action) {
+		handleWheel(state, action: PayloadAction<boolean>) {
 			state.mapInfo.isWheel = action.payload;
 		},
-
-		setPoints(state, action) {
+		setPoints(state, action: PayloadAction<Feature[]>) {
 			state.mapInfo.points = action.payload;
 		},
-
-		setMapLoading(state, action) {
+		setMapLoading(state, action: PayloadAction<boolean>) {
 			state.mapInfo.mapLoading = action.payload;
 		},
-
-		setLocation(state, action) {
+		setLocation(state, action: PayloadAction<boolean>) {
 			state.routeInfo.getLocation = action.payload;
 		},
-		setPointsOnRoute(state, action) {
+		setPointsOnRoute(state, action: PayloadAction<Feature[]>) {
 			state.routeInfo.pointsOnRoute = action.payload;
 		},
-		setIsCursorPoint(state, action) {
+		setIsCursorPoint(state, action: PayloadAction<boolean>) {
 			state.routeInfo.isCursorPoint = action.payload;
 		},
-		setMapType(state, action) {
+		setMapType(state, action: PayloadAction<MapTypes>) {
 			state.mapInfo.mapType = action.payload;
 		},
-		setSelectAddress(state, action) {
+		setSelectAddress(state, action: PayloadAction<boolean>) {
 			state.routeInfo.isSelectAddress = action.payload;
 		},
-		setCenter(state, action) {
+		setCenter(state, action: PayloadAction<number[]>) {
 			state.mapInfo.center = action.payload;
 		},
-		setFixedCenter(state, action) {
+		setFixedCenter(state, action: PayloadAction<number[]>) {
 			state.mapInfo.fixedCenter = action.payload;
 		},
-		setAddress(state, action) {
+		setAddress(state, action: PayloadAction<string>) {
 			state.routeInfo.selectedAddress = action.payload;
 		},
-		setCoords(state, action) {
+		setCoords(state, action: PayloadAction<number[][]>) {
 			state.routeInfo.routeCoords = action.payload;
 		},
-		setCurrentCoords(state, action) {
+		setCurrentCoords(state, action: PayloadAction<number[][]>) {
 			state.routeInfo.currentCoords = action.payload;
 		},
-		setCurrentPointId(state, action) {
+		setCurrentPointId(state, action: PayloadAction<string | null>) {
 			state.routeInfo.currentPointId = action.payload;
 		},
-
-		setSwapPoints(state, action) {
+		setSwapPoints(state, action: PayloadAction<string[]>) {
 			state.routeInfo.swapPoints = action.payload;
 		},
-		setDeletePointId(state, action) {
+		setDeletePointId(state, action: PayloadAction<string | null>) {
 			state.routeInfo.deletePointId = action.payload;
 		},
-		setBuildRoute(state, action) {
+		setBuildRoute(state, action: PayloadAction<boolean>) {
 			state.routeInfo.buildRoute = action.payload;
 		},
-		setRouteBuilded(state, action) {
+		setRouteBuilded(state, action: PayloadAction<boolean>) {
 			state.routeInfo.routeIsBuilded = action.payload;
 		},
-		setIsUrlBuid(state, action) {
+		setIsUrlBuid(state, action: PayloadAction<boolean>) {
 			state.routeInfo.isUrlBuild = action.payload;
 		},
-		setRouteAddresses(state, action) {
+		setRouteAddresses(state, action: PayloadAction<string[]>) {
 			state.routeInfo.routeAddresses = action.payload;
 		},
 		clearRouteAddresses(state) {
 			state.routeInfo.routeAddresses = [];
 		},
-		setRouteTime(state, action) {
+		setRouteTime(state, action: PayloadAction<string>) {
 			state.routeInfo.routeTime = action.payload;
 		},
-		setRouteLength(state, action) {
+		setRouteLength(state, action: PayloadAction<string>) {
 			state.routeInfo.routeLength = action.payload;
 		},
-		setChangeRoute(state, action) {
+		setChangeRoute(state, action: PayloadAction<boolean>) {
 			state.routeInfo.changeRoute = action.payload;
 		},
-		setRouteChanged(state, action) {
+		setRouteChanged(state, action: PayloadAction<boolean>) {
 			state.routeInfo.routeIsChanged = action.payload;
 		},
-		setFieldsCount(state, action) {
+		setFieldsCount(state, action: PayloadAction<number>) {
 			state.routeInfo.fieldsCount = action.payload;
 		},
-		setAzsOnRoute(state, action) {
+		setAzsOnRoute(state, action: PayloadAction<number>) {
 			state.routeInfo.azsOnRoute = action.payload;
 		},
-		setPanorama(state, action) {
+		setPanorama(state, action: PayloadAction<boolean>) {
 			state.mapInfo.panorama = action.payload;
 		},
-		setPanoramaOpen(state, action) {
+		setPanoramaOpen(state, action: PayloadAction<boolean>) {
 			state.mapInfo.panoramaIsOpen = action.payload;
 		},
-		setSearch(state, action) {
+		setSearch(state, action: PayloadAction<boolean>) {
 			state.searchInfo.search = action.payload;
 		},
-		setSearchValue(state, action) {
+		setSearchValue(state, action: PayloadAction<string>) {
 			state.searchInfo.searchValue = action.payload;
 		},
-		setBuildSearch(state, action) {
+		setBuildSearch(state, action: PayloadAction<boolean>) {
 			state.searchInfo.buildSearch = action.payload;
 		},
 		setCategoryTotals(
 			state,
-			action: {
-				payload: {
-					category: keyof IMapInfo['pointsData'];
-					total?: number;
-					totalView?: number;
-				};
-			}
+			action: PayloadAction<{
+				category: CategoryType;
+				total?: number;
+				totalView?: number;
+			}>
 		) {
 			const { category, total, totalView } = action.payload;
+			const categoryData = state.mapInfo.pointsData[category];
 
-			if (state.mapInfo.pointsData[category]) {
+			if (categoryData) {
 				if (total !== undefined) {
-					state.mapInfo.pointsData[category].total = total;
+					categoryData.total = total;
 				}
 				if (totalView !== undefined) {
-					state.mapInfo.pointsData[category].totalView = totalView;
+					categoryData.totalView = totalView;
 				}
 			}
 		}
@@ -270,4 +279,5 @@ export const {
 	setLocation,
 	setCurrentCoords
 } = mapSlice.actions;
+
 export default mapSlice.reducer;

@@ -132,6 +132,7 @@ export const useRoute = ({
 						dispatch(setActiveMenu('route'));
 						dispatch(setRouteAddresses(addressesCollection));
 						objectManagerState.removeAll();
+
 						setRouteCoordsState([...routesArr]);
 						// dispatch(setCoords(routesArr));
 						const geocodePromises = routesArr.map((coord: number[]) => {
@@ -191,6 +192,7 @@ export const useRoute = ({
 								dispatch(setPointsOnRoute(azsOnRoute));
 							}
 						}
+
 						dispatch(setRouteAddresses(addressesCollection));
 					}
 				});
@@ -244,8 +246,6 @@ export const useRoute = ({
 			});
 
 			Promise.all(geocodePromises).then(addresses => {
-				dispatch(setRouteAddresses(addresses));
-
 				setAddressesCollection(addresses);
 			});
 		}

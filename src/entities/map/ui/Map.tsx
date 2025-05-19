@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Loader from 'react-js-loader';
 import { useDispatch } from 'react-redux';
 
@@ -17,19 +17,50 @@ import { createPoints, getVisibleMarkers, mergeData, usePoint, useRoute } from '
 import {
 	handleWheel,
 	setCategoryTotals,
-	setCoords,
 	setCurrentCoords,
 	setCurrentPointId,
 	setFixedCenter,
 	setIsUrlBuid,
 	setMapLoading,
 	setPanoramaOpen,
-	setSearch,
 	setSelectAddress,
 	setZoom
 } from '../model';
 
 import s from './map.module.scss';
+
+interface MapObject {
+	id: string;
+	options: {
+		iconImageHref: string;
+		iconImageSize: [number, number];
+		iconImageOffset: [number, number];
+	};
+	isDisabled?: boolean;
+}
+
+interface YandexMapObject {
+	id: string;
+	options: {
+		iconImageHref: string;
+		iconImageSize: [number, number];
+		iconImageOffset: [number, number];
+	};
+	isDisabled?: boolean;
+}
+
+interface YandexMapEvent {
+	get: (key: string) => string;
+}
+
+const DEFAULT_CENTER = [55.686736, 37.440496];
+const CLUSTER_ICON = {
+	href: '/images/cluster.svg',
+	size: [35, 35],
+	offset: [-35, -35]
+};
+const SELECTED_ICON_SIZE: [number, number] = [45, 65];
+const SELECTED_ICON_OFFSET: [number, number] = [-20, -53];
 
 export const CustomMap = () => {
 	const ymaps = window.ymaps;
@@ -40,8 +71,8 @@ export const CustomMap = () => {
 	const [objectManagerState, setObjectManagerState] = useState<ObjectManager | null>(null);
 	const [pointCollection, setPointCollection] = useState<IPlacemark[]>([]);
 	const { selectedFilterParam } = getQueryParams();
-	const previousObjectRef = useRef(null);
-	const previousOptionsRef = useRef(null);
+	const previousObjectRef = useRef<MapObject | null>(null);
+	const previousOptionsRef = useRef<MapObject['options'] | null>(null);
 	const dispatch = useDispatch();
 	const { saveData, getAllData, filterDataByOptions } = useIndexedDB();
 
@@ -56,14 +87,14 @@ export const CustomMap = () => {
 	const { selectedFilter, filtersIsOpen, clearFilters, filters } = useTypedSelector(
 		state => state.filters
 	);
-	const { objectId: currenctObjectId } = useTypedSelector(state => state.objectInfo);
+	const { objectId: currentObjectId } = useTypedSelector(state => state.objectInfo);
 
-	const init = () => {
+	const init = useCallback(() => {
 		const params = new URLSearchParams(window.location.search);
 		const centerParam = params.get('center');
 		const centerArray = centerParam?.split('-').map(Number);
 		let map = new ymaps.Map('map', {
-			center: centerArray ? centerArray : [55.686736, 37.440496],
+			center: centerArray ? centerArray : DEFAULT_CENTER,
 			zoom
 		});
 
@@ -72,14 +103,7 @@ export const CustomMap = () => {
 			geoObjectOpenBalloonOnClick: true,
 			gridSize: 64,
 			clusterOpenBalloonOnClick: true,
-			clusterIcons: [
-				{
-					href: '/images/cluster.svg',
-					size: [35, 35],
-					offset: [-35, -35]
-				}
-			],
-			// clusterIconContentLayout: '',
+			clusterIcons: [CLUSTER_ICON],
 			clusterIconColor: '#2d9bef'
 		});
 		setObjectManagerState(objectManager);
@@ -155,7 +179,7 @@ export const CustomMap = () => {
 					map.geoObjects.add(result.geoObjects);
 				});
 		});
-	};
+	}, [ymaps, zoom, dispatch]);
 
 	useEffect(() => {
 		if (getLocation) {
@@ -176,104 +200,80 @@ export const CustomMap = () => {
 		}
 	}, [getLocation]);
 
+	const handleObjectClick = useCallback(
+		(objectId: string) => {
+			if (!objectManagerState) return;
+
+			const targetObject = objectManagerState.objects.getById(objectId) as YandexMapObject;
+			if (!targetObject || targetObject.isDisabled) return;
+
+			if (previousObjectRef.current && previousObjectRef.current.id !== objectId) {
+				const restoredObject = JSON.parse(JSON.stringify(previousObjectRef.current));
+				restoredObject.options = { ...previousOptionsRef.current };
+
+				objectManagerState.remove(previousObjectRef.current);
+				setTimeout(() => {
+					objectManagerState.add(restoredObject);
+				}, 50);
+			}
+
+			previousObjectRef.current = JSON.parse(JSON.stringify(targetObject));
+			previousOptionsRef.current = { ...targetObject.options };
+
+			const newObject = JSON.parse(JSON.stringify(targetObject));
+			newObject.options.iconImageHref = newObject.options.iconImageHref.replace(/(\.png)$/, 'r$1');
+			newObject.options.iconImageSize = SELECTED_ICON_SIZE;
+			newObject.options.iconImageOffset = SELECTED_ICON_OFFSET;
+			newObject.isDisabled = true;
+
+			objectManagerState.remove(targetObject);
+			setTimeout(() => {
+				objectManagerState.add(newObject);
+			}, 50);
+		},
+		[objectManagerState]
+	);
+
 	const filter = useCallback(async () => {
-		if (objectManagerState && map) {
-			objectManagerState.removeAll();
+		if (!objectManagerState || !map) return;
 
-			const filteredData = await filterDataByOptions(
-				filters.fuelFilters,
-				filters.features,
-				filters.brandTitles,
-				[],
-				filters.addServices,
-				filters.gateHeight,
-				filters.terminal,
-				filters.card,
-				selectedFilter,
-				filters.relatedProducts
-			);
+		objectManagerState.removeAll();
 
-			const azsPoints = filteredData;
-			const washingPoints = filteredData.filter((marker: Feature) => marker.types.washing);
-			const tirePoints = filteredData.filter((marker: Feature) => marker.types.tire);
-			dispatch(
-				setCategoryTotals({
-					category: 'azs',
-					total: azsPoints.length
-				})
-			);
-			dispatch(
-				setCategoryTotals({
-					category: 'tire',
-					total: tirePoints.length
-				})
-			);
-			dispatch(
-				setCategoryTotals({
-					category: 'washing',
-					total: washingPoints.length
-				})
-			);
-			objectManagerState.removeAll();
-			objectManagerState.add(filteredData);
-			getVisibleMarkers(map, objectManagerState, dispatch);
-		}
-	}, [
-		objectManagerState,
-		selectedFilter,
-		filters.fuelFilters,
-		filters.features,
-		filters.brandTitles,
-		filters.addServices,
-		filters.gateHeight,
-		filters.terminal,
-		filters.card,
-		filters.relatedProducts
-	]);
+		const filteredData = await filterDataByOptions(
+			filters.fuelFilters,
+			filters.features,
+			filters.brandTitles,
+			[],
+			filters.addServices,
+			filters.gateHeight,
+			filters.terminal,
+			filters.card,
+			selectedFilter,
+			filters.relatedProducts
+		);
+
+		const azsPoints = filteredData;
+		const washingPoints = filteredData.filter((marker: Feature) => marker.types.washing);
+		const tirePoints = filteredData.filter((marker: Feature) => marker.types.tire);
+
+		dispatch(setCategoryTotals({ category: 'azs', total: azsPoints.length }));
+		dispatch(setCategoryTotals({ category: 'tire', total: tirePoints.length }));
+		dispatch(setCategoryTotals({ category: 'washing', total: washingPoints.length }));
+
+		objectManagerState.add(filteredData);
+		getVisibleMarkers(map, objectManagerState, dispatch);
+	}, [objectManagerState, map, selectedFilter, filters, dispatch]);
 
 	useEffect(() => {
 		if (objectManagerState && map) {
-			//@ts-ignore
-			objectManagerState.objects.overlays.events.add('click', function (e) {
+			// @ts-ignore - Yandex Maps types are incomplete
+			objectManagerState.objects.overlays.events.add('click', function (e: YandexMapEvent) {
 				const objectId = e.get('objectId');
-				const targetObject = objectManagerState.objects.getById(objectId);
-
-				if (!targetObject) return;
-				//@ts-ignore
-				if (targetObject.isDisabled) return;
-				//@ts-ignore
-				if (previousObjectRef.current && previousObjectRef.current.id !== objectId) {
-					const restoredObject = JSON.parse(JSON.stringify(previousObjectRef.current));
-					//@ts-ignore
-					restoredObject.options = { ...previousOptionsRef.current };
-
-					objectManagerState.remove(previousObjectRef.current);
-					setTimeout(() => {
-						objectManagerState.add(restoredObject);
-					}, 50);
-				}
-
-				previousObjectRef.current = JSON.parse(JSON.stringify(targetObject));
-				//@ts-ignore
-				previousOptionsRef.current = { ...targetObject.options };
-
-				const newObject = JSON.parse(JSON.stringify(targetObject));
-				newObject.options.iconImageHref = newObject.options.iconImageHref.replace(
-					/(\.png)$/,
-					'r$1'
-				);
-				newObject.options.iconImageSize = [45, 65];
-				newObject.options.iconImageOffset = [-20, -53];
-				newObject.isDisabled = true;
-
-				objectManagerState.remove(targetObject);
-				setTimeout(() => {
-					objectManagerState.add(newObject);
-				}, 50);
+				handleObjectClick(objectId);
 			});
-			if (currenctObjectId === null && previousObjectRef.current) {
+
+			if (currentObjectId === null && previousObjectRef.current) {
 				const restoredObject = JSON.parse(JSON.stringify(previousObjectRef.current));
-				//@ts-ignore
 				restoredObject.options = { ...previousOptionsRef.current };
 
 				objectManagerState.remove(previousObjectRef.current);
@@ -285,13 +285,14 @@ export const CustomMap = () => {
 				previousOptionsRef.current = null;
 			}
 
-			if (currenctObjectId !== null) {
-				const selectedObject = objectManagerState.objects.getById(currenctObjectId);
+			if (currentObjectId !== null) {
+				const selectedObject = objectManagerState.objects.getById(
+					currentObjectId
+				) as YandexMapObject;
 
 				if (selectedObject) {
-					if (previousObjectRef.current && previousObjectRef.current.id !== currenctObjectId) {
+					if (previousObjectRef.current && previousObjectRef.current.id !== currentObjectId) {
 						const restoredObject = JSON.parse(JSON.stringify(previousObjectRef.current));
-						//@ts-ignore
 						restoredObject.options = { ...previousOptionsRef.current };
 
 						objectManagerState.remove(previousObjectRef.current);
@@ -305,8 +306,8 @@ export const CustomMap = () => {
 						/(\.png)$/,
 						'r$1'
 					);
-					updatedObject.options.iconImageSize = [45, 65];
-					updatedObject.options.iconImageOffset = [-20, -53];
+					updatedObject.options.iconImageSize = SELECTED_ICON_SIZE;
+					updatedObject.options.iconImageOffset = SELECTED_ICON_OFFSET;
 
 					objectManagerState.remove(selectedObject);
 					setTimeout(() => {
@@ -314,7 +315,6 @@ export const CustomMap = () => {
 					}, 50);
 
 					previousObjectRef.current = JSON.parse(JSON.stringify(selectedObject));
-					//@ts-ignore
 					previousOptionsRef.current = { ...selectedObject.options };
 				}
 			}
@@ -322,11 +322,11 @@ export const CustomMap = () => {
 
 		return () => {
 			if (objectManagerState) {
-				//@ts-ignore
+				// @ts-ignore - Yandex Maps types are incomplete
 				objectManagerState.objects.overlays.events.remove('click');
 			}
 		};
-	}, [objectManagerState, map, currenctObjectId]);
+	}, [objectManagerState, map, currentObjectId, handleObjectClick]);
 
 	useEffect(() => {
 		if (ymaps) {
@@ -345,10 +345,11 @@ export const CustomMap = () => {
 		if (!isLoading && map && features.length > 0 && objectManagerState) {
 			objectManagerState.add(features);
 
+			map.geoObjects.add(objectManagerState);
+
 			dispatch(setMapLoading(false));
 
 			if (!isUrlBuild && !buildRoute) {
-				map.geoObjects.add(objectManagerState);
 				const azsPoints = features;
 				const washingPoints = features.filter((marker: Feature) => marker.types.washing);
 				const tirePoints = features.filter((marker: Feature) => marker.types.tire);
@@ -473,10 +474,14 @@ export const CustomMap = () => {
 		}
 	}, [center, map]);
 
-	const mapClass = clsx({
-		[s.select]: isSelectAddress,
-		[s.panorama]: panoramaIsOpen
-	});
+	const mapClass = useMemo(
+		() =>
+			clsx({
+				[s.select]: isSelectAddress,
+				[s.panorama]: panoramaIsOpen
+			}),
+		[isSelectAddress, panoramaIsOpen]
+	);
 
 	return (
 		<div>

@@ -76,7 +76,7 @@ export const useIndexedDB = () => {
 							: card === 'Кардекс'
 								? !['Лукойл', 'Тебойл'].includes(title)
 								: true)) &&
-					addittional?.relatedProducts === relatedProducts
+					(!relatedProducts || addittional?.relatedProducts === relatedProducts)
 				);
 			}
 		);
@@ -111,7 +111,6 @@ export const useIndexedDB = () => {
 
 		const linesArr = line.toArray();
 		if (!linesArr.length) return [];
-
 		// Получаем данные АЗС: либо из переданного массива, либо из базы
 		const azsData = azsArr?.length ? azsArr : await db.points.filter(el => el.geometry).toArray();
 		if (!azsData.length) return [];
@@ -122,6 +121,13 @@ export const useIndexedDB = () => {
 			typeof routeGeometry.getCoordinates === 'function'
 				? routeGeometry.getCoordinates()
 				: routeGeometry.coordinates;
+		const result2 =
+			routeGeometry
+				.getCoordinates()
+				.map(point => point.join(','))
+				.join(';') + ';';
+		// console.log(result2);
+		// console.log(firstRouteCoord);
 
 		// Создаем воркер из отдельного файла
 		const worker = new Worker(new URL('./azsWorker.js', import.meta.url));
@@ -138,6 +144,8 @@ export const useIndexedDB = () => {
 			};
 			worker.postMessage({ azsData, polyline, threshold, firstRouteCoord });
 		});
+		const consoleResult = result.map(item => item.geometry.coordinates);
+		// console.log(JSON.stringify(consoleResult));
 
 		return result;
 	};
