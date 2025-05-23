@@ -64,10 +64,11 @@ export const FiltersList = () => {
 		activeCard: 0,
 		dataCards: [] as string[]
 	});
+
 	const [services, setServices] = useState<string[]>(addServicesParam ? addServicesParam : []);
 	const prevSelectedFilter = useRef(selectedFilter);
 	const dispatch = useDispatch();
-	const { getBrands, isDbReady, getAllData } = useIndexedDB();
+	const { getBrands, isDbReady } = useIndexedDB();
 
 	const updateBrandState = (newState: Partial<typeof brandState>) => {
 		setBrandState(prev => ({ ...prev, ...newState }));
@@ -77,21 +78,18 @@ export const FiltersList = () => {
 	};
 
 	const handleGetBradns = useCallback(async () => {
-		if (isDbReady && filtersIsOpen) {
-			const brands = await getBrands();
-			const data = await getAllData();
-			if (brandTitles) {
-				const filterBrands = brands.filter(brand => {
-					return !brandTitles.includes(brand);
-				});
-				updateBrandState({ dataBrands: filterBrands });
+		const brands = await getBrands();
+		if (brandTitles) {
+			const filterBrands = brands.filter(brand => {
+				return !brandTitles.includes(brand);
+			});
+			updateBrandState({ dataBrands: filterBrands });
 
-				return;
-			} else {
-				updateBrandState({ dataBrands: brands });
-			}
+			return;
+		} else {
+			updateBrandState({ dataBrands: brands });
 		}
-	}, [getBrands, isDbReady, filtersIsOpen]);
+	}, [getBrands]);
 
 	const handleGetCards = useCallback(async () => {
 		const cards = cardsList;
@@ -197,7 +195,6 @@ export const FiltersList = () => {
 	useEffect(() => {
 		if (filtersIsOpen && selectedFilter !== prevSelectedFilter.current) {
 			dispatch(setFeatures([]));
-			dispatch(setFuelFilters([]));
 			dispatch(setAddServices([]));
 			dispatch(setGateHeight(null));
 			setServices([]);
@@ -260,14 +257,9 @@ export const FiltersList = () => {
 	// Сброс фильтров при открытии/закрытии
 	useEffect(() => {
 		updateBrandState({ inputBrandValue: '' });
-		updateCardState({ inputCardValue: '' });
 		if (brandState.dataBrands) {
 			updateBrandState({ filteredBrands: brandState.dataBrands });
 			updateBrandState({ currentBrands: brandState.dataBrands });
-		}
-		if (cardState.dataCards) {
-			updateCardState({ filteredCards: cardState.dataCards });
-			updateCardState({ currentCards: cardState.dataCards });
 		}
 	}, [filtersIsOpen]);
 
@@ -330,22 +322,20 @@ export const FiltersList = () => {
 					<p>Бренд</p>
 					<div className={s.brandWrapper}>
 						<div className={s.chips}>
-							{brandState.selectedBrands.length > 0
-								? brandState.selectedBrands.map((brand: string, index: number) => (
-										<Chip key={index} isActive>
-											{brand}
-											<div className={s.closeBtn} onClick={() => handleRemoveBrand(brand)}>
-												<CloseIcon />
-											</div>
-										</Chip>
-									))
-								: null}
+							{brandState.selectedBrands.map((brand: string, index: number) => (
+								<Chip key={index} isActive>
+									{brand}
+									<div className={s.closeBtn} onClick={() => handleRemoveBrand(brand)}>
+										<CloseIcon />
+									</div>
+								</Chip>
+							))}
 						</div>
 						<Input
 							onChange={handleChangeInputBrandValue}
 							value={brandState.inputBrandValue}
 							isStyled
-							placeholder='Название'
+							placeholder='Номер или название'
 							onFocus={() => setDropdownActive(true)}
 							onBlur={() => handleBlur()}
 						/>

@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import { setOpenFilters } from '@/widgets/filters';
 import { setActiveMenu } from '@/widgets/menu-list';
 
+import { useFindAzsOnRouteMutation, useGetTerminalsQuery } from '@/shared/api';
 import { getQueryParams, useIndexedDB, useTypedSelector } from '@/shared/lib';
 import { Feature } from '@/shared/types';
 
@@ -18,7 +19,7 @@ import {
 	setRouteLength,
 	setRouteTime
 } from '../../model';
-import { createPlacemark, routeToLineString } from '../helpers';
+import { createPlacemark, createPoints, mergeData, routeToLineString } from '../helpers';
 
 interface IUseRouteProps {
 	ymaps: any;
@@ -38,17 +39,18 @@ export const useRoute = ({
 	const [addressesCollection, setAddressesCollection] = useState<string[]>([]);
 	const [routeCoordsState, setRouteCoordsState] = useState<number[][]>([]);
 	const dispatch = useDispatch();
-	const { filterDataByOptions, getAzsOnRoute } = useIndexedDB();
+	const { filterDataByOptions } = useIndexedDB();
 	const {
 		routeInfo: { routeCoords, buildRoute, routeIsChanged, pointsOnRoute, isUrlBuild }
 	} = useTypedSelector(state => state.map);
 	const { selectedFilter, filters } = useTypedSelector(state => state.filters);
 	const { addSettings, withFilters } = useTypedSelector(state => state.routeForm);
 	const { routesParam } = getQueryParams();
-
+	const { data: terminalsList } = useGetTerminalsQuery();
 	const multiRouteRef = useRef<any>(null);
+	const [fetchAzs] = useFindAzsOnRouteMutation();
 
-	const filtered = async () => {
+	const filtered = async (points?: Feature[]) => {
 		const filteredData = await filterDataByOptions(
 			filters.fuelFilters,
 			filters.features,
@@ -59,7 +61,8 @@ export const useRoute = ({
 			filters.terminal,
 			filters.card,
 			selectedFilter,
-			filters.relatedProducts
+			filters.relatedProducts,
+			points
 		);
 		return filteredData;
 	};
@@ -152,44 +155,68 @@ export const useRoute = ({
 							setPointCollection(prevCollection => [...prevCollection, myPlacemark]);
 						});
 						if (withFilters) {
-							const newFilteredPoints = await filtered();
-							const azsOnRoute = await getAzsOnRoute(
-								newFilteredPoints,
-								//@ts-ignore
-								lines,
-								threshold,
-								routesArr[0]
-							);
+							// @ts-ignore
+							const linesArr = lines.toArray()[0].geometry.getCoordinates();
+							const findAzsData = {
+								radius: threshold,
+								points: linesArr
+							};
+							const currentAzs = await fetchAzs(findAzsData).unwrap();
+							const mergedData = mergeData(currentAzs.data, terminalsList.data);
 
-							if (azsOnRoute && objectManagerState) {
-								dispatch(setPointsOnRoute(azsOnRoute));
+							const points = createPoints(mergedData);
+							const newFilteredPoints = await filtered(points);
+
+							if (points.length > 0 && objectManagerState) {
+								dispatch(setPointsOnRoute(newFilteredPoints));
 							}
 						} else {
 							//@ts-ignore
-							const azsOnRoute = await getAzsOnRoute([], lines, threshold, routeCoords[0]);
-							if (azsOnRoute && objectManagerState) {
-								dispatch(setPointsOnRoute(azsOnRoute));
+							const linesArr = lines.toArray()[0].geometry.getCoordinates();
+							const findAzsData = {
+								radius: threshold,
+								points: linesArr
+							};
+							const currentAzs = await fetchAzs(findAzsData).unwrap();
+							const mergedData = mergeData(currentAzs.data, terminalsList.data);
+
+							const points = createPoints(mergedData);
+
+							if (points.length > 0 && objectManagerState) {
+								dispatch(setPointsOnRoute(points));
 							}
 						}
 					} else {
 						if (withFilters) {
-							const newFilteredPoints = await filtered();
-							const azsOnRoute = await getAzsOnRoute(
-								newFilteredPoints,
-								//@ts-ignore
-								lines,
-								threshold,
-								routeCoords[0]
-							);
+							// @ts-ignore
+							const linesArr = lines.toArray()[0].geometry.getCoordinates();
+							const findAzsData = {
+								radius: threshold,
+								points: linesArr
+							};
+							const currentAzs = await fetchAzs(findAzsData).unwrap();
+							const mergedData = mergeData(currentAzs.data, terminalsList.data);
 
-							if (azsOnRoute && objectManagerState) {
-								dispatch(setPointsOnRoute(azsOnRoute));
+							const points = createPoints(mergedData);
+							const newFilteredPoints = await filtered(points);
+
+							if (points.length > 0 && objectManagerState) {
+								dispatch(setPointsOnRoute(newFilteredPoints));
 							}
 						} else {
 							//@ts-ignore
-							const azsOnRoute = await getAzsOnRoute([], lines, threshold, routeCoords[0]);
-							if (azsOnRoute && objectManagerState) {
-								dispatch(setPointsOnRoute(azsOnRoute));
+							const linesArr = lines.toArray()[0].geometry.getCoordinates();
+							const findAzsData = {
+								radius: threshold,
+								points: linesArr
+							};
+							const currentAzs = await fetchAzs(findAzsData).unwrap();
+							const mergedData = mergeData(currentAzs.data, terminalsList.data);
+
+							const points = createPoints(mergedData);
+
+							if (points.length > 0 && objectManagerState) {
+								dispatch(setPointsOnRoute(points));
 							}
 						}
 

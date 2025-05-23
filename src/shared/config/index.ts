@@ -49,16 +49,16 @@ export const fuelList = [
 ];
 
 export const azsMainFilters = [
-	{
-		title: 'Оплата из машины',
-		value: 'abilityPPay'
-	},
+	// {
+	// 	title: 'Оплата из машины',
+	// 	value: 'abilityPPay'
+	// },
 	{
 		title: 'Сбросить счетчик PIN кода',
 		value: 'canManageCards'
-	},
-	{
-		title: 'Оплата по штрихкоду',
-		value: 'ppayBarcode'
 	}
+	// {
+	// 	title: 'Оплата по штрихкоду',
+	// 	value: 'ppayBarcode'
+	// }
 ];

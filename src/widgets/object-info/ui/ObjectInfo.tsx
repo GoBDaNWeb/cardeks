@@ -23,6 +23,8 @@ export const ObjectInfo = () => {
 	const { getDataById } = useIndexedDB();
 	const dispatch = useDispatch();
 
+	const { activeMenu } = useTypedSelector(store => store.menu);
+	const { filtersIsOpen } = useTypedSelector(store => store.filters);
 	const { data, isLoading } = useGetTerminalsQuery();
 	const { objectId } = useTypedSelector(store => store.objectInfo);
 	const {
@@ -74,7 +76,8 @@ export const ObjectInfo = () => {
 
 	const objectInfoClass = clsx(s.objectInfo, {
 		[s.active]: objectId && !objectId.includes('__cluster__'),
-		[s.top]: objectId && !objectId.includes('__cluster__') && routeIsBuilded
+		[s.top]: objectId && !objectId.includes('__cluster__') && routeIsBuilded,
+		[s.left]: filtersIsOpen || activeMenu
 	});
 
 	return (
@@ -101,10 +104,10 @@ export const ObjectInfo = () => {
 					{azsItem?.features.canManageCards ? (
 						<div className={s.feature}>Сбросить счетчик PIN-кода</div>
 					) : null}
-					{azsItem?.features.abilityPPay ? <div className={s.feature}>Оплата из машины</div> : null}
+					{/* {azsItem?.features.abilityPPay ? <div className={s.feature}>Оплата из машины</div> : null}
 					{azsItem?.features.ppayBarcode ? (
 						<div className={s.feature}>Оплата по штрихкоду</div>
-					) : null}
+					) : null} */}
 				</div>
 
 				<p className={s.address}>{terminal && terminal[1]}</p>

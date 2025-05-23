@@ -111,12 +111,12 @@
 			max-width: 36px !important;
 			max-height: 36px !important;
 		}
-		@media (max-width: $tab-sm) {
-			min-width: 32px !important;
-			min-height: 32px !important;
-			max-width: 32px !important;
-			max-height: 32px !important;
-		}
+		// @media (max-width: $tab-sm) {
+		// 	min-width: 32px !important;
+		// 	min-height: 32px !important;
+		// 	max-width: 32px !important;
+		// 	max-height: 32px !important;
+		// }
 	}
 	.ymaps3x0--controls {
 		height: fit-content !important;

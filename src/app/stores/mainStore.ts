@@ -14,7 +14,7 @@ import { newRouteModalReducer } from '@/entities/new-route-modal';
 import { objectInfoReducer } from '@/entities/object-info';
 import { printModalReducer } from '@/entities/print-modal';
 
-import { cardeksAPI, cardeksPointsAPI } from '@/shared/api';
+import { cardeksAPI, cardeksPointsAPI, cardeksRoutePoints } from '@/shared/api';
 
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 
@@ -33,13 +33,18 @@ const mainReducer = combineReducers({
 	printModal: printModalReducer,
 	objectInfo: objectInfoReducer,
 	[cardeksAPI.reducerPath]: cardeksAPI.reducer,
-	[cardeksPointsAPI.reducerPath]: cardeksPointsAPI.reducer
+	[cardeksPointsAPI.reducerPath]: cardeksPointsAPI.reducer,
+	[cardeksRoutePoints.reducerPath]: cardeksRoutePoints.reducer
 });
 
 export const mainStore = configureStore({
 	reducer: mainReducer,
 	middleware: getDefaultMiddleware =>
-		getDefaultMiddleware().concat(cardeksAPI.middleware).concat(cardeksPointsAPI.middleware)
+		getDefaultMiddleware().concat(
+			cardeksAPI.middleware,
+			cardeksPointsAPI.middleware,
+			cardeksRoutePoints.middleware
+		)
 });
 
 export type RootState = ReturnType<typeof mainStore.getState>;

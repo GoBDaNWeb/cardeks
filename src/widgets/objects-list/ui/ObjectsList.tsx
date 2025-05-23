@@ -138,7 +138,10 @@ export const ObjectsList = () => {
 			</div>
 			<div className={s.objectListContent}>
 				{displayedPoints.map((point: Feature, index: number) => (
-					<div key={point.id} ref={index === displayedPoints.length - 1 ? lastElementRef : null}>
+					<div
+						key={`${point.id}-${index}`}
+						ref={index === displayedPoints.length - 1 ? lastElementRef : null}
+					>
 						<ObjectItem
 							id={point.id}
 							title={point.title}

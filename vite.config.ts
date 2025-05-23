@@ -20,5 +20,14 @@ export default defineConfig({
 		supported: {
 			'top-level-await': true //browsers can handle top-level-await features
 		}
+	},
+	server: {
+		proxy: {
+			'/api': {
+				target: 'https://mapapi-dev.card-oil.ru',
+				changeOrigin: true,
+				rewrite: path => path.replace(/^\/api/, '')
+			}
+		}
 	}
 });
