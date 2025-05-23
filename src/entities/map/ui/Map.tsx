@@ -81,7 +81,7 @@ export const CustomMap = () => {
 
 	const {
 		mapInfo: { zoom, isWheel, mapType, panorama, panoramaIsOpen, center, mapLoading },
-		routeInfo: { isSelectAddress, isUrlBuild, buildRoute, getLocation }
+		routeInfo: { isSelectAddress, isUrlBuild, buildRoute, getLocation, routeIsBuilding }
 	} = useTypedSelector(state => state.map);
 
 	const { selectedFilter, filtersIsOpen, clearFilters, filters } = useTypedSelector(
@@ -496,6 +496,14 @@ export const CustomMap = () => {
 					}}
 				>
 					<Loader type='bubble-ping' bgColor='#5dafee' color='#5dafee' size={240} />
+				</div>
+			) : null}
+			{routeIsBuilding ? (
+				<div className='route-loader'>
+					<div className='route-loader-content'>
+						<Loader type='bubble-ping' bgColor='#5dafee' color='#5dafee' size={240} />
+						<p>Маршрут загружается</p>
+					</div>
 				</div>
 			) : null}
 

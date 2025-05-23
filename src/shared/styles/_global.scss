@@ -282,3 +282,28 @@ h5 {
 	border-top: 1px solid rgba(92, 94, 102, 0.1);
 	margin: 8px 0;
 }
+
+.route-loader {
+	position: fixed;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	z-index: 100;
+	background: rgba(255, 255, 255, 0.5);
+	backdrop-filter: blur(15px);
+	.route-loader-content {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-direction: column;
+		gap: 50px;
+		p {
+			@include h5;
+		}
+	}
+}

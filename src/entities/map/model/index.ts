@@ -29,6 +29,7 @@ export {
 	setPoints,
 	setMapLoading,
 	setIsUrlBuid,
+	setRouteIsBuilding,
 	setIsCursorPoint,
 	setCategoryTotals,
 	setLocation,

@@ -16,6 +16,7 @@ import {
 	setRouteAddresses,
 	setRouteBuilded,
 	setRouteChanged,
+	setRouteIsBuilding,
 	setRouteLength,
 	setRouteTime
 } from '../../model';
@@ -46,9 +47,16 @@ export const useRoute = ({
 	const { selectedFilter, filters } = useTypedSelector(state => state.filters);
 	const { addSettings, withFilters } = useTypedSelector(state => state.routeForm);
 	const { routesParam } = getQueryParams();
+
 	const { data: terminalsList } = useGetTerminalsQuery();
+
 	const multiRouteRef = useRef<any>(null);
-	const [fetchAzs] = useFindAzsOnRouteMutation();
+
+	const [fetchAzs, { isLoading }] = useFindAzsOnRouteMutation();
+
+	useEffect(() => {
+		dispatch(setRouteIsBuilding(isLoading));
+	}, [isLoading]);
 
 	const filtered = async (points?: Feature[]) => {
 		const filteredData = await filterDataByOptions(

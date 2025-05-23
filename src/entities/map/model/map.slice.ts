@@ -51,6 +51,7 @@ export interface IRouteInfo {
 	isUrlBuild: boolean;
 	isCursorPoint: boolean;
 	getLocation: boolean;
+	routeIsBuilding: boolean;
 }
 
 export interface IMapState {
@@ -112,7 +113,8 @@ const initialState: IMapState = {
 		pointsOnRoute: [],
 		isUrlBuild: false,
 		isCursorPoint: false,
-		getLocation: false
+		getLocation: false,
+		routeIsBuilding: false
 	}
 };
 
@@ -174,6 +176,9 @@ const mapSlice = createSlice({
 		},
 		setBuildRoute(state, action: PayloadAction<boolean>) {
 			state.routeInfo.buildRoute = action.payload;
+		},
+		setRouteIsBuilding(state, action: PayloadAction<boolean>) {
+			state.routeInfo.routeIsBuilding = action.payload;
 		},
 		setRouteBuilded(state, action: PayloadAction<boolean>) {
 			state.routeInfo.routeIsBuilded = action.payload;
@@ -274,6 +279,7 @@ export const {
 	setPoints,
 	setMapLoading,
 	setIsUrlBuid,
+	setRouteIsBuilding,
 	setIsCursorPoint,
 	setCategoryTotals,
 	setLocation,
