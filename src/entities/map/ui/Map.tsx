@@ -509,7 +509,7 @@ export const CustomMap = () => {
 	);
 
 	return (
-		<div>
+		<>
 			{mapLoading ? (
 				<div
 					style={{
@@ -532,7 +532,7 @@ export const CustomMap = () => {
 				</div>
 			) : null}
 
-			<div id='map' className={mapClass} style={{ width: '100vw', height: '100vh' }} />
-		</div>
+			<div id='map' className={mapClass} style={{ width: '100%', height: '100%' }} />
+		</>
 	);
 };

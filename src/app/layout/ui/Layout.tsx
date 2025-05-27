@@ -30,7 +30,7 @@ import s from './layout.module.scss';
 
 export const Layout: FC<PropsWithChildren> = ({ children }) => {
 	return (
-		<div className={s.layout}>
+		<>
 			{children}
 
 			<div className={s.widgets}>
@@ -56,6 +56,6 @@ export const Layout: FC<PropsWithChildren> = ({ children }) => {
 				<ModalsMenu />
 				<ToastContainer />
 			</div>
-		</div>
+		</>
 	);
 };
