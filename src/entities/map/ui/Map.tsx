@@ -117,6 +117,13 @@ export const CustomMap = () => {
 		map.controls.remove('rulerControl');
 		map.controls.remove('zoomControl');
 		map.controls.remove('expandControl');
+		map.controls.add('geolocationControl', {
+			float: 'none',
+			position: {
+				bottom: '144px',
+				left: '25px'
+			}
+		});
 		map.controls.add('rulerControl', {
 			float: 'none',
 			position: {
@@ -132,57 +139,75 @@ export const CustomMap = () => {
 		map.geoObjects.events.add('click', function (e) {
 			dispatch(setActiveObject(e.get('objectId')));
 		});
-
-		const GeolocationButtonLayout = ymaps.templateLayoutFactory.createClass(
-			'<button class="custom-geolocation-button"></button>',
-			{
-				build: function () {
-					//@ts-ignore
-					GeolocationButtonLayout.superclass.build.call(this);
-					//@ts-ignore
-					this.getElement().addEventListener('click', this.onClick.bind(this));
-				},
-				onClick: function () {
-					//@ts-ignore
-					this.events.fire('click');
-				},
-				clear: function () {
-					//@ts-ignore
-					this.getElement().removeEventListener('click', this.onClick);
-					//@ts-ignore
-					GeolocationButtonLayout.superclass.clear.call(this);
-				}
-			}
-		);
-		var geolocationButton = new ymaps.control.Button({
-			options: {
-				layout: GeolocationButtonLayout
-			}
-		});
-		map.controls.add(geolocationButton, {
-			float: 'none',
-			position: {
-				bottom: '104px',
-				left: '24px'
-			}
-		});
-
-		geolocationButton.events.add('click', function () {
-			geolocation
-				.get({
-					provider: 'browser',
-					mapStateAutoApply: true
-				})
-				.then(function (result) {
-					//@ts-ignore
-					result.geoObjects.options.set('preset', 'islands#redCircleIcon');
-					map.geoObjects.add(result.geoObjects);
-				});
-		});
 	}, [ymaps, zoom, dispatch]);
 
 	useEffect(() => {
+		if (map && geolocation) {
+			const GeolocationButtonLayout = ymaps.templateLayoutFactory.createClass(
+				'<button class="custom-geolocation-button" title="Геолокация"></button>',
+				{
+					build: function () {
+						//@ts-ignore
+						GeolocationButtonLayout.superclass.build.call(this);
+					},
+					clear: function () {
+						//@ts-ignore
+						GeolocationButtonLayout.superclass.clear.call(this);
+					}
+				}
+			);
+
+			const geolocationButton = new ymaps.control.Button({
+				options: {
+					layout: GeolocationButtonLayout
+				}
+			});
+
+			map.controls.add(geolocationButton, {
+				float: 'none',
+				position: {
+					bottom: '104px',
+					left: '24px'
+				}
+			});
+
+			geolocationButton.events.add('click', function () {
+				if ('geolocation' in navigator) {
+					navigator.geolocation.getCurrentPosition(
+						function (position) {
+							console.log('Success getting position:', position);
+							const coords = [position.coords.latitude, position.coords.longitude];
+							map.setCenter(coords, 14, { checkZoomRange: true });
+							console.log('coords', coords);
+							map.geoObjects.add(
+								new ymaps.Placemark(coords, {
+									balloonContent: 'Вы здесь'
+								})
+							);
+						},
+						function (error) {
+							console.error('Geolocation error:', error);
+							console.error('Error code:', error.code);
+							console.error('Error message:', error.message);
+							alert('Не удалось определить местоположение: ');
+						},
+						{
+							enableHighAccuracy: true,
+							timeout: 5000,
+							maximumAge: 0
+						}
+					);
+				} else {
+					console.error('Geolocation is not supported');
+					alert('Геолокация не поддерживается вашим браузером.');
+				}
+			});
+		}
+	}, [map, geolocation]);
+
+	useEffect(() => {
 		if (getLocation) {
+			console.log('getLocation', getLocation);
 			geolocation
 				.get({
 					provider: 'browser',

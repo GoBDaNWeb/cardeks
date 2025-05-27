@@ -32,16 +32,30 @@
 	.ymaps-2-1-79-image {
 		background-repeat: no-repeat !important;
 	}
+	.ymaps-2-1-79-float-button-icon_icon_geolocation {
+		background-image: url('/images/icons/geo.svg') !important;
+		left: auto;
+	}
 	.ymaps-2-1-79-controls__bottom {
 		.ymaps-2-1-79-controls__control {
 			@media (max-width: $desktop-sm) {
-				inset: auto auto 110px 16px !important;
+				inset: unset !important;
+
+				bottom: 110px !important;
+				left: 16px !important;
+				// inset: auto auto 110px 16px !important;
 			}
 			@media (max-width: $tab) {
-				inset: auto auto 94px 16px !important;
+				inset: unset !important;
+
+				bottom: 94px !important;
+				left: 16px !important;
+				// inset: auto auto 94px 16px !important;
 			}
 			@media (max-width: $tab-sm) {
-				inset: auto auto 16px 56px !important;
+				inset: unset !important;
+				bottom: 16px !important;
+				left: 56px !important;
 				display: flex !important;
 			}
 			@media (max-width: $tab-sm) {
@@ -49,6 +63,7 @@
 				min-height: 36px !important;
 				max-width: 36px !important;
 				max-height: 36px !important;
+				touch-action: manipulation;
 			}
 		}
 	}
