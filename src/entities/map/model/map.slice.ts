@@ -5,6 +5,8 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 const { zoomParam, routesParam } = getQueryParams();
 
+type Coordinates = [number, number];
+
 // Types
 export interface ISearchInfo {
 	search: boolean;
@@ -33,8 +35,8 @@ export interface IMapInfo {
 export interface IRouteInfo {
 	isSelectAddress: boolean;
 	selectedAddress: string;
-	routeCoords: number[][];
-	currentCoords: number[][];
+	routeCoords: Coordinates[];
+	currentCoords: Coordinates[];
 	currentPointId: string | null;
 	fieldsCount: number;
 	swapPoints: string[];
@@ -159,10 +161,10 @@ const mapSlice = createSlice({
 		setAddress(state, action: PayloadAction<string>) {
 			state.routeInfo.selectedAddress = action.payload;
 		},
-		setCoords(state, action: PayloadAction<number[][]>) {
+		setCoords(state, action: PayloadAction<Coordinates[]>) {
 			state.routeInfo.routeCoords = action.payload;
 		},
-		setCurrentCoords(state, action: PayloadAction<number[][]>) {
+		setCurrentCoords(state, action: PayloadAction<Coordinates[]>) {
 			state.routeInfo.currentCoords = action.payload;
 		},
 		setCurrentPointId(state, action: PayloadAction<string | null>) {
@@ -248,42 +250,5 @@ const mapSlice = createSlice({
 	}
 });
 
-export const {
-	setZoom,
-	handleWheel,
-	setMapType,
-	setSelectAddress,
-	setCoords,
-	setAddress,
-	setSwapPoints,
-	setCurrentPointId,
-	setDeletePointId,
-	setBuildRoute,
-	setRouteAddresses,
-	setRouteBuilded,
-	setRouteTime,
-	setRouteLength,
-	clearRouteAddresses,
-	setChangeRoute,
-	setRouteChanged,
-	setPanorama,
-	setPanoramaOpen,
-	setSearch,
-	setSearchValue,
-	setBuildSearch,
-	setFieldsCount,
-	setAzsOnRoute,
-	setPointsOnRoute,
-	setCenter,
-	setFixedCenter,
-	setPoints,
-	setMapLoading,
-	setIsUrlBuid,
-	setRouteIsBuilding,
-	setIsCursorPoint,
-	setCategoryTotals,
-	setLocation,
-	setCurrentCoords
-} = mapSlice.actions;
-
+export { mapSlice };
 export default mapSlice.reducer;

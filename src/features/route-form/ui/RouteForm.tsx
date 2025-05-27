@@ -55,7 +55,7 @@ export const RouteForm: React.FC = () => {
 	} = useTypedSelector(store => store.map);
 	const { activeMenu } = useTypedSelector(store => store.menu);
 	const { activeMenu: mobileActiveMenu } = useTypedSelector(store => store.mobileMenu);
-	const { isSuccess } = useTypedSelector(state => state.newRouteModal);
+	const { props: isSuccess } = useTypedSelector(state => state.modals);
 
 	const { control, register, setValue, getValues, watch } = useForm<IRouteFormValues>({
 		defaultValues: {
@@ -74,7 +74,7 @@ export const RouteForm: React.FC = () => {
 
 	const handleSwap = (index: number) => {
 		swap(index, index + 1);
-		dispatch(setSwapPoints([index, index + 1]));
+		dispatch(setSwapPoints([String(index), String(index + 1)]));
 	};
 
 	const removeQuestion = (index: number) => {

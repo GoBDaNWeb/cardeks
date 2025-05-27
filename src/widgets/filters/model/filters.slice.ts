@@ -85,17 +85,5 @@ const filters = createSlice({
 	}
 });
 
-export const {
-	setSelectedFilter,
-	setOpenFilters,
-	setСlearFilters,
-	setFuelFilters,
-	setAddServices,
-	setGateHeight,
-	setBrandTitles,
-	setFeatures,
-	setTerminal,
-	setCard,
-	setRelatedProducts
-} = filters.actions;
+export { filters };
 export default filters.reducer;

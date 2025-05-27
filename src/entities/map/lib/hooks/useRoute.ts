@@ -22,12 +22,19 @@ import {
 } from '../../model';
 import { createPlacemark, createPoints, mergeData, routeToLineString } from '../helpers';
 
+type Coordinates = [number, number];
+
 interface IUseRouteProps {
 	ymaps: any;
 	map: any;
 	setPointCollection: React.Dispatch<React.SetStateAction<any[]>>;
 	features: Feature[];
 	objectManagerState: any;
+}
+
+interface IFindAzsData {
+	radius: number;
+	points: Coordinates[];
 }
 
 export const useRoute = ({
@@ -38,9 +45,11 @@ export const useRoute = ({
 	objectManagerState
 }: IUseRouteProps) => {
 	const [addressesCollection, setAddressesCollection] = useState<string[]>([]);
-	const [routeCoordsState, setRouteCoordsState] = useState<number[][]>([]);
+	const [routeCoordsState, setRouteCoordsState] = useState<Coordinates[]>([]);
+
 	const dispatch = useDispatch();
 	const { filterDataByOptions } = useIndexedDB();
+
 	const {
 		routeInfo: { routeCoords, buildRoute, routeIsChanged, pointsOnRoute, isUrlBuild }
 	} = useTypedSelector(state => state.map);
@@ -49,17 +58,16 @@ export const useRoute = ({
 	const { routesParam } = getQueryParams();
 
 	const { data: terminalsList } = useGetTerminalsQuery();
-
 	const multiRouteRef = useRef<any>(null);
-
 	const [fetchAzs, { isLoading }] = useFindAzsOnRouteMutation();
 
 	useEffect(() => {
 		dispatch(setRouteIsBuilding(isLoading));
 	}, [isLoading]);
 
+	// функция фильтра точек азс
 	const filtered = async (points?: Feature[]) => {
-		const filteredData = await filterDataByOptions(
+		return await filterDataByOptions(
 			filters.fuelFilters,
 			filters.features,
 			filters.brandTitles,
@@ -72,175 +80,150 @@ export const useRoute = ({
 			filters.relatedProducts,
 			points
 		);
-		return filteredData;
+	};
+
+	// Получение адреса по координатам
+	const getAddressByCoords = async (coord: Coordinates): Promise<string> => {
+		const res = await ymaps.geocode(coord);
+		const firstGeoObject = res.geoObjects.get(0);
+		return firstGeoObject.getAddressLine();
+	};
+
+	// Обработка точек на маршруте
+	const handleRoutePoints = async (lines: any, threshold: number) => {
+		if (!lines || !lines.toArray().length) return;
+
+		const linesArr = lines.toArray()[0].geometry.getCoordinates() as Coordinates[];
+		const findAzsData: IFindAzsData = {
+			radius: threshold,
+			points: linesArr
+		};
+
+		const currentAzs = await fetchAzs(findAzsData).unwrap();
+		const mergedData = mergeData(currentAzs.data, terminalsList.data);
+		const points = createPoints(mergedData);
+
+		if (points.length > 0 && objectManagerState) {
+			if (withFilters) {
+				const newFilteredPoints = await filtered(points);
+				dispatch(setPointsOnRoute(newFilteredPoints));
+			} else {
+				dispatch(setPointsOnRoute(points));
+			}
+		}
+	};
+
+	// Создание и настройка маршрута
+	const createMultiRoute = (routesArr: Coordinates[]) => {
+		return new ymaps.multiRouter.MultiRoute(
+			{
+				referencePoints: routesArr,
+				params: {
+					routingMode: 'auto',
+					results: 1
+				}
+			},
+			{
+				boundsAutoApply: true,
+				routeActiveStrokeWidth: 6,
+				wayPointVisible: false,
+				routeActiveStrokeShowLabels: false,
+				routeActiveStrokeColor: '444444'
+			}
+		);
 	};
 
 	// функция построения маршрута
-	const handleBuildRoute = async (condition: boolean, urlBuild: boolean, routesArr: number[][]) => {
-		// дальность точки от маршрута в мметрах
+	const handleBuildRoute = async (
+		condition: boolean,
+		urlBuild: boolean,
+		routesArr: Coordinates[]
+	) => {
 		const threshold = addSettings.includes(2) ? 200 : 500;
-		if (map) {
-			if (multiRouteRef.current) {
-				map.geoObjects.remove(multiRouteRef.current);
-			}
+		if (!map) return;
 
-			if (condition) {
-				let lineGeoObjects;
-				//@ts-ignore
-				let lines;
-				let multiRoute = new ymaps.multiRouter.MultiRoute(
-					{
-						referencePoints: routesArr,
-						params: {
-							routingMode: 'auto',
-							results: 1
-						}
-					},
-					{
-						boundsAutoApply: true,
-						routeActiveStrokeWidth: 6,
-						wayPointVisible: false,
-						routeActiveStrokeShowLabels: false,
-						routeActiveStrokeColor: '444444'
-					}
-				);
-				map.geoObjects.add(multiRoute);
-				multiRouteRef.current = multiRoute;
-
-				if (addSettings.includes(0)) {
-					multiRoute.model.setParams({ avoidTrafficJams: true }, true);
-				}
-				const routePromise = new Promise(resolve => {
-					multiRoute.model.events.add('update', async () => {
-						if (objectManagerState) {
-							objectManagerState.removeAll();
-						}
-						lineGeoObjects = multiRoute
-							.getRoutes()
-							.toArray()
-							.map((route: any) => new ymaps.Polyline(routeToLineString(route)));
-
-						lines = new ymaps.GeoObjectCollection({ children: lineGeoObjects }, { visible: false });
-						map.geoObjects.add(lines);
-						const routes = multiRoute.getRoutes();
-
-						if (routes.getLength() > 0) {
-							const activeRoute = routes.get(0);
-							const time = activeRoute.properties.get('duration').text;
-							const length = activeRoute.properties.get('distance').text;
-							dispatch(setRouteTime(time));
-							dispatch(setRouteLength(length));
-						}
-						dispatch(setRouteBuilded(true));
-						dispatch(setRouteChanged(false));
-						dispatch(setOpenFilters(false));
-						dispatch(setMapLoading(false));
-						resolve('route');
-					});
-				});
-				routePromise.then(async res => {
-					if (urlBuild && features) {
-						dispatch(setActiveMenu('route'));
-						dispatch(setRouteAddresses(addressesCollection));
-						objectManagerState.removeAll();
-
-						setRouteCoordsState([...routesArr]);
-						// dispatch(setCoords(routesArr));
-						const geocodePromises = routesArr.map((coord: number[]) => {
-							return ymaps.geocode(coord).then((res: any) => {
-								const firstGeoObject = res.geoObjects.get(0);
-								const address = firstGeoObject.getAddressLine();
-								return address;
-							});
-						});
-
-						Promise.all(geocodePromises).then(addresses => {
-							dispatch(setRouteAddresses(addresses));
-						});
-						routesArr.forEach((coords, index) => {
-							const myPlacemark = createPlacemark({ ymaps, coords, index });
-							map.geoObjects.add(myPlacemark);
-							setPointCollection(prevCollection => [...prevCollection, myPlacemark]);
-						});
-						if (withFilters) {
-							// @ts-ignore
-							const linesArr = lines.toArray()[0].geometry.getCoordinates();
-							const findAzsData = {
-								radius: threshold,
-								points: linesArr
-							};
-							const currentAzs = await fetchAzs(findAzsData).unwrap();
-							const mergedData = mergeData(currentAzs.data, terminalsList.data);
-
-							const points = createPoints(mergedData);
-							const newFilteredPoints = await filtered(points);
-
-							if (points.length > 0 && objectManagerState) {
-								dispatch(setPointsOnRoute(newFilteredPoints));
-							}
-						} else {
-							//@ts-ignore
-							const linesArr = lines.toArray()[0].geometry.getCoordinates();
-							const findAzsData = {
-								radius: threshold,
-								points: linesArr
-							};
-							const currentAzs = await fetchAzs(findAzsData).unwrap();
-							const mergedData = mergeData(currentAzs.data, terminalsList.data);
-
-							const points = createPoints(mergedData);
-
-							if (points.length > 0 && objectManagerState) {
-								dispatch(setPointsOnRoute(points));
-							}
-						}
-					} else {
-						if (withFilters) {
-							// @ts-ignore
-							const linesArr = lines.toArray()[0].geometry.getCoordinates();
-							const findAzsData = {
-								radius: threshold,
-								points: linesArr
-							};
-							const currentAzs = await fetchAzs(findAzsData).unwrap();
-							const mergedData = mergeData(currentAzs.data, terminalsList.data);
-
-							const points = createPoints(mergedData);
-							const newFilteredPoints = await filtered(points);
-
-							if (points.length > 0 && objectManagerState) {
-								dispatch(setPointsOnRoute(newFilteredPoints));
-							}
-						} else {
-							//@ts-ignore
-							const linesArr = lines.toArray()[0].geometry.getCoordinates();
-							const findAzsData = {
-								radius: threshold,
-								points: linesArr
-							};
-							const currentAzs = await fetchAzs(findAzsData).unwrap();
-							const mergedData = mergeData(currentAzs.data, terminalsList.data);
-
-							const points = createPoints(mergedData);
-
-							if (points.length > 0 && objectManagerState) {
-								dispatch(setPointsOnRoute(points));
-							}
-						}
-
-						dispatch(setRouteAddresses(addressesCollection));
-					}
-				});
-			} else {
-				if (multiRouteRef.current) {
-					objectManagerState.add(features);
-					map.geoObjects.remove(multiRouteRef.current);
-					multiRouteRef.current = null;
-					dispatch(clearRouteAddresses());
-					dispatch(setCoords([]));
-				}
-			}
+		if (multiRouteRef.current) {
+			map.geoObjects.remove(multiRouteRef.current);
 		}
+
+		if (!condition) {
+			if (multiRouteRef.current) {
+				objectManagerState.add(features);
+				map.geoObjects.remove(multiRouteRef.current);
+				multiRouteRef.current = null;
+				dispatch(clearRouteAddresses());
+				dispatch(setCoords([]));
+			}
+			return;
+		}
+
+		let lineGeoObjects;
+		let lines: any = null;
+		const multiRoute = createMultiRoute(routesArr);
+		map.geoObjects.add(multiRoute);
+		multiRouteRef.current = multiRoute;
+
+		if (addSettings.includes(0)) {
+			multiRoute.model.setParams({ avoidTrafficJams: true }, true);
+		}
+
+		const routePromise = new Promise(resolve => {
+			multiRoute.model.events.add('update', async () => {
+				if (objectManagerState) {
+					objectManagerState.removeAll();
+				}
+
+				lineGeoObjects = multiRoute
+					.getRoutes()
+					.toArray()
+					.map((route: any) => new ymaps.Polyline(routeToLineString(route)));
+
+				lines = new ymaps.GeoObjectCollection({ children: lineGeoObjects }, { visible: false });
+				map.geoObjects.add(lines);
+
+				const routes = multiRoute.getRoutes();
+				if (routes.getLength() > 0) {
+					const activeRoute = routes.get(0);
+					dispatch(setRouteTime(activeRoute.properties.get('duration').text));
+					dispatch(setRouteLength(activeRoute.properties.get('distance').text));
+				}
+
+				dispatch(setRouteBuilded(true));
+				dispatch(setRouteChanged(false));
+				dispatch(setOpenFilters(false));
+				dispatch(setMapLoading(false));
+				resolve('route');
+			});
+		});
+
+		await routePromise;
+
+		if (urlBuild && features) {
+			await handleUrlBuild(routesArr, lines, threshold);
+		} else {
+			await handleRoutePoints(lines, threshold);
+			dispatch(setRouteAddresses(addressesCollection));
+		}
+	};
+
+	// Обработка построения маршрута из URL
+	const handleUrlBuild = async (routesArr: Coordinates[], lines: any, threshold: number) => {
+		dispatch(setActiveMenu('route'));
+		dispatch(setRouteAddresses(addressesCollection));
+		objectManagerState.removeAll();
+
+		setRouteCoordsState([...routesArr]);
+
+		const addresses = await Promise.all(routesArr.map(coord => getAddressByCoords(coord)));
+		dispatch(setRouteAddresses(addresses));
+
+		routesArr.forEach((coords, index) => {
+			const myPlacemark = createPlacemark({ ymaps, coords, index });
+			map.geoObjects.add(myPlacemark);
+			setPointCollection(prevCollection => [...prevCollection, myPlacemark]);
+		});
+
+		await handleRoutePoints(lines, threshold);
 	};
 
 	useEffect(() => {
@@ -250,39 +233,29 @@ export const useRoute = ({
 		}
 	}, [pointsOnRoute]);
 
-	// обновление координат
 	useEffect(() => {
 		dispatch(setCoords(routeCoordsState));
 	}, [routeCoordsState, dispatch]);
 
-	// построение маршрута
 	useEffect(() => {
 		const condition = buildRoute || routeIsChanged;
-		handleBuildRoute(condition, false, routeCoords);
+		handleBuildRoute(condition, false, routeCoords as Coordinates[]);
 	}, [buildRoute, routeIsChanged]);
 
-	// построение маршрута по данным из url
 	useEffect(() => {
 		if (routesParam && objectManagerState && isUrlBuild && features.length) {
 			const condition = routesParam && buildRoute;
-			handleBuildRoute(condition, true, routesParam);
+			handleBuildRoute(condition, true, routesParam as Coordinates[]);
 		}
 	}, [map, buildRoute, objectManagerState, isUrlBuild, features]);
 
-	// получение адресов по координатам
 	useEffect(() => {
 		if (routeCoords.length > 1) {
-			const geocodePromises = routeCoords.map((coord: number[]) => {
-				return ymaps.geocode(coord).then((res: any) => {
-					const firstGeoObject = res.geoObjects.get(0);
-					const address = firstGeoObject.getAddressLine();
-					return address;
-				});
-			});
-
-			Promise.all(geocodePromises).then(addresses => {
-				setAddressesCollection(addresses);
-			});
+			Promise.all(routeCoords.map((coord: Coordinates) => getAddressByCoords(coord))).then(
+				addresses => {
+					setAddressesCollection(addresses);
+				}
+			);
 		}
 	}, [routeCoords]);
 };

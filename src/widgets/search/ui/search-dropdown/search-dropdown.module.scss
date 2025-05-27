@@ -1,5 +1,7 @@
 @import '@/shared/styles/mixins';
-
+.dropdown {
+	padding: 12px 16px;
+}
 .searchItem {
 	cursor: pointer;
 	&:hover {

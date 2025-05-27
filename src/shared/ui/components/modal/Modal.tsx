@@ -7,6 +7,7 @@ import { Portal } from '../portal';
 
 import { useLockedBody } from './lib';
 import s from './modal.module.scss';
+import './modal.scss';
 
 interface IModal {
 	isOpen: boolean;
@@ -20,34 +21,30 @@ export const Modal: FC<PropsWithChildren<IModal>> = forwardRef(
 		const nodeRef = useRef<HTMLDivElement | null>(null);
 		const modalClass = clsx(s.modal, className);
 		return (
-			<CSSTransition
-				classNames={{
-					enterDone: s.open,
-					exit: s.exit
-				}}
-				in={isOpen}
-				timeout={0}
-				nodeRef={nodeRef}
-			>
-				<Portal rootId='#modal'>
-					{isOpen ? (
-						<div
-							className={modalClass}
-							onClick={close}
-							ref={el => {
-								nodeRef.current = el; // Присваиваем ref элементу
-								if (typeof ref === 'function') {
-									ref(el); // Передаем ref в родительский компонент
-								} else if (ref) {
-									ref.current = el;
-								}
-							}}
-						>
-							{children}
-						</div>
-					) : null}
-				</Portal>
-			</CSSTransition>
+			<Portal rootId='#modal'>
+				<CSSTransition
+					classNames='modal'
+					unmountOnExit
+					in={isOpen}
+					timeout={{ exit: 300, enter: 0 }}
+					nodeRef={nodeRef}
+				>
+					<div
+						className={modalClass}
+						onClick={close}
+						ref={el => {
+							nodeRef.current = el; // Присваиваем ref элементу
+							if (typeof ref === 'function') {
+								ref(el); // Передаем ref в родительский компонент
+							} else if (ref) {
+								ref.current = el;
+							}
+						}}
+					>
+						{children}
+					</div>
+				</CSSTransition>
+			</Portal>
 		);
 	}
 );

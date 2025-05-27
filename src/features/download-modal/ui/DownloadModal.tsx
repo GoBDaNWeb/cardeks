@@ -1,23 +1,18 @@
-import { useDispatch } from 'react-redux';
-
 import { DownloadFiles } from '@/features/download-files';
 
-import { useTypedSelector } from '@/shared/lib';
-import { Button, CloseIcon, Modal } from '@/shared/ui';
-
-import { handleOpenModal } from '../model';
+import { Button, CloseIcon, Modal, useModal } from '@/shared/ui';
 
 import s from './download-modal.module.scss';
 
 export const DownloadModal = () => {
-	const { isOpen } = useTypedSelector(store => store.downloadModal);
-	const dispatch = useDispatch();
+	const { close, isOpen } = useModal();
+
 	const handleCloseModal = () => {
-		dispatch(handleOpenModal(false));
+		close();
 	};
 
 	return (
-		<Modal isOpen={isOpen} className={s.downloadModal} close={handleCloseModal}>
+		<Modal isOpen={isOpen('download')} className={s.downloadModal} close={handleCloseModal}>
 			<div className={s.modalContent} onClick={e => e.stopPropagation()}>
 				<Button className={s.closeBtn} onClick={() => handleCloseModal()}>
 					<CloseIcon />

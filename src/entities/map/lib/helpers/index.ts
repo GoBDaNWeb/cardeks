@@ -8,3 +8,4 @@ export { createPoints } from './createPoints';
 export { routeToLineString } from './routeToLineString';
 export { getVisibleMarkers } from './getVisibleMarkers';
 export { mergeData } from './mergeData';
+export { getAddress } from './getAddress';

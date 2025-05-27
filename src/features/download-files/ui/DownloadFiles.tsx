@@ -3,7 +3,7 @@ import { Controller, FieldValues, SubmitHandler, useForm } from 'react-hook-form
 
 import { useTypedSelector } from '@/shared/lib';
 import { Feature, IGPX } from '@/shared/types';
-import { Button, ExcelTemplate, Input, Radio, Selector } from '@/shared/ui';
+import { Button, ExcelTemplate, Input, Radio, Selector, useModal } from '@/shared/ui';
 
 import { selectorOptions } from '../config';
 import { createAndDownloadExcel, handleDownloadCSV, handleDownloadGPX } from '../lib/helpers';
@@ -22,8 +22,7 @@ export const DownloadFiles: FC<IDownloadFiles> = ({ title, text, btnText, downlo
 	const [buttonDisabled, setButtonDisabled] = useState(true);
 	const [csvData, setCsvData] = useState([[]]);
 	const [gpxData, setGpxData] = useState<IGPX[]>([]);
-
-	const { isOpen } = useTypedSelector(store => store.downloadModal);
+	const { isOpen } = useModal();
 	const {
 		routeInfo: { pointsOnRoute },
 		mapInfo: { points }
@@ -60,7 +59,7 @@ export const DownloadFiles: FC<IDownloadFiles> = ({ title, text, btnText, downlo
 	};
 
 	useEffect(() => {
-		if (isOpen) {
+		if (isOpen('download')) {
 			if (pointsOnRoute.length > 0) {
 				const mappedCVSPoints = pointsOnRoute.map((point: Feature) => {
 					return [point.geometry.coordinates, point.address, point.title];

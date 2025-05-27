@@ -17,7 +17,7 @@ export const SearchDropdown: FC<ISearchDropdown> = ({
 	handleSearchAddress
 }) => {
 	return (
-		<Dropdown>
+		<Dropdown className={s.dropdown}>
 			{list?.results ? (
 				<>
 					{list.results.map((item, index) => (

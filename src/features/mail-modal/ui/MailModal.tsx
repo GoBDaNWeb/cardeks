@@ -1,26 +1,18 @@
-import { useEffect, useState } from 'react';
-import { Controller, FieldValues, SubmitHandler, useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
-
 import { DownloadFiles } from '@/features/download-files';
 
-import { useTypedSelector } from '@/shared/lib';
-import { Button, CloseIcon, Input, Modal, Radio, Selector } from '@/shared/ui';
-
-import { selectorOptions } from '../config';
-import { handleOpenModal } from '../model';
+import { Button, CloseIcon, Input, Modal, Radio, Selector, useModal } from '@/shared/ui';
 
 import s from './mail-modal.module.scss';
 
 export const MailModal = () => {
-	const { isOpen } = useTypedSelector(store => store.mailModal);
-	const dispatch = useDispatch();
+	const { close, isOpen } = useModal();
+
 	const handleCloseModal = () => {
-		dispatch(handleOpenModal(false));
+		close();
 	};
 
 	return (
-		<Modal isOpen={isOpen} className={s.mailModal} close={handleCloseModal}>
+		<Modal isOpen={isOpen('mail')} className={s.mailModal} close={handleCloseModal}>
 			<div className={s.modalContent} onClick={e => e.stopPropagation()}>
 				<Button className={s.closeBtn} onClick={() => handleCloseModal()}>
 					<CloseIcon />

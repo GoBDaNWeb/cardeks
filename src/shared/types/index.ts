@@ -79,3 +79,12 @@ export interface IGPX {
 	lon: number;
 	name: string;
 }
+export type ModalName = 'guide' | 'new-route' | 'download' | 'mail' | 'print' | 'review';
+export type ModalProps = {
+	isSucces?: boolean;
+};
+
+export interface IModal {
+	currentModal: ModalName | null;
+	props: ModalProps;
+}

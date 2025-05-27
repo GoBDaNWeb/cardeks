@@ -6,17 +6,21 @@ import clsx from 'clsx';
 import { clearActiveMenu } from '@/widgets/menu-list';
 import { setActiveMenu } from '@/widgets/menu-list';
 
-import { handleOpenModal as openDownloadModal } from '@/features/download-modal';
-import { handleOpenModal as openMailModal } from '@/features/mail-modal';
-
 import { setAddress, setCenter, setCurrentPointId } from '@/entities/map';
 import { setActiveMenu as setActiveMenuMob } from '@/entities/mobile-menu';
 import { ObjectItem } from '@/entities/object-item';
-import { handleOpenModal as openPrintModal } from '@/entities/print-modal';
 
 import { handleCopyLink, useTypedSelector } from '@/shared/lib';
 import { Feature } from '@/shared/types';
-import { Button, CloseIcon, DownloadIcon, LinkIcon, MailIcon, PrintIcon } from '@/shared/ui';
+import {
+	Button,
+	CloseIcon,
+	DownloadIcon,
+	LinkIcon,
+	MailIcon,
+	PrintIcon,
+	useModal
+} from '@/shared/ui';
 
 import s from './objects-list.module.scss';
 
@@ -28,6 +32,8 @@ export const ObjectsList = () => {
 	const lastElementRef = useRef<HTMLDivElement | null>(null);
 
 	const dispatch = useDispatch();
+
+	const { open } = useModal();
 
 	const {
 		mapInfo: { fixedCenter, points, pointsData, zoom }
@@ -67,13 +73,14 @@ export const ObjectsList = () => {
 	};
 
 	const handeOpenDownloadModal = () => {
-		dispatch(openDownloadModal(true));
+		open('download');
 	};
+
 	const handeOpenMailModal = () => {
-		dispatch(openMailModal(true));
+		open('mail');
 	};
 	const handeOpenPrintModal = () => {
-		dispatch(openPrintModal(true));
+		open('print');
 	};
 
 	useEffect(() => {
@@ -102,7 +109,7 @@ export const ObjectsList = () => {
 				</div>
 				<div className={s.right}>
 					<div className={s.features}>
-						<Button onClick={() => handeOpenDownloadModal()} title='Загрузить список ТО'>
+						<Button onClick={handeOpenDownloadModal} title='Загрузить список ТО'>
 							<DownloadIcon />
 						</Button>
 						<Button
@@ -124,14 +131,14 @@ export const ObjectsList = () => {
 						>
 							<LinkIcon />
 						</Button>
-						<Button onClick={() => handeOpenPrintModal()} title='Распечатать список ТО'>
+						<Button onClick={handeOpenPrintModal} title='Распечатать список ТО'>
 							<PrintIcon />
 						</Button>
-						{/* <Button onClick={() => handeOpenMailModal()} title='Отправить список ТО на почту'>
+						{/* <Button onClick={handeOpenMailModal} title='Отправить список ТО на почту'>
 							<MailIcon />
 						</Button> */}
 					</div>
-					<Button onClick={() => handleClose()}>
+					<Button onClick={handleClose}>
 						<CloseIcon />
 					</Button>
 				</div>

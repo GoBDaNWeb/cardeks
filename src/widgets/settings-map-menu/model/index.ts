@@ -1,5 +1,2 @@
-export {
-	setOpenSettings,
-	setGetLocation,
-	default as settingsMapMenuReducer
-} from './settings-map-menu.slice';
+export * from './actions';
+export { default as settingsMapMenuReducer } from './settings-map-menu.slice';

@@ -1,9 +1,2 @@
-export {
-	setFilterActive,
-	setAddSettings,
-	setBrandTitles,
-	setWithFilters,
-	setAzsTypes,
-	clearFilters,
-	default as routeFormReducer
-} from './routeForm.slice';
+export * from './actions';
+export { default as routeFormReducer } from './routeForm.slice';

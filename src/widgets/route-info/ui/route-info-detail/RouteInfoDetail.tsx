@@ -1,17 +1,21 @@
 import { FC, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { handleOpenModal as openDownloadModal } from '@/features/download-modal';
-import { handleOpenModal as openMailModal } from '@/features/mail-modal';
-
 import { setCenter, setPointsOnRoute } from '@/entities/map';
 import { ObjectItem } from '@/entities/object-item';
-import { handleOpenModal as openPrintModal } from '@/entities/print-modal';
 
 import { ruLetters } from '@/shared/config';
 import { handleCopyLink, useTypedSelector } from '@/shared/lib';
 import { Feature } from '@/shared/types';
-import { Button, CloseIcon, DownloadIcon, LinkIcon, MailIcon, PrintIcon } from '@/shared/ui';
+import {
+	Button,
+	CloseIcon,
+	DownloadIcon,
+	LinkIcon,
+	MailIcon,
+	PrintIcon,
+	useModal
+} from '@/shared/ui';
 
 import s from './route-info-detail.module.scss';
 
@@ -23,15 +27,16 @@ export const RouteInfoDetail: FC<IRouteInfoDetail> = ({ setDetail }) => {
 	const {
 		routeInfo: { routeAddresses, pointsOnRoute, routeCoords }
 	} = useTypedSelector(state => state.map);
+	const {
+		selectedFilter,
+		filters: { fuelFilters, brandTitles, addServices, features, gateHeight, terminal, card }
+	} = useTypedSelector(store => store.filters);
 
 	const [pointsList] = useState<Feature[]>(pointsOnRoute);
 	const [deletedPoints, setDeletedPoints] = useState<Feature[]>([]);
 
 	const dispatch = useDispatch();
-	const {
-		selectedFilter,
-		filters: { fuelFilters, brandTitles, addServices, features, gateHeight, terminal, card }
-	} = useTypedSelector(store => store.filters);
+	const { open } = useModal();
 
 	useEffect(() => {
 		const newDeletedPoints = pointsList.filter(
@@ -41,13 +46,14 @@ export const RouteInfoDetail: FC<IRouteInfoDetail> = ({ setDetail }) => {
 	}, [pointsOnRoute, pointsList]);
 
 	const handeOpenDownloadModal = () => {
-		dispatch(openDownloadModal(true));
+		open('download');
 	};
+
 	const handeOpenMailModal = () => {
-		dispatch(openMailModal(true));
+		open('mail');
 	};
 	const handeOpenPrintModal = () => {
-		dispatch(openPrintModal(true));
+		open('print');
 	};
 	const handleViewOnMap = (coords: number[]) => {
 		dispatch(setCenter(coords));
@@ -79,7 +85,7 @@ export const RouteInfoDetail: FC<IRouteInfoDetail> = ({ setDetail }) => {
 				<p className={s.title}>Основной маршрут</p>
 				<div className={s.btnsWrapper}>
 					<div className={s.features}>
-						<Button onClick={() => handeOpenDownloadModal()} title='Загрузить список ТО'>
+						<Button onClick={handeOpenDownloadModal} title='Загрузить список ТО'>
 							<DownloadIcon />
 						</Button>
 						<Button
@@ -100,7 +106,7 @@ export const RouteInfoDetail: FC<IRouteInfoDetail> = ({ setDetail }) => {
 						>
 							<LinkIcon />
 						</Button>
-						<Button onClick={() => handeOpenPrintModal()} title='Распечатать список ТО'>
+						<Button onClick={handeOpenPrintModal} title='Распечатать список ТО'>
 							<PrintIcon />
 						</Button>
 						{/* <Button onClick={() => handeOpenMailModal()} title='Отправить список ТО на почту'>

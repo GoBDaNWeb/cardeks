@@ -46,12 +46,5 @@ const routeForm = createSlice({
 	}
 });
 
-export const {
-	setFilterActive,
-	setBrandTitles,
-	setAddSettings,
-	setWithFilters,
-	setAzsTypes,
-	clearFilters
-} = routeForm.actions;
+export { routeForm };
 export default routeForm.reducer;

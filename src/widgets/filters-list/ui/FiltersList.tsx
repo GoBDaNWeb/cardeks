@@ -16,7 +16,7 @@ import {
 } from '@/widgets/filters';
 
 import { getQueryParams, useIndexedDB, useTypedSelector } from '@/shared/lib';
-import { ArrowTopIcon, Button, Chip, CloseIcon, Dropdown, Input } from '@/shared/ui';
+import { ArrowTopIcon, Button, Chip, CloseIcon, Input, SearchableDropdown } from '@/shared/ui';
 
 import { cardsList } from '../config';
 
@@ -45,8 +45,6 @@ export const FiltersList = () => {
 	} = useTypedSelector(store => store.filters);
 
 	const [inputTerminalValue, setInputTerminalValue] = useState(terminal);
-	const [dropdownActive, setDropdownActive] = useState(false);
-	const [dropdownCardActive, setDropdownCardActive] = useState(false);
 
 	const [brandState, setBrandState] = useState({
 		filteredBrands: [] as string[],
@@ -97,7 +95,6 @@ export const FiltersList = () => {
 	}, []);
 
 	const { activeMenu } = useTypedSelector(state => state.menu);
-	const { objectId } = useTypedSelector(store => store.objectInfo);
 
 	const handleCloseFiltersList = () => {
 		dispatch(setOpenFilters(false));
@@ -141,7 +138,6 @@ export const FiltersList = () => {
 		updateCardState({ selectedCard: card });
 		updateCardState({ filteredCards: cardState.filteredCards.filter(b => b !== card) });
 		updateCardState({ inputCardValue: card });
-		setDropdownCardActive(false);
 		if (cardState.dataCards) {
 			const filter = cardState.dataCards.filter(b => b !== card);
 			updateCardState({ currentCards: filter });
@@ -151,7 +147,6 @@ export const FiltersList = () => {
 		updateBrandState({ selectedBrands: [...brandState.selectedBrands, brand] });
 		updateBrandState({ filteredBrands: brandState.filteredBrands.filter(b => b !== brand) });
 		updateBrandState({ inputBrandValue: '' });
-		setDropdownActive(false);
 		if (brandState.dataBrands) {
 			const filter = brandState.dataBrands.filter(b => b !== brand);
 			updateBrandState({ currentBrands: filter });
@@ -179,17 +174,6 @@ export const FiltersList = () => {
 		updateCardState({ selectedCard: '' });
 		updateCardState({ currentCards: cardState.dataCards });
 		updateCardState({ filteredCards: cardState.dataCards });
-	};
-
-	const handleBlur = () => {
-		setTimeout(() => {
-			setDropdownActive(false);
-		}, 150);
-	};
-	const handleBlurCard = () => {
-		setTimeout(() => {
-			setDropdownCardActive(false);
-		}, 150);
 	};
 
 	useEffect(() => {
@@ -269,10 +253,6 @@ export const FiltersList = () => {
 	});
 
 	const terminalClass = clsx(s.filterRow, s.terminalWrapper);
-	const dropdownClass = clsx(s.dropdown, { [s.active]: dropdownActive });
-	const dropdownCardClass = clsx(s.dropdown, {
-		[s.active]: dropdownCardActive
-	});
 
 	return (
 		<div className={filterListClass}>
@@ -287,35 +267,16 @@ export const FiltersList = () => {
 					<p>Карта</p>
 					<div className={s.brandWrapper}>
 						<div className={s.inputWrapper}>
-							<Input
-								onChange={handleChangeInputCardValue}
+							<SearchableDropdown
 								value={cardState.inputCardValue}
-								isStyled
+								onChange={handleChangeInputCardValue}
+								onClear={handleClearCardInput}
+								onSelect={handleSearchCards}
+								items={cardState.currentCards}
 								placeholder='Название'
-								onFocus={() => setDropdownCardActive(true)}
-								onBlur={() => handleBlurCard()}
+								className={s.cardDropdown}
 							/>
-							{cardState.inputCardValue.length ? (
-								<Button className={s.clearIcon} onClick={handleClearCardInput}>
-									<CloseIcon />
-								</Button>
-							) : null}
 						</div>
-
-						<Dropdown className={dropdownCardClass}>
-							{cardState.currentCards.length > 0
-								? cardState.currentCards.map((card: string, index: number) => (
-										<div
-											onMouseEnter={() => updateCardState({ activeCard: index })}
-											className={`${s.brand} ${index === cardState.activeCard ? s.active : ''}`}
-											key={index}
-											onClick={() => handleSearchCards(card)}
-										>
-											{card}
-										</div>
-									))
-								: null}
-						</Dropdown>
 					</div>
 				</div>
 				<div className={s.filterRow}>
@@ -331,29 +292,13 @@ export const FiltersList = () => {
 								</Chip>
 							))}
 						</div>
-						<Input
-							onChange={handleChangeInputBrandValue}
+						<SearchableDropdown
 							value={brandState.inputBrandValue}
-							isStyled
-							placeholder='Номер или название'
-							onFocus={() => setDropdownActive(true)}
-							onBlur={() => handleBlur()}
+							onChange={handleChangeInputBrandValue}
+							onSelect={handleSearchBrands}
+							items={brandState.currentBrands}
+							placeholder='Название'
 						/>
-
-						<Dropdown className={dropdownClass}>
-							{brandState.currentBrands.length > 0
-								? brandState.currentBrands.map((brand: string, index: number) => (
-										<div
-											onMouseEnter={() => updateBrandState({ activeBrand: index })}
-											className={`${s.brand} ${index === brandState.activeBrand ? s.active : ''}`}
-											key={index}
-											onClick={() => handleSearchBrands(brand)}
-										>
-											{brand}
-										</div>
-									))
-								: null}
-						</Dropdown>
 					</div>
 				</div>
 				{selectedFilter !== null &&

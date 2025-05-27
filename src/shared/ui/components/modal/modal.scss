@@ -1,0 +1,28 @@
+.modal-enter-done {
+	opacity: 1;
+	transition: var(--trs-300);
+	.modal-content-wrapper {
+		transform: translateX(0);
+	}
+}
+.modal-exit {
+	opacity: 1;
+	transition: var(--trs-300);
+	.modal-content-wrapper {
+		transform: translateX(100%);
+	}
+}
+.modal-exit-active {
+	opacity: 0;
+	.modal-content-wrapper {
+		transform: translateX(100%);
+	}
+	transition: var(--trs-300);
+}
+.modal-exit-done {
+	opacity: 0;
+	transition: var(--trs-300);
+	.modal-content-wrapper {
+		transform: translateX(100%);
+	}
+}

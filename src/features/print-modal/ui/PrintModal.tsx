@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { useReactToPrint } from 'react-to-print';
 
 import { Map as MapType } from 'yandex-maps';
@@ -7,9 +6,7 @@ import { Map as MapType } from 'yandex-maps';
 import { fuelList } from '@/shared/config';
 import { useTypedSelector } from '@/shared/lib';
 import { Feature } from '@/shared/types';
-import { Button, CardeksLogo, CloseIcon, Modal } from '@/shared/ui';
-
-import { handleOpenModal, handleSuccess } from '../model';
+import { Button, CardeksLogo, CloseIcon, Modal, useModal } from '@/shared/ui';
 
 import { PrintItem } from './print-item';
 import s from './print-modal.module.scss';
@@ -19,8 +16,6 @@ export const PrintModal = () => {
 	const ymaps = window.ymaps;
 	const [map, setMap] = useState<null | MapType>(null);
 
-	const dispatch = useDispatch();
-	const { isOpen } = useTypedSelector(store => store.printModal);
 	const { filters } = useTypedSelector(store => store.routeForm);
 
 	const {
@@ -29,6 +24,8 @@ export const PrintModal = () => {
 	} = useTypedSelector(store => store.map);
 	const contentRef = useRef<HTMLDivElement>(null);
 	const reactToPrintFn = useReactToPrint({ contentRef });
+
+	const { close, isOpen } = useModal();
 
 	const init = () => {
 		let multiRoute = new ymaps.multiRouter.MultiRoute(
@@ -89,11 +86,10 @@ export const PrintModal = () => {
 	}, [mapType, map]);
 
 	const handleCloseModal = () => {
-		dispatch(handleOpenModal(false));
+		close();
 	};
-
 	return (
-		<Modal isOpen={isOpen} className={s.newRouteModal} close={handleCloseModal}>
+		<Modal isOpen={isOpen('print')} className={s.newRouteModal} close={handleCloseModal}>
 			<div className={s.modalContent} onClick={e => e.stopPropagation()}>
 				<Button onClick={() => handleCloseModal()} className={s.closeBtn}>
 					<CloseIcon />

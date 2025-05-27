@@ -1,1 +1,2 @@
-export { setActiveMenu, clearActiveMenu, default as menuReducer } from './menu.slice';
+export * from './actions';
+export { default as menuReducer } from './menu.slice';

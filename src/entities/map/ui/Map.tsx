@@ -117,13 +117,7 @@ export const CustomMap = () => {
 		map.controls.remove('rulerControl');
 		map.controls.remove('zoomControl');
 		map.controls.remove('expandControl');
-		map.controls.add('geolocationControl', {
-			float: 'none',
-			position: {
-				bottom: '144px',
-				left: '25px'
-			}
-		});
+
 		map.controls.add('rulerControl', {
 			float: 'none',
 			position: {
@@ -171,19 +165,26 @@ export const CustomMap = () => {
 				}
 			});
 
+			let currentGeolocationMarker: any = null;
+
 			geolocationButton.events.add('click', function () {
 				if ('geolocation' in navigator) {
+					// Удаляем предыдущую метку, если она существует
+					if (currentGeolocationMarker) {
+						map.geoObjects.remove(currentGeolocationMarker);
+						currentGeolocationMarker = null;
+					}
+
 					navigator.geolocation.getCurrentPosition(
 						function (position) {
-							console.log('Success getting position:', position);
 							const coords = [position.coords.latitude, position.coords.longitude];
 							map.setCenter(coords, 14, { checkZoomRange: true });
-							console.log('coords', coords);
-							map.geoObjects.add(
-								new ymaps.Placemark(coords, {
-									balloonContent: 'Вы здесь'
-								})
-							);
+
+							// Создаем новую метку и сохраняем ссылку на неё
+							currentGeolocationMarker = new ymaps.Placemark(coords, {
+								balloonContent: 'Вы здесь'
+							});
+							map.geoObjects.add(currentGeolocationMarker);
 						},
 						function (error) {
 							console.error('Geolocation error:', error);
@@ -207,7 +208,6 @@ export const CustomMap = () => {
 
 	useEffect(() => {
 		if (getLocation) {
-			console.log('getLocation', getLocation);
 			geolocation
 				.get({
 					provider: 'browser',

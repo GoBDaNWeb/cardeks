@@ -11,10 +11,13 @@ import {
 	changePointImage,
 	containsArray,
 	createPlacemark,
+	getAddress,
 	getImage,
 	getPointInfo,
 	swapItems
 } from '../helpers';
+
+type Coordinates = [number, number];
 
 interface IUsePointProps {
 	ymaps: any;
@@ -45,26 +48,9 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IU
 		}
 	} = useTypedSelector(store => store.map);
 
-	const { getLocation } = useTypedSelector(store => store.settingsMapMenu);
 	const { activeMenu: mobileActiveMenu } = useTypedSelector(store => store.mobileMenu);
 	const { activeMenu } = useTypedSelector(state => state.menu);
-	const { isSuccess } = useTypedSelector(state => state.newRouteModal);
-
-	const getAddress = (coords: number[]) => {
-		ymaps.geocode(coords).then((res: any) => {
-			const firstGeoObject = res.geoObjects.get(0);
-			const address = firstGeoObject.getAddressLine();
-			dispatch(setAddress(address));
-		});
-	};
-
-	const handleSelectCoords = (e: any) => {
-		const coords = e.get('coords');
-		getAddress(coords);
-		// setTimeout(() => {
-		dispatch(setSelectAddress(false));
-		// }, 300);
-	};
+	const { props: isSuccess } = useTypedSelector(state => state.modals);
 
 	const addPoint = (coords: number[]) => {
 		const pointId = currentPointIdRef.current;
@@ -78,7 +64,9 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IU
 				(existingMarker.geometry as IPointGeometry).getCoordinates(),
 				coords
 			);
-			dispatch(setCoords(newCoords));
+			if (newCoords) {
+				dispatch(setCoords(newCoords as Coordinates[]));
+			}
 			(existingMarker.geometry as IPointGeometry).setCoordinates(coords);
 		} else {
 			const pointIndex = pointId!.split('.')[1];
@@ -98,6 +86,14 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IU
 		}
 	};
 
+	// нахождениеадреса по координатам
+	const handleSelectCoords = (e: any) => {
+		const coords = e.get('coords');
+		getAddress({ ymaps, coords, dispatch, setAddress });
+		dispatch(setSelectAddress(false));
+	};
+
+	// функция добавления точки
 	const handleAddPoint = (e?: any, pingPoint?: boolean) => {
 		if (e && pingPoint && isCursorPoint) {
 			const coords = e.get('coords');
@@ -113,6 +109,7 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IU
 		}
 	};
 
+	// функция удаления точки
 	const handleRemovePoint = (id: string) => {
 		const deletedPoint = pointCollection.find(point => {
 			return getPointInfo(point, 'id') === id;
@@ -128,7 +125,9 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IU
 			filteredPointCollection.forEach((point, index) => {
 				changePointImage(point, index, getImage(index));
 			});
-			dispatch(setCoords(filteredCoords));
+			if (filteredCoords) {
+				dispatch(setCoords(filteredCoords as Coordinates[]));
+			}
 			map.geoObjects.remove(deletedPoint);
 			setPointCollection(filteredPointCollection);
 		} else {
@@ -139,6 +138,7 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IU
 		}
 	};
 
+	// удаления всех точек
 	const handleClearPoints = () => {
 		if (map) {
 			pointCollection.forEach(marker => {
@@ -152,16 +152,19 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IU
 		currentPointIdRef.current = currentPointId;
 	}, [currentPointId]);
 
+	// добавление точки при поиске
 	useEffect(() => {
 		handleAddPoint(null, false);
 	}, [buildSearch]);
 
+	// добавление точки при нажатии на карту через построение маршрута
 	useEffect(() => {
 		if (selectedAddress) {
 			handleAddPoint(null, false);
 		}
 	}, [selectedAddress, isSelectAddress]);
 
+	// добавление точки при поиске
 	useEffect(() => {
 		if (map) {
 			if (search) {
@@ -187,6 +190,7 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IU
 		}
 	}, [search]);
 
+	// свап точек маршрута на карте - "A" -> "B" = "B" -> "A"
 	useEffect(() => {
 		const firstInput = pointCollection.find(point => {
 			return getPointInfo(point, 'index') == swapPoints[0];
@@ -202,7 +206,9 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IU
 				(firstInput.geometry as IPointGeometry).setCoordinates(secondPointCoords);
 				(secondInput.geometry as IPointGeometry).setCoordinates(firstPointCoords);
 				swapItems(tempCoordsArray, swapPoints);
-				dispatch(setCoords(tempCoordsArray));
+				if (tempCoordsArray) {
+					dispatch(setCoords(tempCoordsArray as Coordinates[]));
+				}
 			}
 		} else {
 			if (firstInput) {
@@ -222,27 +228,14 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IU
 		}
 	}, [swapPoints]);
 
-	useEffect(() => {
-		if (map && getLocation) {
-			const location = ymaps.geolocation.get();
-			location.then(
-				(result: any) => {
-					map.geoObjects.add(result.geoObjects);
-					map.setCenter(result.geoObjects.position, 15);
-				},
-				(err: any) => {
-					console.log('Ошибка: ' + err);
-				}
-			);
-		}
-	}, [getLocation]);
-
+	// удаление точки
 	useEffect(() => {
 		if (deletePointId) {
 			handleRemovePoint(deletePointId);
 		}
 	}, [deletePointId]);
 
+	// добавление обработчика кликов на карту
 	useEffect(() => {
 		if (map) {
 			const cursor = map.cursors.push('arrow');
@@ -260,21 +253,26 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IU
 			}
 		}
 	}, [isSelectAddress, currentPointId]);
+
+	// поиск геолокации и добавление метки для посторения маршрута
 	useEffect(() => {
 		if (getLocationPoint && currentCoords.length) {
-			getAddress(currentCoords);
+			getAddress({ ymaps, coords: currentCoords, dispatch, setAddress });
 			setTimeout(() => {
 				map.setCenter(...currentCoords, 15);
 			}, 400);
 			dispatch(setSelectAddress(false));
 		}
 	}, [getLocationPoint, currentCoords]);
+
+	// удаление точек при закрытии меню маршрута
 	useEffect(() => {
 		if (activeMenu !== 'route' || mobileActiveMenu !== 'route') {
 			handleClearPoints();
 		}
 	}, [activeMenu, mobileActiveMenu]);
 
+	// удаление точек старого маршрута при построении нового
 	useEffect(() => {
 		if (isSuccess) {
 			handleClearPoints();

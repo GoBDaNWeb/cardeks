@@ -1,6 +1,3 @@
-import { useDispatch } from 'react-redux';
-
-import { useTypedSelector } from '@/shared/lib';
 import {
 	Button,
 	CloseIcon,
@@ -9,22 +6,21 @@ import {
 	Modal,
 	PinIcon,
 	RouteIcon,
-	SearchIcon
+	SearchIcon,
+	useModal
 } from '@/shared/ui';
-
-import { handleOpenModal } from '../model';
 
 import s from './guide-modal.module.scss';
 
 export const GuideModal = () => {
-	const { isOpen } = useTypedSelector(store => store.guideModal);
-	const dispatch = useDispatch();
+	const { close, isOpen } = useModal();
 
 	const handleCloseModal = () => {
-		dispatch(handleOpenModal(false));
+		close();
 	};
+
 	return (
-		<Modal isOpen={isOpen} className={s.guideModal} close={handleCloseModal}>
+		<Modal isOpen={isOpen('guide')} className={s.guideModal} close={handleCloseModal}>
 			<div className={s.modalContent} onClick={e => e.stopPropagation()}>
 				<Button className={s.closeBtn} onClick={() => handleCloseModal()}>
 					<CloseIcon />

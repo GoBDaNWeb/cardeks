@@ -13,7 +13,6 @@ import s from './filters.module.scss';
 export const Filters = () => {
 	const [activeTab, setActiveTab] = useState<number | null>(null);
 
-	const dispatch = useDispatch();
 	const { activeMenu } = useTypedSelector(state => state.menu);
 	const { filterActive } = useTypedSelector(store => store.routeForm);
 	const { filtersIsOpen, selectedFilter, filters } = useTypedSelector(store => store.filters);
@@ -26,13 +25,14 @@ export const Filters = () => {
 		routeInfo: { routeIsBuilded }
 	} = useTypedSelector(state => state.map);
 
+	const dispatch = useDispatch();
+
 	const handleActiveTab = (index: number) => {
 		if (index === activeTab) {
 			setActiveTab(null);
 			dispatch(setOpenFilters(false));
 		} else {
 			setActiveTab(index);
-			// dispatch(setMapLoading(true));
 			setTimeout(() => {
 				dispatch(setOpenFilters(true));
 				dispatch(setSelectedFilter(index));

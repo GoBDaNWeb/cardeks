@@ -1,22 +1,16 @@
-import { useDispatch } from 'react-redux';
-
-import { useTypedSelector } from '@/shared/lib';
-import { Button, CloseIcon, Input, Modal, PlusIcon, Textarea } from '@/shared/ui';
-
-import { handleOpenModal } from '../model';
+import { Button, CloseIcon, Input, Modal, PlusIcon, Textarea, useModal } from '@/shared/ui';
 
 import s from './review-modal.module.scss';
 
 export const ReviewModal = () => {
-	const { isOpen } = useTypedSelector(store => store.reviewModal);
-	const dispatch = useDispatch();
+	const { close, isOpen } = useModal();
 
 	const handleCloseModal = () => {
-		dispatch(handleOpenModal(false));
+		close();
 	};
 
 	return (
-		<Modal isOpen={isOpen} className={s.reviewModal} close={handleCloseModal}>
+		<Modal isOpen={isOpen('review')} className={s.reviewModal} close={handleCloseModal}>
 			<div className={s.modalContent} onClick={e => e.stopPropagation()}>
 				<Button className={s.closeBtn} onClick={() => handleCloseModal()}>
 					<CloseIcon />

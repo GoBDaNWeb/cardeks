@@ -23,5 +23,5 @@ const settingsMapMenuSlice = createSlice({
 	}
 });
 
-export const { setOpenSettings, setGetLocation } = settingsMapMenuSlice.actions;
+export { settingsMapMenuSlice };
 export default settingsMapMenuSlice.reducer;

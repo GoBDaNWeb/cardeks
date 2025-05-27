@@ -1,15 +1,18 @@
 import { FC, Fragment } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { handleOpenModal as openDownloadModal } from '@/features/download-modal';
-import { handleOpenModal as openMailModal } from '@/features/mail-modal';
-
 import { setChangeRoute, setRouteBuilded } from '@/entities/map';
-import { handleOpenModal } from '@/entities/new-route-modal';
-import { handleOpenModal as openPrintModal } from '@/entities/print-modal';
 
 import { handleCopyLink, useTypedSelector } from '@/shared/lib';
-import { Button, CloseIcon, DownloadIcon, LinkIcon, MailIcon, PrintIcon } from '@/shared/ui';
+import {
+	Button,
+	CloseIcon,
+	DownloadIcon,
+	LinkIcon,
+	MailIcon,
+	PrintIcon,
+	useModal
+} from '@/shared/ui';
 
 import s from './route-info-short.module.scss';
 
@@ -20,6 +23,7 @@ interface IRouteInfoShort {
 
 export const RouteInfoShort: FC<IRouteInfoShort> = ({ setDetail, handleClose }) => {
 	const dispatch = useDispatch();
+	const { open } = useModal();
 
 	const {
 		routeInfo: { routeAddresses, routeTime, routeLength, routeCoords }
@@ -30,16 +34,16 @@ export const RouteInfoShort: FC<IRouteInfoShort> = ({ setDetail, handleClose }) 
 	} = useTypedSelector(store => store.filters);
 
 	const handleOpenNewRouteModal = () => {
-		dispatch(handleOpenModal(true));
+		open('new-route');
 	};
 	const handeOpenDownloadModal = () => {
-		dispatch(openDownloadModal(true));
+		open('download');
 	};
 	const handeOpenMailModal = () => {
-		dispatch(openMailModal(true));
+		open('mail');
 	};
 	const handeOpenPrintModal = () => {
-		dispatch(openPrintModal(true));
+		open('print');
 	};
 	const handleChangeRoute = () => {
 		dispatch(setRouteBuilded(false));
