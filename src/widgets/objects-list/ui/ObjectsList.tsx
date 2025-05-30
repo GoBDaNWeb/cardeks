@@ -10,6 +10,7 @@ import { setAddress, setCenter, setCurrentPointId } from '@/entities/map';
 import { setActiveMenu as setActiveMenuMob } from '@/entities/mobile-menu';
 import { ObjectItem } from '@/entities/object-item';
 
+import { useLazyGetTerminalsQuery } from '@/shared/api/cardeksPoints';
 import { handleCopyLink, useTypedSelector } from '@/shared/lib';
 import { Feature } from '@/shared/types';
 import {
@@ -26,7 +27,7 @@ import s from './objects-list.module.scss';
 
 export const ObjectsList = () => {
 	const [page, setPage] = useState(1);
-	const [itemsPerPage, setItemsPerPage] = useState(10);
+	const [itemsPerPage] = useState(10);
 
 	const observer = useRef<IntersectionObserver | null>(null);
 	const lastElementRef = useRef<HTMLDivElement | null>(null);
@@ -34,6 +35,9 @@ export const ObjectsList = () => {
 	const dispatch = useDispatch();
 
 	const { open } = useModal();
+
+	const [fetchTerminals, { data: terminalsData, isLoading, isSuccess }] =
+		useLazyGetTerminalsQuery();
 
 	const {
 		mapInfo: { fixedCenter, points, pointsData, zoom }
@@ -82,6 +86,16 @@ export const ObjectsList = () => {
 	const handeOpenPrintModal = () => {
 		open('print');
 	};
+
+	useEffect(() => {
+		const fetch = async () => {
+			await fetchTerminals();
+		};
+
+		if (activeMenu === 'objects-list') {
+			fetch();
+		}
+	}, [activeMenu]);
 
 	useEffect(() => {
 		if (observer.current) observer.current.disconnect();
@@ -144,21 +158,24 @@ export const ObjectsList = () => {
 				</div>
 			</div>
 			<div className={s.objectListContent}>
-				{displayedPoints.map((point: Feature, index: number) => (
-					<div
-						key={`${point.id}-${index}`}
-						ref={index === displayedPoints.length - 1 ? lastElementRef : null}
-					>
-						<ObjectItem
-							id={point.id}
-							title={point.title}
-							address={point.address}
-							viewOnMap={() => handleViewOnMap(point.geometry.coordinates)}
-							buildRoute={() => handleBuildRoute(point.address ?? '')}
-							fuels={point.fuels}
-						/>
-					</div>
-				))}
+				{displayedPoints.map((point: Feature, index: number) => {
+					const terminalInfo = terminalsData?.data?.find((item: any) => item[0] === point.id);
+					return (
+						<div
+							key={`${point.id}-${index}`}
+							ref={index === displayedPoints.length - 1 ? lastElementRef : null}
+						>
+							<ObjectItem
+								id={point.id}
+								title={point.title}
+								address={terminalInfo?.[1] ?? point.address}
+								viewOnMap={() => handleViewOnMap(point.geometry.coordinates)}
+								buildRoute={() => handleBuildRoute(terminalInfo?.[1] ?? point.address ?? '')}
+								fuels={point.fuels}
+							/>
+						</div>
+					);
+				})}
 			</div>
 		</div>
 	);

@@ -9,7 +9,7 @@ import { setActiveMenu } from '@/widgets/menu-list';
 import { setAddress, setCurrentPointId } from '@/entities/map';
 import { setActiveObject } from '@/entities/object-info';
 
-import { useGetTerminalsQuery } from '@/shared/api';
+import { useLazyGetTerminalsQuery } from '@/shared/api/cardeksPoints';
 import { fuelList } from '@/shared/config';
 import { useIndexedDB, useTypedSelector } from '@/shared/lib';
 import { Feature } from '@/shared/types';
@@ -25,7 +25,7 @@ export const ObjectInfo = () => {
 
 	const { activeMenu } = useTypedSelector(store => store.menu);
 	const { filtersIsOpen } = useTypedSelector(store => store.filters);
-	const { data, isLoading } = useGetTerminalsQuery();
+	const [fetchTerminals, { data, isLoading }] = useLazyGetTerminalsQuery();
 	const { objectId } = useTypedSelector(store => store.objectInfo);
 	const {
 		routeInfo: { routeIsBuilded }
@@ -56,20 +56,25 @@ export const ObjectInfo = () => {
 	};
 	useEffect(() => {
 		const fetch = async () => {
-			if (objectId && !objectId.includes('__cluster__')) {
-				const currentAzs = await getDataById(objectId);
-				const filterTerminal = data.data.find((item: any) => {
-					return item[0] === objectId;
-				});
-				if (filterTerminal) {
-					setTerminal(filterTerminal);
+			try {
+				const result = await fetchTerminals().unwrap();
+				if (objectId && !objectId.includes('__cluster__')) {
+					const currentAzs = await getDataById(objectId);
+					const filterTerminal = result.data.find((item: any) => {
+						return item[0] === objectId;
+					});
+					if (filterTerminal) {
+						setTerminal(filterTerminal);
+					}
+					if (currentAzs) {
+						setAzsItem(currentAzs);
+					}
 				}
-				if (currentAzs) {
-					setAzsItem(currentAzs);
-				}
+			} catch (e) {
+				console.error('Ошибка при загрузке:', e);
 			}
 		};
-		if (!isLoading) {
+		if (objectId && !isLoading) {
 			fetch();
 		}
 	}, [objectId]);
@@ -99,16 +104,17 @@ export const ObjectInfo = () => {
 						<CloseIcon />
 					</Button>
 				</div>
-
-				<div className={s.features}>
-					{azsItem?.features.canManageCards ? (
-						<div className={s.feature}>Сбросить счетчик PIN-кода</div>
-					) : null}
-					{/* {azsItem?.features.abilityPPay ? <div className={s.feature}>Оплата из машины</div> : null}
+				{azsItem?.features.canManageCards ? (
+					<div className={s.features}>
+						{azsItem?.features.canManageCards ? (
+							<div className={s.feature}>Сбросить счетчик PIN-кода</div>
+						) : null}
+						{/* {azsItem?.features.abilityPPay ? <div className={s.feature}>Оплата из машины</div> : null}
 					{azsItem?.features.ppayBarcode ? (
 						<div className={s.feature}>Оплата по штрихкоду</div>
 					) : null} */}
-				</div>
+					</div>
+				) : null}
 
 				<p className={s.address}>{terminal && terminal[1]}</p>
 				<Button

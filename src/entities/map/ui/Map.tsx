@@ -9,11 +9,11 @@ import { setSelectedFilter } from '@/widgets/filters';
 
 import { setActiveObject } from '@/entities/object-info';
 
-import { useGetPointsQuery, useGetTerminalsQuery } from '@/shared/api';
+import { useGetPointsQuery } from '@/shared/api';
 import { getPointId, getQueryParams, useIndexedDB, useTypedSelector } from '@/shared/lib';
 import { Feature, IPlacemark } from '@/shared/types';
 
-import { createPoints, getVisibleMarkers, mergeData, usePoint, useRoute } from '../lib';
+import { createPoints, getVisibleMarkers, usePoint, useRoute } from '../lib';
 import {
 	handleWheel,
 	setCategoryTotals,
@@ -77,7 +77,6 @@ export const CustomMap = () => {
 	const { saveData, getAllData, filterDataByOptions } = useIndexedDB();
 
 	const { data, isLoading } = useGetPointsQuery();
-	const { data: terminalsList, isLoading: isLoadingTerminal } = useGetTerminalsQuery();
 
 	const {
 		mapInfo: { zoom, isWheel, mapType, panorama, panoramaIsOpen, center, mapLoading },
@@ -430,15 +429,14 @@ export const CustomMap = () => {
 
 	useEffect(() => {
 		const fetch = async () => {
-			const mergedData = mergeData(data.data, terminalsList.data);
-			await saveData(createPoints(mergedData));
+			await saveData(createPoints(data.data));
 			const allData = await getAllData();
 			setFeatures(allData);
 		};
-		if (!isLoading && !isLoadingTerminal) {
+		if (!isLoading) {
 			fetch();
 		}
-	}, [isLoading, isLoadingTerminal]);
+	}, [isLoading]);
 
 	useEffect(() => {
 		if (!objectManagerState) return;

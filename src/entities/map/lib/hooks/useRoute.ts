@@ -5,6 +5,7 @@ import { setOpenFilters } from '@/widgets/filters';
 import { setActiveMenu } from '@/widgets/menu-list';
 
 import { useFindAzsOnRouteMutation, useGetTerminalsQuery } from '@/shared/api';
+import { useLazyGetTerminalsQuery } from '@/shared/api/cardeksPoints';
 import { getQueryParams, useIndexedDB, useTypedSelector } from '@/shared/lib';
 import { Feature } from '@/shared/types';
 
@@ -56,8 +57,8 @@ export const useRoute = ({
 	const { selectedFilter, filters } = useTypedSelector(state => state.filters);
 	const { addSettings, withFilters } = useTypedSelector(state => state.routeForm);
 	const { routesParam } = getQueryParams();
-
-	const { data: terminalsList } = useGetTerminalsQuery();
+	const [fetchTerminals, { data: terminalsList }] = useLazyGetTerminalsQuery();
+	// const { data: terminalsList } = useGetTerminalsQuery();
 	const multiRouteRef = useRef<any>(null);
 	const [fetchAzs, { isLoading }] = useFindAzsOnRouteMutation();
 
@@ -91,25 +92,30 @@ export const useRoute = ({
 
 	// Обработка точек на маршруте
 	const handleRoutePoints = async (lines: any, threshold: number) => {
-		if (!lines || !lines.toArray().length) return;
+		try {
+			const result = await fetchTerminals().unwrap();
+			if (!lines || !lines.toArray().length) return;
 
-		const linesArr = lines.toArray()[0].geometry.getCoordinates() as Coordinates[];
-		const findAzsData: IFindAzsData = {
-			radius: threshold,
-			points: linesArr
-		};
+			const linesArr = lines.toArray()[0].geometry.getCoordinates() as Coordinates[];
+			const findAzsData: IFindAzsData = {
+				radius: threshold,
+				points: linesArr
+			};
 
-		const currentAzs = await fetchAzs(findAzsData).unwrap();
-		const mergedData = mergeData(currentAzs.data, terminalsList.data);
-		const points = createPoints(mergedData);
+			const currentAzs = await fetchAzs(findAzsData).unwrap();
+			const mergedData = mergeData(currentAzs.data, result.data);
+			const points = createPoints(mergedData);
 
-		if (points.length > 0 && objectManagerState) {
-			if (withFilters) {
-				const newFilteredPoints = await filtered(points);
-				dispatch(setPointsOnRoute(newFilteredPoints));
-			} else {
-				dispatch(setPointsOnRoute(points));
+			if (points.length > 0 && objectManagerState) {
+				if (withFilters) {
+					const newFilteredPoints = await filtered(points);
+					dispatch(setPointsOnRoute(newFilteredPoints));
+				} else {
+					dispatch(setPointsOnRoute(points));
+				}
 			}
+		} catch (e) {
+			console.error('Ошибка при загрузке:', e);
 		}
 	};
 

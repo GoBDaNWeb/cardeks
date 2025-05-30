@@ -13,6 +13,7 @@ export const cardeksPointsAPI = createApi({
 	})
 });
 
-export const { useGetPointsQuery, useGetTerminalsQuery } = cardeksPointsAPI;
+export const { useGetPointsQuery, useGetTerminalsQuery, useLazyGetTerminalsQuery } =
+	cardeksPointsAPI;
 
 export const { getPoints, getTerminals } = cardeksPointsAPI.endpoints;
