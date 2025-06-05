@@ -65,7 +65,6 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IU
 				coords
 			);
 			if (newCoords) {
-				console.log('1');
 				dispatch(setCoords(newCoords as Coordinates[]));
 			}
 			(existingMarker.geometry as IPointGeometry).setCoordinates(coords);
@@ -135,8 +134,6 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IU
 				changePointImage(point, index, getImage(index));
 			});
 			if (filteredCoords) {
-				console.log('3');
-
 				dispatch(setCoords(filteredCoords as Coordinates[]));
 			}
 			map.geoObjects.remove(deletedPoint);
@@ -219,8 +216,6 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IU
 				(secondInput.geometry as IPointGeometry).setCoordinates(firstPointCoords);
 				swapItems(tempCoordsArray, swapPoints);
 				if (tempCoordsArray) {
-					console.log('4');
-
 					dispatch(setCoords(tempCoordsArray as Coordinates[]));
 				}
 			}

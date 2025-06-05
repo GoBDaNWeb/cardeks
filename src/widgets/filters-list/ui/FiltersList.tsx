@@ -12,6 +12,7 @@ import {
 	setFuelFilters,
 	setGateHeight,
 	setOpenFilters,
+	setRelatedProducts,
 	setTerminal
 } from '@/widgets/filters';
 
@@ -235,6 +236,7 @@ export const FiltersList = () => {
 			dispatch(setAddServices([]));
 			dispatch(setGateHeight(null));
 			dispatch(setFeatures([]));
+			dispatch(setRelatedProducts(false));
 		}
 	}, [clearFilters]);
 
