@@ -201,7 +201,7 @@ export const FiltersList = () => {
 	}, [selectedFilter, filtersIsOpen]);
 
 	useEffect(() => {
-		if (isDbReady) {
+		if (isDbReady && filtersIsOpen) {
 			handleGetBradns();
 			handleGetCards();
 		}
