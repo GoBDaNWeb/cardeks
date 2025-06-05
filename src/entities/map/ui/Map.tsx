@@ -10,10 +10,11 @@ import { setSelectedFilter } from '@/widgets/filters';
 import { setActiveObject } from '@/entities/object-info';
 
 import { useGetPointsQuery } from '@/shared/api';
+import { useGetTerminalsQuery, useLazyGetTerminalsQuery } from '@/shared/api/cardeksPoints';
 import { getPointId, getQueryParams, useIndexedDB, useTypedSelector } from '@/shared/lib';
 import { Feature, IPlacemark } from '@/shared/types';
 
-import { createPoints, getVisibleMarkers, usePoint, useRoute } from '../lib';
+import { createPoints, getVisibleMarkers, mergeData, usePoint, useRoute } from '../lib';
 import {
 	handleWheel,
 	setCategoryTotals,
@@ -65,7 +66,7 @@ const SELECTED_ICON_OFFSET: [number, number] = [-20, -53];
 export const CustomMap = () => {
 	const ymaps = window.ymaps;
 	let geolocation = window.ymaps.geolocation;
-
+	const [fetchTerminals] = useLazyGetTerminalsQuery();
 	const [features, setFeatures] = useState<Feature[]>([]);
 	const [map, setMap] = useState<null | MapType>(null);
 	const [objectManagerState, setObjectManagerState] = useState<ObjectManager | null>(null);
@@ -75,8 +76,7 @@ export const CustomMap = () => {
 	const previousOptionsRef = useRef<MapObject['options'] | null>(null);
 	const dispatch = useDispatch();
 	const { saveData, getAllData, filterDataByOptions } = useIndexedDB();
-
-	const { data, isLoading } = useGetPointsQuery();
+	const { data, isLoading, isSuccess } = useGetPointsQuery();
 
 	const {
 		mapInfo: { zoom, isWheel, mapType, panorama, panoramaIsOpen, center, mapLoading },
@@ -276,7 +276,7 @@ export const CustomMap = () => {
 			filters.relatedProducts
 		);
 
-		const azsPoints = filteredData;
+		const azsPoints = filteredData.filter((marker: Feature) => marker.types.azs);
 		const washingPoints = filteredData.filter((marker: Feature) => marker.types.washing);
 		const tirePoints = filteredData.filter((marker: Feature) => marker.types.tire);
 
@@ -374,7 +374,7 @@ export const CustomMap = () => {
 			dispatch(setMapLoading(false));
 
 			if (!isUrlBuild && !buildRoute) {
-				const azsPoints = features;
+				const azsPoints = features.filter((marker: Feature) => marker.types.azs);
 				const washingPoints = features.filter((marker: Feature) => marker.types.washing);
 				const tirePoints = features.filter((marker: Feature) => marker.types.tire);
 				dispatch(
@@ -433,10 +433,21 @@ export const CustomMap = () => {
 			const allData = await getAllData();
 			setFeatures(allData);
 		};
-		if (!isLoading) {
+		const fecthTerminals = async () => {
+			const result = await fetchTerminals().unwrap();
+
+			const mergedData = mergeData(data.data, result.data);
+			await saveData(createPoints(mergedData));
+			const allData = await getAllData();
+			setFeatures(allData);
+		};
+		if (!isLoading && features.length === 0) {
 			fetch();
 		}
-	}, [isLoading]);
+		if (isSuccess && !isLoading && features.length > 0) {
+			fecthTerminals();
+		}
+	}, [isLoading, features.length]);
 
 	useEffect(() => {
 		if (!objectManagerState) return;

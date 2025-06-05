@@ -1,18 +1,66 @@
-import { forwardRef, useRef } from 'react';
+import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import { useLazyGetTerminalsQuery } from '@/shared/api/cardeksPoints';
 import { useTypedSelector } from '@/shared/lib';
 import { Feature } from '@/shared/types';
 
 import s from './excel-template.module.scss';
 
 export const ExcelTemplate = forwardRef(({}, ref) => {
+	const [terminalPoints, setTerminalPoints] = useState<any[]>([]);
 	const nodeRef = useRef<HTMLDivElement | null>(null);
+	const [fetchTerminals] = useLazyGetTerminalsQuery();
+	const hasFetchedRef = useRef(false);
+	const { currentModal } = useTypedSelector(state => state.modals);
 
 	const {
 		routeInfo: { pointsOnRoute },
 		mapInfo: { points }
 	} = useTypedSelector(store => store.map);
-	const tableData = pointsOnRoute.length > 0 ? pointsOnRoute : points;
+
+	// Функция для создания мапы терминалов (мемоизируем)
+	const createTerminalMap = useCallback((terminals: any[]) => {
+		const map: Record<string, { address: string; terminals: any[] }> = {};
+		terminals.forEach(item => {
+			const id = item[0];
+			map[id] = {
+				address: item[1],
+				terminals: item[2]
+			};
+		});
+		return map;
+	}, []);
+
+	// Мемоизация объединённого массива
+	const mergedArray = useMemo(() => {
+		const terminalMap = createTerminalMap(terminalPoints);
+		const currentPoints = pointsOnRoute.length > 0 ? pointsOnRoute : points;
+
+		return currentPoints.map((item: Feature) => {
+			const idString = item.id.toString().padStart(10, '0');
+			const terminalData = terminalMap[idString];
+
+			return terminalData
+				? { ...item, address: terminalData.address, terminals: terminalData.terminals }
+				: item;
+		});
+	}, [terminalPoints, pointsOnRoute, points, createTerminalMap]);
+
+	useEffect(() => {
+		if (currentModal === 'download' && !hasFetchedRef.current) {
+			hasFetchedRef.current = true;
+			fetchTerminals()
+				.unwrap()
+				.then(res => {
+					setTerminalPoints(res.data);
+				})
+				.catch(err => {
+					console.error('Ошибка при загрузке терминалов:', err);
+				});
+		}
+	}, [currentModal, fetchTerminals]);
+
+	const tableData = pointsOnRoute.length > 0 ? pointsOnRoute : mergedArray;
 
 	return (
 		<table

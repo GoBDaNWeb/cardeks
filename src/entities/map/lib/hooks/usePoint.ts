@@ -213,16 +213,16 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IU
 		} else {
 			if (firstInput) {
 				if (getPointInfo(firstInput, 'index') == swapPoints[0]) {
-					changePointImage(firstInput, swapPoints[0] + 1, getImage(swapPoints[0] + 1));
+					changePointImage(firstInput, +swapPoints[0] + 1, getImage(+swapPoints[0] + 1));
 				} else {
-					changePointImage(firstInput, swapPoints[0], getImage(swapPoints[0]));
+					changePointImage(firstInput, +swapPoints[0], getImage(+swapPoints[0]));
 				}
 			}
 			if (secondInput) {
 				if (getPointInfo(secondInput, 'index') == swapPoints[0]) {
-					changePointImage(secondInput, swapPoints[0] + 1, getImage(swapPoints[0] + 1));
+					changePointImage(secondInput, +swapPoints[0] + 1, getImage(+swapPoints[0] + 1));
 				} else {
-					changePointImage(secondInput, swapPoints[0], getImage(swapPoints[0]));
+					changePointImage(secondInput, +swapPoints[0], getImage(+swapPoints[0]));
 				}
 			}
 		}

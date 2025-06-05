@@ -19,10 +19,11 @@ export const getVisibleMarkers = async (map: any, objectManagerState: any, dispa
 		);
 	});
 
+	const visibleAzsPoints = visibleMarkers.filter(marker => marker.types?.azs);
 	const visibleWashingPoints = visibleMarkers.filter(marker => marker.types?.washing);
 	const visibleTirePoints = visibleMarkers.filter(marker => marker.types?.tire);
 
-	dispatch(setCategoryTotals({ category: 'azs', totalView: visibleMarkers.length }));
+	dispatch(setCategoryTotals({ category: 'azs', totalView: visibleAzsPoints.length }));
 	dispatch(setCategoryTotals({ category: 'points', totalView: visibleMarkers.length }));
 	dispatch(setCategoryTotals({ category: 'washing', totalView: visibleWashingPoints.length }));
 	dispatch(setCategoryTotals({ category: 'tire', totalView: visibleTirePoints.length }));

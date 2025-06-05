@@ -31,10 +31,13 @@ export const SearchableDropdown: FC<SearchableDropdownProps> = ({
 	const [activeItem, setActiveItem] = useState<number>(0);
 
 	const handleFocus = () => {
+		console.log('isDropdownActive', isDropdownActive);
 		setIsDropdownActive(true);
 	};
 
 	const handleBlur = () => {
+		console.log('isDropdownActive', isDropdownActive);
+
 		setTimeout(() => {
 			setIsDropdownActive(false);
 		}, 200);

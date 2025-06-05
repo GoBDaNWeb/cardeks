@@ -57,7 +57,7 @@ export const useRoute = ({
 	const { selectedFilter, filters } = useTypedSelector(state => state.filters);
 	const { addSettings, withFilters } = useTypedSelector(state => state.routeForm);
 	const { routesParam } = getQueryParams();
-	const [fetchTerminals, { data: terminalsList }] = useLazyGetTerminalsQuery();
+	const [fetchTerminals] = useLazyGetTerminalsQuery();
 	// const { data: terminalsList } = useGetTerminalsQuery();
 	const multiRouteRef = useRef<any>(null);
 	const [fetchAzs, { isLoading }] = useFindAzsOnRouteMutation();
@@ -105,13 +105,22 @@ export const useRoute = ({
 			const currentAzs = await fetchAzs(findAzsData).unwrap();
 			const mergedData = mergeData(currentAzs.data, result.data);
 			const points = createPoints(mergedData);
+			const mappedFiltered = await Promise.all(
+				points.map(async (item: Feature) => {
+					const distance = ymaps.coordSystem.geo.getDistance(
+						routeCoords[0],
+						item.geometry.coordinates
+					);
 
+					return { ...item, distance };
+				})
+			);
 			if (points.length > 0 && objectManagerState) {
 				if (withFilters) {
-					const newFilteredPoints = await filtered(points);
+					const newFilteredPoints = await filtered(mappedFiltered);
 					dispatch(setPointsOnRoute(newFilteredPoints));
 				} else {
-					dispatch(setPointsOnRoute(points));
+					dispatch(setPointsOnRoute(mappedFiltered));
 				}
 			}
 		} catch (e) {

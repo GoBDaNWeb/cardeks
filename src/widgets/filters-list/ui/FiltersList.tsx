@@ -62,7 +62,7 @@ export const FiltersList = () => {
 		activeCard: 0,
 		dataCards: [] as string[]
 	});
-
+	console.log(cardState);
 	const [services, setServices] = useState<string[]>(addServicesParam ? addServicesParam : []);
 	const prevSelectedFilter = useRef(selectedFilter);
 	const dispatch = useDispatch();
@@ -91,8 +91,23 @@ export const FiltersList = () => {
 
 	const handleGetCards = useCallback(async () => {
 		const cards = cardsList;
-		updateCardState({ dataCards: cards });
-	}, []);
+		if (card) {
+			const filterCards = cards.filter(c => {
+				return card !== c;
+			});
+			const currentCard = cards.find(c => {
+				return card === c;
+			});
+			updateCardState({ filteredCards: filterCards });
+			updateCardState({ currentCards: filterCards });
+			updateCardState({ selectedCard: currentCard });
+			updateCardState({ inputCardValue: currentCard });
+
+			return;
+		} else {
+			updateCardState({ dataCards: cards });
+		}
+	}, [filtersIsOpen]);
 
 	const { activeMenu } = useTypedSelector(state => state.menu);
 
@@ -245,6 +260,11 @@ export const FiltersList = () => {
 			updateBrandState({ filteredBrands: brandState.dataBrands });
 			updateBrandState({ currentBrands: brandState.dataBrands });
 		}
+		// updateCardState({ inputCardValue: '' });
+		// if (brandState.dataBrands) {
+		// 	updateCardState({ filteredCards: cardState.dataCards });
+		// 	updateCardState({ currentCards: cardState.dataCards });
+		// }
 	}, [filtersIsOpen]);
 
 	const filterListClass = clsx(s.filtersList, {

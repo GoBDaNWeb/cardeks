@@ -9,7 +9,6 @@ import { setActiveMenu } from '@/widgets/menu-list';
 import { setAddress, setCurrentPointId } from '@/entities/map';
 import { setActiveObject } from '@/entities/object-info';
 
-import { useLazyGetTerminalsQuery } from '@/shared/api/cardeksPoints';
 import { fuelList } from '@/shared/config';
 import { useIndexedDB, useTypedSelector } from '@/shared/lib';
 import { Feature } from '@/shared/types';
@@ -19,13 +18,11 @@ import s from './object-info.module.scss';
 
 export const ObjectInfo = () => {
 	const [azsItem, setAzsItem] = useState<Feature | null>(null);
-	const [terminal, setTerminal] = useState<any>(null);
 	const { getDataById } = useIndexedDB();
 	const dispatch = useDispatch();
 
 	const { activeMenu } = useTypedSelector(store => store.menu);
 	const { filtersIsOpen } = useTypedSelector(store => store.filters);
-	const [fetchTerminals, { data, isLoading }] = useLazyGetTerminalsQuery();
 	const { objectId } = useTypedSelector(store => store.objectInfo);
 	const {
 		routeInfo: { routeIsBuilded }
@@ -48,8 +45,8 @@ export const ObjectInfo = () => {
 	const handleBuildRoute = () => {
 		dispatch(setActiveMenu('route'));
 		setTimeout(() => {
-			dispatch(setCurrentPointId('points.0.inputText'));
-			dispatch(setAddress(terminal[1]));
+			dispatch(setCurrentPointId('points.1.inputText'));
+			dispatch(setAddress(azsItem?.address as string));
 		}, 500);
 
 		dispatch(setActiveObject(null));
@@ -57,15 +54,9 @@ export const ObjectInfo = () => {
 	useEffect(() => {
 		const fetch = async () => {
 			try {
-				const result = await fetchTerminals().unwrap();
 				if (objectId && !objectId.includes('__cluster__')) {
 					const currentAzs = await getDataById(objectId);
-					const filterTerminal = result.data.find((item: any) => {
-						return item[0] === objectId;
-					});
-					if (filterTerminal) {
-						setTerminal(filterTerminal);
-					}
+
 					if (currentAzs) {
 						setAzsItem(currentAzs);
 					}
@@ -74,7 +65,7 @@ export const ObjectInfo = () => {
 				console.error('Ошибка при загрузке:', e);
 			}
 		};
-		if (objectId && !isLoading) {
+		if (objectId) {
 			fetch();
 		}
 	}, [objectId]);
@@ -93,7 +84,7 @@ export const ObjectInfo = () => {
 						<p>{azsItem?.title}</p>
 
 						<a
-							href={`https://yandex.ru/maps/?rtext=${azsItem?.geometry.coordinates.join(',')}&rtt=mt`}
+							href={`https://yandex.ru/maps/?rtext=${azsItem?.geometry.coordinates.join(',')}&rtt=auto`}
 							target='_blank'
 						>
 							Открыть на Я.Картах
@@ -116,7 +107,7 @@ export const ObjectInfo = () => {
 					</div>
 				) : null}
 
-				<p className={s.address}>{terminal && terminal[1]}</p>
+				<p className={s.address}>{azsItem?.address}</p>
 				<Button
 					className={s.coords}
 					onClick={() => handleCopyCoords(azsItem?.geometry.coordinates.join(', ') ?? '')}
@@ -147,9 +138,9 @@ export const ObjectInfo = () => {
 				<div className={s.infoItem}>
 					<h6>Принимает карты</h6>
 					<p>
-						{terminal ? (
+						{azsItem?.terminals ? (
 							<>
-								{terminal[2]?.filter((item: string) => {
+								{azsItem?.terminals?.filter((item: string) => {
 									return item.includes('2005');
 								}).length > 0 ? (
 									'Кардекс'
@@ -171,10 +162,10 @@ export const ObjectInfo = () => {
 						<p> Сопутствующие товары</p>
 					</div>
 				) : null}
-				{terminal && terminal[2].length ? (
+				{azsItem?.terminals?.length ? (
 					<div className={s.infoItem}>
 						<h6>Терминалы</h6>
-						<p>{terminal[2].join(' -')}</p>
+						<p>{azsItem?.terminals.join(' -')}</p>
 					</div>
 				) : null}
 			</div>
