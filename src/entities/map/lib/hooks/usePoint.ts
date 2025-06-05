@@ -65,6 +65,7 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IU
 				coords
 			);
 			if (newCoords) {
+				console.log('1');
 				dispatch(setCoords(newCoords as Coordinates[]));
 			}
 			(existingMarker.geometry as IPointGeometry).setCoordinates(coords);
@@ -77,8 +78,16 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IU
 					pointId,
 					pointIndex: parseInt(pointIndex)
 				});
+				const index = +currentPointId.split('.')[1];
+				const newCoords = [...routeCoords];
 
-				dispatch(setCoords([...routeCoords, coords]));
+				while (newCoords.length <= index) {
+					newCoords.push(null);
+				}
+
+				newCoords[index] = coords;
+
+				dispatch(setCoords(newCoords));
 
 				map.geoObjects.add(myPlacemark);
 				setPointCollection(prevCollection => [...prevCollection, myPlacemark]);
@@ -126,6 +135,8 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IU
 				changePointImage(point, index, getImage(index));
 			});
 			if (filteredCoords) {
+				console.log('3');
+
 				dispatch(setCoords(filteredCoords as Coordinates[]));
 			}
 			map.geoObjects.remove(deletedPoint);
@@ -198,8 +209,9 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IU
 		const secondInput = pointCollection.find(point => {
 			return getPointInfo(point, 'index') == swapPoints[1];
 		});
+		let tempCoordsArray = routeCoords.slice();
+
 		if (fieldsCount === pointCollection.length) {
-			let tempCoordsArray = routeCoords.slice();
 			if (firstInput && secondInput) {
 				const firstPointCoords = (firstInput.geometry as IPointGeometry).getCoordinates();
 				const secondPointCoords = (secondInput.geometry as IPointGeometry).getCoordinates();
@@ -207,10 +219,15 @@ export const usePoint = ({ ymaps, map, pointCollection, setPointCollection }: IU
 				(secondInput.geometry as IPointGeometry).setCoordinates(firstPointCoords);
 				swapItems(tempCoordsArray, swapPoints);
 				if (tempCoordsArray) {
+					console.log('4');
+
 					dispatch(setCoords(tempCoordsArray as Coordinates[]));
 				}
 			}
 		} else {
+			swapItems(tempCoordsArray, swapPoints);
+			dispatch(setCoords(tempCoordsArray as Coordinates[]));
+
 			if (firstInput) {
 				if (getPointInfo(firstInput, 'index') == swapPoints[0]) {
 					changePointImage(firstInput, +swapPoints[0] + 1, getImage(+swapPoints[0] + 1));

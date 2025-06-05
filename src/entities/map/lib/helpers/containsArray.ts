@@ -3,7 +3,7 @@ export const containsArray = (
 	targetArray: number[] | null,
 	newArray: number[]
 ) => {
-	if (targetArray) {
+	if (targetArray && arrayOfArrays) {
 		const index = arrayOfArrays.findIndex(
 			arr =>
 				arr.length === targetArray.length &&

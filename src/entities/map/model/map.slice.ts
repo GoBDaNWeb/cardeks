@@ -5,7 +5,7 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 const { zoomParam, routesParam } = getQueryParams();
 
-type Coordinates = [number, number];
+type Coordinates = [number, number] | [null, null] | [null, number];
 
 // Types
 export interface ISearchInfo {

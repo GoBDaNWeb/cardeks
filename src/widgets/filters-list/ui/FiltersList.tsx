@@ -224,7 +224,7 @@ export const FiltersList = () => {
 			updateCardState({ filteredCards: [] });
 			updateCardState({ selectedCard: '' });
 			updateCardState({ inputCardValue: '' });
-			updateCardState({ currentCards: [] });
+			updateCardState({ currentCards: ['Кардекс', 'Лукойл'] });
 			updateCardState({ activeCard: 0 });
 			setInputTerminalValue('');
 

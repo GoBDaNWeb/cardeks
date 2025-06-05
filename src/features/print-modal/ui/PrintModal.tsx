@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useReactToPrint } from 'react-to-print';
 
 import { Map as MapType } from 'yandex-maps';
@@ -25,9 +25,9 @@ export const PrintModal = () => {
 	const contentRef = useRef<HTMLDivElement>(null);
 	const reactToPrintFn = useReactToPrint({ contentRef });
 
-	const { close, isOpen } = useModal();
+	const { close, isOpen, currentModal } = useModal();
 
-	const init = () => {
+	const init = useCallback(() => {
 		let multiRoute = new ymaps.multiRouter.MultiRoute(
 			{
 				referencePoints: routeCoords,
@@ -64,6 +64,7 @@ export const PrintModal = () => {
 			zoom: zoom
 		});
 		setMap(map);
+
 		map.controls.remove('searchControl');
 		map.controls.remove('trafficControl');
 		map.controls.remove('typeSelector');
@@ -73,11 +74,13 @@ export const PrintModal = () => {
 		map.geoObjects.add(multiRoute);
 		map.geoObjects.add(objectManager);
 		objectManager.add(pointsOnRoute);
-	};
+	}, []);
 
 	useEffect(() => {
-		ymaps.ready(init);
-	}, [isOpen]);
+		if (ymaps && isOpen('print')) {
+			ymaps.ready(init);
+		}
+	}, [ymaps, currentModal]);
 
 	useEffect(() => {
 		if (map) {
