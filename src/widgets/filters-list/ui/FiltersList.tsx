@@ -62,7 +62,6 @@ export const FiltersList = () => {
 		activeCard: 0,
 		dataCards: [] as string[]
 	});
-	console.log(cardState);
 	const [services, setServices] = useState<string[]>(addServicesParam ? addServicesParam : []);
 	const prevSelectedFilter = useRef(selectedFilter);
 	const dispatch = useDispatch();
