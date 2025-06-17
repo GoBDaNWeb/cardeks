@@ -16,7 +16,7 @@ import {
 	setTerminal
 } from '@/widgets/filters';
 
-import { getQueryParams, useIndexedDB, useTypedSelector } from '@/shared/lib';
+import { getQueryParams, useDebounce, useIndexedDB, useTypedSelector } from '@/shared/lib';
 import { ArrowTopIcon, Button, Chip, CloseIcon, Input, SearchableDropdown } from '@/shared/ui';
 
 import { cardsList } from '../config';
@@ -46,6 +46,7 @@ export const FiltersList = () => {
 	} = useTypedSelector(store => store.filters);
 
 	const [inputTerminalValue, setInputTerminalValue] = useState(terminal);
+	const debounced = useDebounce(inputTerminalValue);
 
 	const [brandState, setBrandState] = useState({
 		filteredBrands: [] as string[],
@@ -118,8 +119,11 @@ export const FiltersList = () => {
 	const handleChangeTerminalInputValue = (e: FormEvent<HTMLInputElement>) => {
 		const value = (e.target as HTMLInputElement).value;
 		setInputTerminalValue(value);
-		dispatch(setTerminal(value));
 	};
+
+	useEffect(() => {
+		dispatch(setTerminal(debounced));
+	}, [debounced]);
 
 	const handleChangeInputBrandValue = (e: FormEvent<HTMLInputElement>) => {
 		const value = (e.target as HTMLInputElement).value;

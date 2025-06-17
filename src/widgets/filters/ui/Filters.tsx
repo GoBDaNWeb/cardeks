@@ -124,7 +124,14 @@ export const Filters = () => {
 					<div className={s.icon}>
 						<FilterIcon />
 					</div>
-					<p>Фильтры{totalFilters() > 0 ? <>: {totalFilters()}</> : null}</p>
+					<p>
+						Фильтры
+						{totalFilters() > 0 ? (
+							<>
+								:<span> {totalFilters()}</span>
+							</>
+						) : null}
+					</p>
 				</div>
 				<div className={s.rightBlock}>
 					{condition ? (

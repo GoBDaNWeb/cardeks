@@ -1,6 +1,7 @@
 @import '@/shared/styles/mixins';
 @import '@/shared/styles/variables';
 
+.filterTab.selected,
 .filterTab.active {
 	@media (min-width: $tab-sm) {
 		background: var(--accent-color);
@@ -62,9 +63,6 @@
 	justify-content: space-between;
 	background: var(--white-color);
 
-	&.selected {
-		border-color: var(--accent-hover-color);
-	}
 	transition:
 		background var(--trs-300),
 		border-color var(--trs-300);

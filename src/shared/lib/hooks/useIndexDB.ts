@@ -59,7 +59,7 @@ export const useIndexedDB = () => {
 						(azsTypes.length === 0 || azsTypes.some(type => types?.[type.value])) &&
 						(addServices.length === 0 || filterObj(types, addServices)) &&
 						(!gateHeight || (filters?.gateHeight ?? 0) > gateHeight) &&
-						(!terminal.trim() || terminals?.some(t => t.trim() === terminal.trim())) &&
+						(!terminal.trim() || terminals?.some(t => t.trim().includes(terminal.trim()))) &&
 						(!titleFilter?.length ||
 							titleFilter.some(brand => title.toLowerCase().includes(brand.toLowerCase()))) &&
 						(!card ||
@@ -104,7 +104,7 @@ export const useIndexedDB = () => {
 						(azsTypes.length === 0 || azsTypes.some(type => types?.[type.value])) &&
 						(addServices.length === 0 || filterObj(types, addServices)) &&
 						(!gateHeight || (filters?.gateHeight ?? 0) > gateHeight) &&
-						(!terminal.trim() || terminals?.some(t => t.trim() === terminal.trim())) &&
+						(!terminal.trim() || terminals?.some(t => t.trim().includes(terminal.trim()))) &&
 						(!titleFilter?.length ||
 							titleFilter.some(brand => title.toLowerCase().includes(brand.toLowerCase()))) &&
 						(!card ||
