@@ -1,6 +1,6 @@
 import { DownloadFiles } from '@/features/download-files';
 
-import { Button, CloseIcon, Input, Modal, Radio, Selector, useModal } from '@/shared/ui';
+import { Button, CloseIcon, Modal, useModal } from '@/shared/ui';
 
 import s from './mail-modal.module.scss';
 

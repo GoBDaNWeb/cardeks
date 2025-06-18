@@ -7,13 +7,11 @@ import { setOpenFilters, setSelectedFilter } from '@/widgets/filters';
 
 import { setWithFilters } from '@/features/route-form';
 
-import { setActiveMenu as setActiveMobileMenu } from '@/entities/mobile-menu';
-
 import { useTypedSelector } from '@/shared/lib';
 import { Accordion, ArrowDownIcon, Button, Checkbox, Chip, FilterIcon } from '@/shared/ui';
 
 import { settingTabs } from '../../config';
-import { setAddSettings, setFilterActive } from '../../model';
+import { setAddSettings } from '../../model';
 
 import s from './route-settings.module.scss';
 

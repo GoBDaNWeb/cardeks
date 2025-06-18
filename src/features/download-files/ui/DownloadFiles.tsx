@@ -1,12 +1,7 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { Controller, FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 
-import {
-	useGetRegionsQuery,
-	useGetTerminalsQuery,
-	useLazyGetRegionsQuery,
-	useLazyGetTerminalsQuery
-} from '@/shared/api/cardeksPoints';
+import { useGetRegionsQuery, useGetTerminalsQuery } from '@/shared/api/cardeksPoints';
 import { useTypedSelector } from '@/shared/lib';
 import { Feature, IGPX } from '@/shared/types';
 import { Button, ExcelTemplate, Input, Radio, Selector, useModal } from '@/shared/ui';
@@ -25,7 +20,6 @@ interface IDownloadFiles {
 
 export const DownloadFiles: FC<IDownloadFiles> = ({ title, text, btnText, download = true }) => {
 	const { isLoading: terminalsLoading } = useGetTerminalsQuery();
-	// const [fetchRegions, { isLoading: regionsLoading }] = useLazyGetRegionsQuery();
 	const { isLoading: regionsLoading } = useGetRegionsQuery();
 
 	const [selectDisabled, setSeletDisabled] = useState(true);
@@ -53,7 +47,7 @@ export const DownloadFiles: FC<IDownloadFiles> = ({ title, text, btnText, downlo
 	const watchMail = watch('mail');
 
 	const onSubmit: SubmitHandler<FieldValues> = async data => {
-		const { radio, selector, mail } = data;
+		const { radio, selector } = data;
 
 		if (download) {
 			if (radio === 'excel' && tableRef.current) {
