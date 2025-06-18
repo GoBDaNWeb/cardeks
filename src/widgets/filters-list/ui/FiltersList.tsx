@@ -15,6 +15,9 @@ import {
 	setRelatedProducts,
 	setTerminal
 } from '@/widgets/filters';
+import { setActiveMenu } from '@/widgets/menu-list';
+
+import { setActiveMenu as setActiveMobileMenu } from '@/entities/mobile-menu';
 
 import { getQueryParams, useDebounce, useIndexedDB, useTypedSelector } from '@/shared/lib';
 import { ArrowTopIcon, Button, Chip, CloseIcon, Input, SearchableDropdown } from '@/shared/ui';
@@ -114,6 +117,10 @@ export const FiltersList = () => {
 
 	const handleCloseFiltersList = () => {
 		dispatch(setOpenFilters(false));
+		if (window.innerWidth <= 767) {
+			dispatch(setActiveMobileMenu(null));
+			dispatch(setActiveMenu(null));
+		}
 	};
 
 	const handleChangeTerminalInputValue = (e: FormEvent<HTMLInputElement>) => {
@@ -273,7 +280,7 @@ export const FiltersList = () => {
 	}, [filtersIsOpen]);
 
 	const filterListClass = clsx(s.filtersList, {
-		[s.left]: activeMenu,
+		[s.left]: activeMenu !== 'filters',
 		[s.active]: filtersIsOpen
 	});
 

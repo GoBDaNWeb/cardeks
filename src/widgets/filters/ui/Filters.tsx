@@ -3,6 +3,10 @@ import { useDispatch } from 'react-redux';
 
 import clsx from 'clsx';
 
+import { setActiveMenu } from '@/widgets/menu-list';
+
+import { setActiveMenu as setActiveMobileMenu } from '@/entities/mobile-menu';
+
 import { useTypedSelector } from '@/shared/lib';
 import { AZSIcon, Button, FilterIcon, FilterTab, TireIcon, WashIcon } from '@/shared/ui';
 
@@ -28,6 +32,9 @@ export const Filters = () => {
 	const dispatch = useDispatch();
 
 	const handleActiveTab = (index: number) => {
+		dispatch(setActiveMenu('filters'));
+
+		dispatch(setActiveMobileMenu('filters'));
 		if (index === activeTab) {
 			setActiveTab(null);
 			dispatch(setOpenFilters(false));
