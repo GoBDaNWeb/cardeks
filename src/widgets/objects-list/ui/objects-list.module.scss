@@ -26,8 +26,9 @@
 	opacity: 0;
 	@media (max-width: $desktop-sm) {
 		right: 16px;
-		width: 550px;
-		top: 204px;
+		width: 500px;
+		// width: 550px;
+		top: 212px;
 		bottom: 16px;
 		max-height: calc(100vh - 221px);
 	}

@@ -15,7 +15,7 @@
 		width: 5px;
 	}
 	@media (max-width: $desktop-sm) {
-		max-height: calc(100vh - 358px);
+		max-height: calc(100vh - 400px);
 	}
 	@media (max-width: $tab) {
 		max-height: calc(100vh - 388px);
@@ -138,11 +138,14 @@
 .filtersList.left {
 	transform: translateX(-577px);
 	@media (max-width: $desktop-sm) {
-		transform: translateX(-500px);
+		transform: translateX(-505px);
+	}
+	@media (max-width: $tab) {
+		transform: translateX(-368px);
 	}
 }
 .filtersList.route {
-	@media (max-width: $tab) {
+	@media (max-width: $tab-sm) {
 		transform: translateX(0);
 	}
 }
@@ -170,9 +173,11 @@
 		opacity var(--trs-300);
 	@media (max-width: $desktop-sm) {
 		right: 16px;
-		top: 189px;
-		max-width: 550px;
-		max-height: calc(100vh - 205px);
+		top: 212px;
+		// max-width: 550px;
+		max-width: 500px;
+
+		max-height: calc(100vh - 255px);
 	}
 	@media (max-width: $tab) {
 		top: 234px;

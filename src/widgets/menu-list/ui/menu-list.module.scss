@@ -11,7 +11,8 @@
 	@media (max-width: $desktop-sm) {
 		top: 16px;
 		right: 16px;
-		width: 550px;
+		// width: 550px;
+		max-width: 500px;
 		gap: 4px;
 	}
 	@media (max-width: $tab) {

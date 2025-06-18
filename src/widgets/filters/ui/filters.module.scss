@@ -8,14 +8,14 @@
 .filters.left {
 	transform: translateX(-577px);
 	@media (max-width: $desktop-sm) {
-		transform: translateX(-500px);
+		transform: translateX(-505px);
 	}
 	@media (max-width: $tab) {
-		transform: translateX(-329px);
+		transform: translateX(-368px);
 	}
 }
 .filters.routeFilterActive {
-	@media (max-width: $tab) {
+	@media (max-width: $tab-sm) {
 		transform: translateX(0) !important;
 		opacity: 1;
 		pointer-events: all;
@@ -41,7 +41,7 @@
 	@media (max-width: $desktop-sm) {
 		right: 16px;
 		top: 72px;
-		max-width: 550px;
+		max-width: 500px;
 	}
 	@media (max-width: $tab) {
 		top: 96px;

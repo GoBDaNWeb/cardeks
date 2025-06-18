@@ -8,10 +8,10 @@
 .objectInfo.left {
 	transform: translateX(-577px);
 	@media (max-width: $desktop-sm) {
-		transform: translateX(-500px);
+		transform: translateX(-505px);
 	}
-	@media (max-width: $desktop-sm) {
-		transform: translateX(-500px);
+	@media (max-width: $tab) {
+		transform: translateX(-368px);
 	}
 	@media (max-width: $tab-sm) {
 		transform: translateX(0);
@@ -47,7 +47,7 @@
 	}
 	@media (max-width: $desktop-sm) {
 		right: 16px;
-		width: 550px;
+		width: 500px;
 		top: 204px;
 		bottom: 16px;
 		max-height: calc(100vh - 221px);
