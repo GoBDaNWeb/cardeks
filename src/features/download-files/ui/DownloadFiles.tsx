@@ -1,6 +1,12 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { Controller, FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 
+import {
+	useGetRegionsQuery,
+	useGetTerminalsQuery,
+	useLazyGetRegionsQuery,
+	useLazyGetTerminalsQuery
+} from '@/shared/api/cardeksPoints';
 import { useTypedSelector } from '@/shared/lib';
 import { Feature, IGPX } from '@/shared/types';
 import { Button, ExcelTemplate, Input, Radio, Selector, useModal } from '@/shared/ui';
@@ -18,6 +24,10 @@ interface IDownloadFiles {
 }
 
 export const DownloadFiles: FC<IDownloadFiles> = ({ title, text, btnText, download = true }) => {
+	const { isLoading: terminalsLoading } = useGetTerminalsQuery();
+	// const [fetchRegions, { isLoading: regionsLoading }] = useLazyGetRegionsQuery();
+	const { isLoading: regionsLoading } = useGetRegionsQuery();
+
 	const [selectDisabled, setSeletDisabled] = useState(true);
 	const [buttonDisabled, setButtonDisabled] = useState(true);
 	const [csvData, setCsvData] = useState([[]]);
@@ -115,6 +125,7 @@ export const DownloadFiles: FC<IDownloadFiles> = ({ title, text, btnText, downlo
 		}
 		getValues('radio') === 'poi' ? setSeletDisabled(false) : setSeletDisabled(true);
 	}, [watchRaio, watchSelector, watchMail]);
+
 	return (
 		<>
 			<form onSubmit={handleSubmit(onSubmit)} className={s.downloadFiles}>
@@ -177,9 +188,9 @@ export const DownloadFiles: FC<IDownloadFiles> = ({ title, text, btnText, downlo
 						onClick={handleSubmit(onSubmit)}
 						className={s.submitBtn}
 						type='submit'
-						isDisabled={buttonDisabled}
+						isDisabled={buttonDisabled || terminalsLoading || regionsLoading}
 					>
-						{btnText}
+						{terminalsLoading || regionsLoading ? 'Идет загрузка списка' : btnText}
 					</Button>
 				</div>
 			</form>

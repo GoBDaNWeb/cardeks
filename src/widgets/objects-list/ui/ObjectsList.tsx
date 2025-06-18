@@ -36,8 +36,7 @@ export const ObjectsList = () => {
 
 	const { open } = useModal();
 
-	const [fetchTerminals, { data: terminalsData, isLoading, isSuccess }] =
-		useLazyGetTerminalsQuery();
+	const [fetchTerminals, { data: terminalsData }] = useLazyGetTerminalsQuery();
 
 	const {
 		mapInfo: { fixedCenter, points, pointsData, zoom }
