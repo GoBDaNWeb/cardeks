@@ -7,6 +7,8 @@ import { setOpenFilters, setSelectedFilter } from '@/widgets/filters';
 
 import { setWithFilters } from '@/features/route-form';
 
+import { setActiveMenu as setActiveMobileMenu } from '@/entities/mobile-menu';
+
 import { useTypedSelector } from '@/shared/lib';
 import { Accordion, ArrowDownIcon, Button, Checkbox, Chip, FilterIcon } from '@/shared/ui';
 
@@ -25,13 +27,12 @@ const AccordionTitle: FC<IAccordionTitle> = ({ handleOpen, isShow }) => {
 
 	const dispatch = useDispatch();
 
-	const { filterActive } = useTypedSelector(store => store.routeForm);
 	const { filtersIsOpen } = useTypedSelector(store => store.filters);
 
 	const handleOpenFilters = () => {
 		dispatch(setOpenFilters(!filtersIsOpen));
 		dispatch(setSelectedFilter(0));
-		// dispatch(setFilterActive(!filterActive));
+		// dispatch(setActiveMobileMenu('filters'));
 	};
 
 	const handleChangeCheckbox = () => {

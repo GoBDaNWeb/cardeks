@@ -40,6 +40,8 @@ const filters = [
 
 export const FiltersList = () => {
 	const { addServicesParam } = getQueryParams();
+	const { activeMenu: mobileActiveMenu } = useTypedSelector(store => store.mobileMenu);
+	const { activeMenu } = useTypedSelector(state => state.menu);
 
 	const {
 		selectedFilter,
@@ -113,13 +115,16 @@ export const FiltersList = () => {
 		}
 	}, [filtersIsOpen]);
 
-	const { activeMenu } = useTypedSelector(state => state.menu);
-
 	const handleCloseFiltersList = () => {
 		dispatch(setOpenFilters(false));
 		if (window.innerWidth <= 767) {
-			dispatch(setActiveMobileMenu(null));
-			dispatch(setActiveMenu(null));
+			if (mobileActiveMenu !== 'route') {
+				dispatch(setActiveMenu('filters'));
+				dispatch(setActiveMobileMenu('filters'));
+			} else {
+				dispatch(setActiveMobileMenu('route'));
+				dispatch(setActiveMenu('route'));
+			}
 		}
 	};
 
@@ -258,6 +263,7 @@ export const FiltersList = () => {
 			updateBrandState({ currentBrands: brandState.dataBrands });
 		}
 	}, [brandState.dataBrands]);
+
 	useEffect(() => {
 		if (cardState.dataCards) {
 			updateCardState({ filteredCards: cardState.dataCards });
@@ -280,8 +286,12 @@ export const FiltersList = () => {
 	}, [filtersIsOpen]);
 
 	const filterListClass = clsx(s.filtersList, {
-		[s.left]: activeMenu !== 'filters',
-		[s.active]: filtersIsOpen
+		[s.left]:
+			window.innerWidth <= 767
+				? mobileActiveMenu !== 'filters' && mobileActiveMenu !== 'route'
+				: activeMenu,
+		[s.active]: filtersIsOpen,
+		[s.route]: activeMenu === 'route' && filtersIsOpen
 	});
 
 	const terminalClass = clsx(s.filterRow, s.terminalWrapper);

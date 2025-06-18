@@ -15,6 +15,11 @@
 	}
 }
 .filters.routeFilterActive {
+	@media (max-width: $tab) {
+		transform: translateX(0) !important;
+		opacity: 1;
+		pointer-events: all;
+	}
 	@media (min-width: $tab-sm) {
 		background: var(--tertiary-color);
 	}

@@ -32,9 +32,10 @@ export const Filters = () => {
 	const dispatch = useDispatch();
 
 	const handleActiveTab = (index: number) => {
-		dispatch(setActiveMenu('filters'));
-
-		dispatch(setActiveMobileMenu('filters'));
+		if (mobileActiveMenu !== 'route' && window.innerWidth <= 767) {
+			dispatch(setActiveMenu('filters'));
+			dispatch(setActiveMobileMenu('filters'));
+		}
 		if (index === activeTab) {
 			setActiveTab(null);
 			dispatch(setOpenFilters(false));

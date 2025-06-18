@@ -141,6 +141,11 @@
 		transform: translateX(-500px);
 	}
 }
+.filtersList.route {
+	@media (max-width: $tab) {
+		transform: translateX(0);
+	}
+}
 .filtersList.top {
 	top: 40px !important;
 }
