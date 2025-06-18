@@ -10,7 +10,7 @@ import { setSelectedFilter } from '@/widgets/filters';
 import { setActiveObject } from '@/entities/object-info';
 
 import { useGetPointsQuery } from '@/shared/api';
-import { useGetTerminalsQuery, useLazyGetTerminalsQuery } from '@/shared/api/cardeksPoints';
+import { useLazyGetTerminalsQuery } from '@/shared/api/cardeksPoints';
 import { getPointId, getQueryParams, useIndexedDB, useTypedSelector } from '@/shared/lib';
 import { Feature, IPlacemark } from '@/shared/types';
 

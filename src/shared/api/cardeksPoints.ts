@@ -9,11 +9,14 @@ export const cardeksPointsAPI = createApi({
 		}),
 		getTerminals: build.query<any, void>({
 			query: () => `TerminalsAZS.json`
+		}),
+		getRegions: build.query<any, void>({
+			query: () => `FilterRegionAZS.json`
 		})
 	})
 });
 
-export const { useGetPointsQuery, useGetTerminalsQuery, useLazyGetTerminalsQuery } =
+export const { useGetPointsQuery, useLazyGetTerminalsQuery, useLazyGetRegionsQuery } =
 	cardeksPointsAPI;
 
-export const { getPoints, getTerminals } = cardeksPointsAPI.endpoints;
+export const { getPoints, getTerminals, getRegions } = cardeksPointsAPI.endpoints;

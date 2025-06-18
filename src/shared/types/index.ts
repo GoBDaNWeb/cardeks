@@ -66,6 +66,8 @@ export interface Feature {
 	isDisabled?: boolean;
 	distance?: number;
 	address?: string;
+	region?: string;
+	town?: string;
 }
 export interface IList {
 	title: string;

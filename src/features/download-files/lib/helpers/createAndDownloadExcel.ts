@@ -11,7 +11,7 @@ export const createAndDownloadExcel = async (tableElement: HTMLTableElement | nu
 	worksheet.views = [{ state: 'frozen', ySplit: 3 }];
 
 	// Устанавливаем ширину столбцов (6-й столбец самый широкий)
-	const columnWidths = [10, 50, 20, 25, 10, 10, 10, 10, 20];
+	const columnWidths = [10, 30, 20, 80, 20, 12, 10, 10, 10, 10, 15];
 	worksheet.columns = columnWidths.map(width => ({ width }));
 
 	// Извлекаем данные из HTML-таблицы

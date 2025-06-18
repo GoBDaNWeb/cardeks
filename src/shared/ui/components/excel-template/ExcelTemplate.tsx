@@ -1,6 +1,6 @@
 import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { useLazyGetTerminalsQuery } from '@/shared/api/cardeksPoints';
+import { useLazyGetRegionsQuery, useLazyGetTerminalsQuery } from '@/shared/api/cardeksPoints';
 import { useTypedSelector } from '@/shared/lib';
 import { Feature } from '@/shared/types';
 
@@ -8,8 +8,10 @@ import s from './excel-template.module.scss';
 
 export const ExcelTemplate = forwardRef(({}, ref) => {
 	const [terminalPoints, setTerminalPoints] = useState<any[]>([]);
+	const [regionPoints, setRegionPoints] = useState<any[]>([]);
 	const nodeRef = useRef<HTMLDivElement | null>(null);
 	const [fetchTerminals] = useLazyGetTerminalsQuery();
+	const [fetchRegions] = useLazyGetRegionsQuery();
 	const hasFetchedRef = useRef(false);
 	const { currentModal } = useTypedSelector(state => state.modals);
 
@@ -31,17 +33,38 @@ export const ExcelTemplate = forwardRef(({}, ref) => {
 		return map;
 	}, []);
 
+	// Функция для создания мапы регионов (мемоизируем)
+	const createRegionMap = useCallback((terminals: any[]) => {
+		const map: Record<string, { region: string; town: string }> = {};
+		terminals.forEach(item => {
+			const id = item[0];
+			map[id] = {
+				region: item[1],
+				town: item[2]
+			};
+		});
+		return map;
+	}, []);
+
 	// Мемоизация объединённого массива
 	const mergedArray = useMemo(() => {
 		const terminalMap = createTerminalMap(terminalPoints);
+		const regionMap = createRegionMap(regionPoints);
 		const currentPoints = pointsOnRoute.length > 0 ? pointsOnRoute : points;
 
 		return currentPoints.map((item: Feature) => {
 			const idString = item.id.toString().padStart(10, '0');
 			const terminalData = terminalMap[idString];
+			const regionData = regionMap[idString];
 
-			return terminalData
-				? { ...item, address: terminalData.address, terminals: terminalData.terminals }
+			return terminalData && regionData
+				? {
+						...item,
+						address: terminalData.address,
+						terminals: terminalData.terminals,
+						region: regionData.region,
+						town: regionData.town
+					}
 				: item;
 		});
 	}, [terminalPoints, pointsOnRoute, points, createTerminalMap]);
@@ -57,11 +80,19 @@ export const ExcelTemplate = forwardRef(({}, ref) => {
 				.catch(err => {
 					console.error('Ошибка при загрузке терминалов:', err);
 				});
+
+			fetchRegions()
+				.unwrap()
+				.then(res => {
+					setRegionPoints(res.data);
+				})
+				.catch(err => {
+					console.error('Ошибка при загрузке регионов:', err);
+				});
 		}
-	}, [currentModal, fetchTerminals]);
+	}, [currentModal, fetchTerminals, fetchRegions]);
 
 	const tableData = pointsOnRoute.length > 0 ? pointsOnRoute : mergedArray;
-
 	return (
 		<table
 			className={s.excelTemplate}
@@ -93,6 +124,8 @@ export const ExcelTemplate = forwardRef(({}, ref) => {
 			<tbody>
 				<tr>
 					<td>№</td>
+					<td>Регион</td>
+					<td>Город</td>
 					<td>Месторасположение</td>
 					<td>Бренд</td>
 					<td>Тип карты</td>
@@ -136,7 +169,9 @@ export const ExcelTemplate = forwardRef(({}, ref) => {
 						return (
 							<tr key={point.id || index}>
 								<td>{index + 1}</td>
-								<td>{point.address || ''}</td>
+								<td>{point.region || '-'}</td>
+								<td>{point.town || '-'}</td>
+								<td>{point.address || '-'}</td>
 								<td>{point.title || ''}</td>
 								<td>
 									{point.terminals ? (
@@ -154,7 +189,9 @@ export const ExcelTemplate = forwardRef(({}, ref) => {
 												</>
 											)}
 										</>
-									) : null}
+									) : (
+										'-'
+									)}
 								</td>
 								<td>
 									{point.fuels.Ai100 ||

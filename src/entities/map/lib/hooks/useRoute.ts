@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { setOpenFilters } from '@/widgets/filters';
 import { setActiveMenu } from '@/widgets/menu-list';
 
-import { useFindAzsOnRouteMutation, useGetTerminalsQuery } from '@/shared/api';
+import { useFindAzsOnRouteMutation } from '@/shared/api';
 import { useLazyGetTerminalsQuery } from '@/shared/api/cardeksPoints';
 import { getQueryParams, useIndexedDB, useTypedSelector } from '@/shared/lib';
 import { Feature } from '@/shared/types';
@@ -58,7 +58,6 @@ export const useRoute = ({
 	const { addSettings, withFilters } = useTypedSelector(state => state.routeForm);
 	const { routesParam } = getQueryParams();
 	const [fetchTerminals] = useLazyGetTerminalsQuery();
-	// const { data: terminalsList } = useGetTerminalsQuery();
 	const multiRouteRef = useRef<any>(null);
 	const [fetchAzs, { isLoading }] = useFindAzsOnRouteMutation();
 
