@@ -76,6 +76,8 @@ export const ExcelTemplate = forwardRef(({}, ref) => {
 			fetchTerminals()
 				.unwrap()
 				.then(res => {
+					console.log('res.data Terminal', res.data);
+
 					setTerminalPoints(res.data);
 				})
 				.catch(err => {
@@ -85,6 +87,7 @@ export const ExcelTemplate = forwardRef(({}, ref) => {
 			fetchRegions()
 				.unwrap()
 				.then(res => {
+					console.log('res.data Regions', res.data);
 					setRegionPoints(res.data);
 				})
 				.catch(err => {
