@@ -51,14 +51,12 @@ export const ExcelTemplate = forwardRef(({}, ref) => {
 	const mergedArray = useMemo(() => {
 		const terminalMap = createTerminalMap(terminalPoints);
 		const regionMap = createRegionMap(regionPoints);
-		console.log('regionPoints', regionPoints);
 		const currentPoints = pointsOnRoute.length > 0 ? pointsOnRoute : points;
 
 		return currentPoints.map((item: Feature) => {
 			const idString = item.id.toString().padStart(10, '0');
 			const terminalData = terminalMap[idString];
 			const regionData = regionMap[idString];
-			console.log('regionData', regionData);
 			return terminalData && regionData
 				? {
 						...item,
@@ -77,8 +75,6 @@ export const ExcelTemplate = forwardRef(({}, ref) => {
 			fetchTerminals()
 				.unwrap()
 				.then(res => {
-					console.log('res.data Terminal', res.data);
-
 					setTerminalPoints(res.data);
 				})
 				.catch(err => {
@@ -88,7 +84,6 @@ export const ExcelTemplate = forwardRef(({}, ref) => {
 			fetchRegions()
 				.unwrap()
 				.then(res => {
-					console.log('res.data Regions', res.data);
 					setRegionPoints(res.data);
 				})
 				.catch(err => {
@@ -98,8 +93,6 @@ export const ExcelTemplate = forwardRef(({}, ref) => {
 	}, [currentModal, fetchTerminals, fetchRegions]);
 
 	useEffect(() => {
-		console.log('pointsOnRoute', pointsOnRoute);
-		console.log('mergedArray', mergedArray);
 		pointsOnRoute.length > 0 ? setTablePoints(pointsOnRoute) : setTablePoints(mergedArray);
 	}, [pointsOnRoute, mergedArray]);
 
