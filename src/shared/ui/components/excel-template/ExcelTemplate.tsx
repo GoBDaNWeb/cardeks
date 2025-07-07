@@ -68,7 +68,7 @@ export const ExcelTemplate = forwardRef(({}, ref) => {
 					}
 				: item;
 		});
-	}, [terminalPoints, pointsOnRoute, points, createTerminalMap]);
+	}, [terminalPoints, regionPoints, pointsOnRoute, points, createTerminalMap]);
 
 	useEffect(() => {
 		if (currentModal === 'download' && !hasFetchedRef.current) {
