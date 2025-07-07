@@ -50,6 +50,7 @@ export const ExcelTemplate = forwardRef(({}, ref) => {
 	const mergedArray = useMemo(() => {
 		const terminalMap = createTerminalMap(terminalPoints);
 		const regionMap = createRegionMap(regionPoints);
+		console.log('regionPoints', regionPoints);
 		const currentPoints = pointsOnRoute.length > 0 ? pointsOnRoute : points;
 
 		return currentPoints.map((item: Feature) => {
