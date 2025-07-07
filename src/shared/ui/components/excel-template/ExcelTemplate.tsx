@@ -56,7 +56,7 @@ export const ExcelTemplate = forwardRef(({}, ref) => {
 			const idString = item.id.toString().padStart(10, '0');
 			const terminalData = terminalMap[idString];
 			const regionData = regionMap[idString];
-
+			console.log('regionData', regionData);
 			return terminalData && regionData
 				? {
 						...item,
