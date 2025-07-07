@@ -7,6 +7,7 @@ import { Feature } from '@/shared/types';
 import s from './excel-template.module.scss';
 
 export const ExcelTemplate = forwardRef(({}, ref) => {
+	const [tablePoints, setTablePoints] = useState<any[]>([]);
 	const [terminalPoints, setTerminalPoints] = useState<any[]>([]);
 	const [regionPoints, setRegionPoints] = useState<any[]>([]);
 	const nodeRef = useRef<HTMLDivElement | null>(null);
@@ -96,7 +97,12 @@ export const ExcelTemplate = forwardRef(({}, ref) => {
 		}
 	}, [currentModal, fetchTerminals, fetchRegions]);
 
-	const tableData = pointsOnRoute.length > 0 ? pointsOnRoute : mergedArray;
+	useEffect(() => {
+		console.log('pointsOnRoute', pointsOnRoute);
+		console.log('mergedArray', mergedArray);
+		pointsOnRoute.length > 0 ? setTablePoints(pointsOnRoute) : setTablePoints(mergedArray);
+	}, [pointsOnRoute, mergedArray]);
+
 	return (
 		<table
 			className={s.excelTemplate}
@@ -161,8 +167,8 @@ export const ExcelTemplate = forwardRef(({}, ref) => {
 								<td>{point.types.azs ? 'АЗС' : ''}</td>
 							</tr>
 						))} */}
-				{tableData.length > 0 &&
-					tableData.map((point: Feature, index: number) => {
+				{tablePoints.length > 0 &&
+					tablePoints.map((point: Feature, index: number) => {
 						const cardData = () => {
 							const services = [];
 							if (point.fuels.AdBlue) services.push('AdBlue');
